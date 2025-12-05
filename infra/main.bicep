@@ -21,6 +21,19 @@ param secureAuthToken string
 @description('Random string for seeding. Please generate random string at least 12 chars long.')
 param secureJwtSecret string
 
+@description('The container image to deploy.')
+param containerImage string = 'mintplexlabs/anythingllm:latest'
+
+@description('The ACR server.')
+param acrServer string = ''
+
+@description('The ACR username.')
+param acrUsername string = ''
+
+@secure()
+@description('The ACR password.')
+param acrPassword string = ''
+
 @description('Create a storage account and file shares to persist data for the AnythingLLM and Caddy containers.')
 module storageAccount './storage-account.bicep' = {
   name: 'allmStorageAccount'
@@ -44,5 +57,9 @@ module allmAci './aci.bicep' = {
     overridePublicUrl: overridePublicUrl
     secureAuthToken: secureAuthToken
     secureJwtSecret: secureJwtSecret
+    containerImage: containerImage
+    acrServer: acrServer
+    acrUsername: acrUsername
+    acrPassword: acrPassword
   }
 }

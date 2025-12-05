@@ -10,6 +10,12 @@ param secureAuthToken string
 @secure()
 param secureJwtSecret string
 
+param containerImage string = 'mintplexlabs/anythingllm:latest'
+param acrServer string = ''
+param acrUsername string = ''
+@secure()
+param acrPassword string = ''
+
 var publicUrl = empty(overridePublicUrl)
   ? toLower('${containerGroupName}.${location}.azurecontainer.io')
   : overridePublicUrl
@@ -24,6 +30,15 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2024-05-01-
   location: location
   properties: {
     sku: 'Standard'
+    imageRegistryCredentials: empty(acrServer)
+      ? []
+      : [
+          {
+            server: acrServer
+            username: acrUsername
+            password: acrPassword
+          }
+        ]
     containers: [
       {
         name: '${containerGroupName}-caddy'
@@ -67,7 +82,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2024-05-01-
         name: '${containerGroupName}-allm'
         properties: {
           // https://hub.docker.com/r/mintplexlabs/anythingllm
-          image: 'mintplexlabs/anythingllm:latest'
+          image: containerImage
           resources: {
             requests: {
               cpu: 1
