@@ -71,12 +71,16 @@ function oauthEndpoints(app, apiRouter) {
       let role = "default";
 
       // 1. Check Admin Email
+      console.log("user_email", email);
+      console.log("AZURE_AD_ADMIN_EMAIL", process.env.AZURE_AD_ADMIN_EMAIL);
       if (
         process.env.AZURE_AD_ADMIN_EMAIL &&
         email.toLowerCase() === process.env.AZURE_AD_ADMIN_EMAIL.toLowerCase()
       ) {
         role = "admin";
       }
+
+      console.log("role", role);
 
       // 2. Check Group Mapping (Optional)
       if (process.env.AZURE_AD_ROLE_MAP) {
@@ -89,6 +93,8 @@ function oauthEndpoints(app, apiRouter) {
             }
           );
           const groupsData = await groupsResponse.json();
+
+          console.log("user_groupsData", groupsData);
 
           if (groupsData.value) {
             const userGroupIds = groupsData.value.map((g) => g.id);

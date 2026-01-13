@@ -1,0 +1,1 @@
+cd "c:/Users/Nathan/Documents/Work/Repos/BCP/anything-llm-fd/server"; $env:NODE_ENV = 'production'; node index.js
