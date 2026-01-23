@@ -182,7 +182,7 @@ export default {
   communityHub: {
     website: () => {
       return import.meta.env.DEV
-        ? `http://localhost:5173`
+        ? `http://localhost:3000`
         : `https://hub.anythingllm.com`;
     },
     /**

@@ -146,8 +146,8 @@ function oauthEndpoints(app, apiRouter) {
       if (error) throw new Error(error);
 
       // Redirect to frontend SSO handler
-      // In dev, frontend is on port 5173. In prod, it's served by the server.
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      // In dev, frontend is on port 3000. In prod, it's served by the server.
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
       res.redirect(`${frontendUrl}/sso/simple?token=${token}`);
     } catch (e) {
       console.error("Azure Auth Error:", e);

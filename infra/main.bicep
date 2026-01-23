@@ -22,7 +22,7 @@ param secureAuthToken string
 param secureJwtSecret string
 
 @description('The container image to deploy.')
-param containerImage string = 'mintplexlabs/anythingllm:latest'
+param containerImage string = 'rgbcpaiacr/anything-llm:latest'
 
 @description('The ACR server.')
 param acrServer string = ''
@@ -33,6 +33,13 @@ param acrUsername string = ''
 @secure()
 @description('The ACR password.')
 param acrPassword string = ''
+
+@description('PostgreSQL admin username.')
+param postgresAdminUsername string = 'bcpallm_admin'
+
+@secure()
+@description('PostgreSQL admin password.')
+param postgresAdminPassword string
 
 @description('Create a storage account and file shares to persist data for the AnythingLLM and Caddy containers.')
 module storageAccount './storage-account.bicep' = {
@@ -57,9 +64,21 @@ module allmAci './aci.bicep' = {
     overridePublicUrl: overridePublicUrl
     secureAuthToken: secureAuthToken
     secureJwtSecret: secureJwtSecret
+    postgresConnectionString: postgresServer.outputs.connectionString
     containerImage: containerImage
     acrServer: acrServer
     acrUsername: acrUsername
     acrPassword: acrPassword
+  }
+}
+
+@description('Create PostgreSQL Flexible Server for vector database.')
+module postgresServer 'postgres.bicep' = {
+  name: 'allmPostgresServer'
+  params: {
+    location: location
+    serverName: '${containerGroupName}-postgres'
+    adminUsername: postgresAdminUsername
+    adminPassword: postgresAdminPassword
   }
 }

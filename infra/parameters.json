@@ -19,6 +19,24 @@
         },
         "secureJwtSecret": {
             "value": "RUhUQ!8VVn#QuYzId2Mh##oIc8n#Qz1ha&R7WouzKe"
+        },
+        "postgresAdminUsername": {
+            "value": "bcpallmAdmin"
+        },
+        "postgresAdminPassword": {
+            "value": "PwpOkYo987YB4V4IukPS"
+        },
+        "containerImage": {
+            "value": "rgbcpaiacr.azurecr.io/anythingllm:latest"
+        },
+        "acrServer": {
+            "value": "rgbcpaiacr.azurecr.io"
+        },
+        "acrUsername": {
+            "value": "rgbcpaiacr"
+        },
+        "acrPassword": {
+            "value": "qqKCTDvu+W7doMMDoRQ3eHZs2iLUor4UEZzKXGIC5O+ACRCpKyY7"
         }
     }
 }

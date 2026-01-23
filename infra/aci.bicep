@@ -9,10 +9,13 @@ param overridePublicUrl string = ''
 param secureAuthToken string
 @secure()
 param secureJwtSecret string
+@secure()
+param postgresConnectionString string // ADD THIS LINE
 
-param containerImage string = 'mintplexlabs/anythingllm:latest'
+param containerImage string = 'rgbcpaiacr/anything-llm:latest'
 param acrServer string = ''
 param acrUsername string = ''
+
 @secure()
 param acrPassword string = ''
 
@@ -129,6 +132,15 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2024-05-01-
             {
               name: 'JWT_SECRET'
               value: secureJwtSecret
+            }
+            // ADD THESE THREE LINES FOR PGVECTOR:
+            {
+              name: 'VECTOR_DB'
+              value: 'pgvector'
+            }
+            {
+              name: 'PGVECTOR_DB_URL'
+              value: postgresConnectionString
             }
           ]
         }

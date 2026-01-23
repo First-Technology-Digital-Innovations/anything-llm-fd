@@ -283,6 +283,19 @@ const SystemSettings = {
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
 
       // --------------------------------------------------------
+      // Voice Chat - Azure Realtime API Settings & Configs
+      // --------------------------------------------------------
+      VoiceChatEnabled: process.env.VOICE_CHAT_ENABLED === "true",
+      AzureRealtimeEndpoint: process.env.AZURE_REALTIME_ENDPOINT || null,
+      AzureRealtimeKey: !!process.env.AZURE_REALTIME_KEY,
+      AzureRealtimeModel: process.env.AZURE_REALTIME_MODEL || "gpt-realtime",
+      VoiceChatDefaultVoice: process.env.VOICE_CHAT_DEFAULT_VOICE || "alloy",
+      VoiceChatVADThreshold:
+        parseFloat(process.env.VOICE_CHAT_VAD_THRESHOLD) || 0.5,
+      VoiceChatSessionTimeout:
+        parseInt(process.env.VOICE_CHAT_SESSION_TIMEOUT) || 1500000, // 25 minutes in ms
+
+      // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,

@@ -12,6 +12,7 @@ import AvailableAgentsButton, {
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
 import LLMSelectorAction from "./LLMSelector/action";
+import VoiceChatToggleAction from "./VoiceChatToggle";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
@@ -30,6 +31,7 @@ export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
 
 export default function PromptInput({
+  workspace,
   submit,
   onChange,
   isStreaming,
@@ -330,6 +332,7 @@ export default function PromptInput({
                 />
                 <TextSizeButton />
                 <LLMSelectorAction />
+                <VoiceChatToggleAction workspace={workspace} />
               </div>
               <div className="flex gap-x-2">
                 <SpeechToText sendCommand={sendCommand} />

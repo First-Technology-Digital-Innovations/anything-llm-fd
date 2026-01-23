@@ -113,7 +113,7 @@ const ModelName = {
 
 - HTTP request logging enabled with `ENABLE_HTTP_LOGGER=true` in development
 - Swagger API docs at `/api/docs` endpoint (disable in production)
-- Frontend dev server with hot reload on `localhost:5173`
+- Frontend dev server with hot reload on `localhost:3000`
 - API server accessible at `localhost:3001`
 
 ### Common Debugging Patterns
