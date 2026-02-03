@@ -120,6 +120,9 @@ export default {
     audioPreference: () => {
       return "/settings/audio-preference";
     },
+    voiceChat: () => {
+      return "/settings/voice-chat";
+    },
     defaultSystemPrompt: () => {
       return "/settings/default-system-prompt";
     },

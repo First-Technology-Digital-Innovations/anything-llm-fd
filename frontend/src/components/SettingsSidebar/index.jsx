@@ -251,6 +251,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: "Voice Chat",
+              href: paths.settings.voiceChat(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.transcription"),
               href: paths.settings.transcriptionPreference(),
               flex: true,

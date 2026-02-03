@@ -35,16 +35,43 @@ class VoiceChatSession {
       }
 
       // Azure Realtime API WebSocket URL
+      // For Azure OpenAI Service: wss://{resource}.openai.azure.com/openai/realtime?api-version=2024-10-01-preview&deployment={deployment}
+      // For Azure AI Services: wss://{endpoint}/openai/realtime?api-version=2024-10-01-preview&deployment={deployment}
       const azureEndpoint = settings.AzureRealtimeEndpoint.replace(
         /^https?:\/\//,
         ""
       );
-      const azureWsUrl = `wss://${azureEndpoint}/openai/v1/realtime?model=${settings.AzureRealtimeModel}&api-key=${process.env.AZURE_REALTIME_KEY}`;
+      const deploymentName =
+        settings.AzureRealtimeModel || "gpt-4o-realtime-preview";
+      const azureWsUrl = `wss://${azureEndpoint}/openai/realtime?api-version=2024-10-01-preview&deployment=${deploymentName}`;
 
-      this.azureSocket = new WebSocket(azureWsUrl);
+      console.log(
+        `Connecting to Azure Realtime API: wss://${azureEndpoint}/openai/realtime?api-version=2024-10-01-preview&deployment=${deploymentName}`
+      );
+
+      // Create WebSocket with API key header for Azure authentication
+      this.azureSocket = new WebSocket(azureWsUrl, {
+        headers: {
+          "api-key": settings.AzureRealtimeKey,
+        },
+      });
 
       return new Promise((resolve, reject) => {
+        // Add connection timeout
+        const connectionTimeout = setTimeout(() => {
+          console.error(
+            `Azure WebSocket connection timeout for session ${this.sessionId}`
+          );
+          this.azureSocket.close();
+          reject(
+            new Error(
+              "Azure connection timeout - check your endpoint and API key"
+            )
+          );
+        }, 15000); // 15 second timeout
+
         this.azureSocket.on("open", () => {
+          clearTimeout(connectionTimeout);
           console.log(
             `Voice chat session ${this.sessionId} connected to Azure Realtime API`
           );
@@ -55,16 +82,41 @@ class VoiceChatSession {
         });
 
         this.azureSocket.on("error", (error) => {
+          clearTimeout(connectionTimeout);
           console.error(
             `Azure WebSocket error for session ${this.sessionId}:`,
-            error
+            error.message || error
           );
           reject(error);
         });
 
-        this.azureSocket.on("close", () => {
-          console.log(`Azure WebSocket closed for session ${this.sessionId}`);
+        this.azureSocket.on("close", (code, reason) => {
+          console.log(
+            `Azure WebSocket closed for session ${this.sessionId}. Code: ${code}, Reason: ${reason?.toString() || "unknown"}`
+          );
           this.cleanup();
+        });
+
+        // Add unexpected response handler for debugging connection issues
+        this.azureSocket.on("unexpected-response", (request, response) => {
+          console.error(
+            `Azure WebSocket unexpected response for session ${this.sessionId}:`
+          );
+          console.error(
+            `  Status: ${response.statusCode} ${response.statusMessage}`
+          );
+          let body = "";
+          response.on("data", (chunk) => {
+            body += chunk;
+          });
+          response.on("end", () => {
+            console.error(`  Body: ${body}`);
+          });
+          reject(
+            new Error(
+              `Azure connection failed: ${response.statusCode} ${response.statusMessage}`
+            )
+          );
         });
 
         this.azureSocket.on("message", (data) => {
@@ -398,8 +450,32 @@ function voiceChatWebSocket(app) {
       // Create or get existing session
       let session = VoiceChatSession.get(sessionId);
       if (!session) {
+        console.log(
+          `Creating new voice chat session ${sessionId} for workspace ${workspaceSlug}`
+        );
         session = VoiceChatSession.create(sessionId, workspaceSlug, userId);
-        await session.initialize();
+        try {
+          await session.initialize();
+          console.log(
+            `Voice chat session ${sessionId} initialized successfully`
+          );
+        } catch (initError) {
+          console.error(
+            `Failed to initialize voice chat session ${sessionId}:`,
+            initError.message
+          );
+          socket.send(
+            JSON.stringify({
+              type: "error",
+              error: {
+                message: `Failed to connect to Azure Realtime API: ${initError.message}`,
+              },
+            })
+          );
+          socket.close();
+          VoiceChatSession.close(sessionId);
+          return;
+        }
       }
 
       session.setClientSocket(socket);
