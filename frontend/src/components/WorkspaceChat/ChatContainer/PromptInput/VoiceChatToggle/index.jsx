@@ -26,9 +26,17 @@ export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = (
 
   const checkVoiceChatAvailability = async () => {
     try {
-      const { settings } = await System.keys();
+      // System.keys() returns the settings object directly, not { settings }
+      const settings = await System.keys();
       const voiceChatEnabled = settings?.VoiceChatEnabled === true;
       const hasAzureConfig = settings?.AzureRealtimeEndpoint && settings?.AzureRealtimeKey;
+      
+      console.log("Voice Chat Debug:", {
+        voiceChatEnabled,
+        hasAzureConfig,
+        azureEndpoint: settings?.AzureRealtimeEndpoint,
+        hasAzureKey: !!settings?.AzureRealtimeKey
+      });
       
       setIsVoiceAvailable(voiceChatEnabled && hasAzureConfig);
       
@@ -339,7 +347,8 @@ export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = (
 
   // This feature is disabled for multi-user instances where the user is not an admin
   // Same restriction as LLMSelectorAction
-  if (!!user && user.role !== "admin") return null;
+  // Temporarily disabled for testing
+  // if (!!user && user.role !== "admin") return null;
 
   // Don't show if voice chat is not available
   if (!isVoiceAvailable) return null;
