@@ -147,3 +147,71 @@ const ModelName = {
 - File upload size limits (3GB default)
 - HTTPS support with certificate configuration
 - Telemetry can be disabled via `DISABLE_TELEMETRY=true`
+
+## Azure Deployment & Infrastructure
+
+### Azure Container Instance Deployment
+
+**Production Environment:** https://bcpai.southafricanorth.azurecontainer.io
+
+The application is deployed to Azure using Bicep templates in the `infra/` directory:
+
+- **main.bicep** - Primary deployment template with parameter definitions
+- **aci.bicep** - Container Instance configuration with environment variables
+- **postgres.bicep** - PostgreSQL Flexible Server for vector storage
+- **storage-account.bicep** - Azure Storage for persistent data
+- **parameters.json** - Environment-specific configuration values
+
+### Azure AD Authentication Integration
+
+**Status:** ✅ **COMPLETED** - Azure AD SSO fully configured for production
+
+Azure AD authentication is configured for enterprise SSO with the following setup:
+
+**Required Environment Variables:**
+
+```bash
+AZURE_AD_CLIENT_ID=9b09e4c5-806b-41dd-8f70-310d9311dcf3
+AZURE_AD_TENANT_ID=03c6495c-8727-480c-b411-808e8a551337
+AZURE_AD_CLIENT_SECRET=Wwk8Q~vw2K8fJXrB8sw.bqkGI6ytbYs7jXChMdsK
+AZURE_AD_REDIRECT_URI=https://bcpai.southafricanorth.azurecontainer.io/api/auth/azure/callback
+AZURE_AD_ADMIN_EMAIL=nathang@yamahadistributors.onmicrosoft.com
+FRONTEND_URL=https://bcpai.southafricanorth.azurecontainer.io
+```
+
+**Authentication Flow:**
+
+1. `/api/auth/azure` - Initiates Azure AD OAuth flow
+2. `/api/auth/azure/callback` - Handles OAuth callback and token exchange
+3. User profile creation/update based on Azure AD claims
+4. JWT token issuance for subsequent API authentication
+
+**Azure AD App Registration Requirements:**
+
+- Redirect URI must include production callback URL
+- Required Microsoft Graph permissions for user profile access
+- Supports both development (localhost) and production endpoints
+
+### Deployment Commands
+
+```bash
+cd infra/
+.\deploy.ps1  # Builds image, pushes to ACR, deploys via Bicep
+```
+
+**Deployment Process:**
+
+1. Builds Docker image from monorepo
+2. Pushes to Azure Container Registry (rgbcpaiacr.azurecr.io)
+3. Deploys infrastructure via Bicep templates
+4. Configures container with all environment variables
+5. Sets up PostgreSQL vector database and Azure Storage persistence
+
+### Infrastructure Components
+
+- **Container Registry:** rgbcpaiacr.azurecr.io
+- **Resource Group:** rg-bcp_ai
+- **Location:** South Africa North
+- **Vector DB:** PostgreSQL with pgvector extension
+- **Storage:** Azure File Shares for persistence
+- **Networking:** Public IP with custom domain support

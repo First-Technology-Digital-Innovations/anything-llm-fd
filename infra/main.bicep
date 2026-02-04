@@ -41,6 +41,63 @@ param postgresAdminUsername string = 'bcpallm_admin'
 @description('PostgreSQL admin password.')
 param postgresAdminPassword string
 
+// Azure OpenAI Configuration
+@description('Azure OpenAI Endpoint')
+param azureOpenAIEndpoint string = ''
+
+@secure()
+@description('Azure OpenAI Key')
+param azureOpenAIKey string = ''
+
+@description('Azure OpenAI Model')
+param azureOpenAIModel string = 'gpt-4'
+
+@description('LLM Provider')
+param llmProvider string = 'azure'
+
+@description('Embedding Engine')
+param embeddingEngine string = 'native'
+
+@description('Embedding Model Preference')
+param embeddingModelPref string = 'Xenova/all-MiniLM-L6-v2'
+
+// Azure AD Configuration
+@description('Azure AD Client ID')
+param azureAdClientId string = ''
+
+@description('Azure AD Tenant ID')
+param azureAdTenantId string = ''
+
+@secure()
+@description('Azure AD Client Secret')
+param azureAdClientSecret string = ''
+
+@description('Azure AD Admin Email')
+param azureAdAdminEmail string = ''
+
+// Voice Chat Configuration
+@description('Enable voice chat functionality')
+param voiceChatEnabled string = 'false'
+
+@description('Azure Realtime Endpoint')
+param azureRealtimeEndpoint string = ''
+
+@secure()
+@description('Azure Realtime Key')
+param azureRealtimeKey string = ''
+
+@description('Azure Realtime Model')
+param azureRealtimeModel string = 'gpt-realtime'
+
+@description('Voice chat default voice')
+param voiceChatDefaultVoice string = 'alloy'
+
+@description('Voice chat VAD threshold')
+param voiceChatVadThreshold string = '0.5'
+
+@description('Voice chat session timeout')
+param voiceChatSessionTimeout string = '1500000'
+
 @description('Create a storage account and file shares to persist data for the AnythingLLM and Caddy containers.')
 module storageAccount './storage-account.bicep' = {
   name: 'allmStorageAccount'
@@ -69,6 +126,23 @@ module allmAci './aci.bicep' = {
     acrServer: acrServer
     acrUsername: acrUsername
     acrPassword: acrPassword
+    azureOpenAIEndpoint: azureOpenAIEndpoint
+    azureOpenAIKey: azureOpenAIKey
+    azureOpenAIModel: azureOpenAIModel
+    llmProvider: llmProvider
+    embeddingEngine: embeddingEngine
+    embeddingModelPref: embeddingModelPref
+    azureAdClientId: azureAdClientId
+    azureAdTenantId: azureAdTenantId
+    azureAdClientSecret: azureAdClientSecret
+    azureAdAdminEmail: azureAdAdminEmail
+    voiceChatEnabled: voiceChatEnabled
+    azureRealtimeEndpoint: azureRealtimeEndpoint
+    azureRealtimeKey: azureRealtimeKey
+    azureRealtimeModel: azureRealtimeModel
+    voiceChatDefaultVoice: voiceChatDefaultVoice
+    voiceChatVadThreshold: voiceChatVadThreshold
+    voiceChatSessionTimeout: voiceChatSessionTimeout
   }
 }
 

@@ -19,6 +19,32 @@ param acrUsername string = ''
 @secure()
 param acrPassword string = ''
 
+// Azure OpenAI Configuration
+param azureOpenAIEndpoint string = ''
+@secure()
+param azureOpenAIKey string = ''
+param azureOpenAIModel string = 'gpt-4'
+param llmProvider string = 'azure'
+param embeddingEngine string = 'native'
+param embeddingModelPref string = 'text-embedding-ada-002'
+
+// Azure AD Configuration
+param azureAdClientId string = ''
+param azureAdTenantId string = ''
+@secure()
+param azureAdClientSecret string = ''
+param azureAdAdminEmail string = ''
+
+// Voice Chat Configuration
+param voiceChatEnabled string = 'false'
+param azureRealtimeEndpoint string = ''
+@secure()
+param azureRealtimeKey string = ''
+param azureRealtimeModel string = 'gpt-realtime'
+param voiceChatDefaultVoice string = 'alloy'
+param voiceChatVadThreshold string = '0.5'
+param voiceChatSessionTimeout string = '1500000'
+
 var publicUrl = empty(overridePublicUrl)
   ? toLower('${containerGroupName}.${location}.azurecontainer.io')
   : overridePublicUrl
@@ -133,6 +159,30 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2024-05-01-
               name: 'JWT_SECRET'
               value: secureJwtSecret
             }
+            {
+              name: 'LLM_PROVIDER'
+              value: llmProvider
+            }
+            {
+              name: 'AZURE_OPENAI_ENDPOINT'
+              value: azureOpenAIEndpoint
+            }
+            {
+              name: 'AZURE_OPENAI_KEY'
+              value: azureOpenAIKey
+            }
+            {
+              name: 'OPEN_MODEL_PREF'
+              value: azureOpenAIModel
+            }
+            {
+              name: 'EMBEDDING_ENGINE'
+              value: embeddingEngine
+            }
+            {
+              name: 'EMBEDDING_MODEL_PREF'
+              value: embeddingModelPref
+            }
             // ADD THESE THREE LINES FOR PGVECTOR:
             {
               name: 'VECTOR_DB'
@@ -141,6 +191,60 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2024-05-01-
             {
               name: 'PGVECTOR_DB_URL'
               value: postgresConnectionString
+            }
+            // Azure AD Configuration
+            {
+              name: 'AZURE_AD_CLIENT_ID'
+              value: azureAdClientId
+            }
+            {
+              name: 'AZURE_AD_TENANT_ID'
+              value: azureAdTenantId
+            }
+            {
+              name: 'AZURE_AD_CLIENT_SECRET'
+              value: azureAdClientSecret
+            }
+            {
+              name: 'AZURE_AD_REDIRECT_URI'
+              value: 'https://${publicUrl}/api/auth/azure/callback'
+            }
+            {
+              name: 'AZURE_AD_ADMIN_EMAIL'
+              value: azureAdAdminEmail
+            }
+            {
+              name: 'FRONTEND_URL'
+              value: 'https://${publicUrl}'
+            }
+            // Voice Chat Configuration
+            {
+              name: 'VOICE_CHAT_ENABLED'
+              value: voiceChatEnabled
+            }
+            {
+              name: 'AZURE_REALTIME_ENDPOINT'
+              value: azureRealtimeEndpoint
+            }
+            {
+              name: 'AZURE_REALTIME_KEY'
+              value: azureRealtimeKey
+            }
+            {
+              name: 'AZURE_REALTIME_MODEL'
+              value: azureRealtimeModel
+            }
+            {
+              name: 'VOICE_CHAT_DEFAULT_VOICE'
+              value: voiceChatDefaultVoice
+            }
+            {
+              name: 'VOICE_CHAT_VAD_THRESHOLD'
+              value: voiceChatVadThreshold
+            }
+            {
+              name: 'VOICE_CHAT_SESSION_TIMEOUT'
+              value: voiceChatSessionTimeout
             }
           ]
         }

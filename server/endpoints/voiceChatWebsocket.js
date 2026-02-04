@@ -35,25 +35,35 @@ class VoiceChatSession {
       }
 
       // Azure Realtime API WebSocket URL
-      // For Azure OpenAI Service: wss://{resource}.openai.azure.com/openai/realtime?api-version=2024-10-01-preview&deployment={deployment}
-      // For Azure AI Services: wss://{endpoint}/openai/realtime?api-version=2024-10-01-preview&deployment={deployment}
+      // For GA models: wss://{resource}.openai.azure.com/openai/v1/realtime?model={deployment}
+      // For Preview models: wss://{endpoint}/openai/realtime?api-version=2024-10-01-preview&deployment={deployment}
       const azureEndpoint = settings.AzureRealtimeEndpoint.replace(
         /^https?:\/\//,
         ""
       );
-      const deploymentName =
-        settings.AzureRealtimeModel || "gpt-4o-realtime-preview";
-      const azureWsUrl = `wss://${azureEndpoint}/openai/realtime?api-version=2024-10-01-preview&deployment=${deploymentName}`;
+      const deploymentName = settings.AzureRealtimeModel || "gpt-realtime";
 
-      console.log(
-        `Connecting to Azure Realtime API: wss://${azureEndpoint}/openai/realtime?api-version=2024-10-01-preview&deployment=${deploymentName}`
-      );
+      // Use GA endpoint format for GA models, Preview format for preview models
+      const isPreviewModel = deploymentName.includes("-preview");
+      const azureWsUrl = isPreviewModel
+        ? `wss://${azureEndpoint}/openai/realtime?api-version=2024-10-01-preview&deployment=${deploymentName}`
+        : `wss://${azureEndpoint}/openai/v1/realtime?model=${deploymentName}`;
+
+      console.log(`Connecting to Azure Realtime API: ${azureWsUrl}`);
 
       // Create WebSocket with API key header for Azure authentication
+      // For GA models, use Authorization: Bearer token (if using managed identity)
+      // For both GA and Preview models, api-key header should work
+      const headers = {
+        "api-key": settings.AzureRealtimeKey,
+      };
+
+      console.log(
+        `Authentication header set: api-key (length: ${settings.AzureRealtimeKey?.length || 0})`
+      );
+
       this.azureSocket = new WebSocket(azureWsUrl, {
-        headers: {
-          "api-key": settings.AzureRealtimeKey,
-        },
+        headers: headers,
       });
 
       return new Promise((resolve, reject) => {
@@ -137,6 +147,9 @@ class VoiceChatSession {
     const sessionConfig = {
       type: "session.update",
       session: {
+        modalities: ["text", "audio"],
+        instructions:
+          "You are a helpful AI assistant. Respond naturally and conversationally.",
         voice: settings.VoiceChatDefaultVoice || "alloy",
         input_audio_format: "pcm16",
         output_audio_format: "pcm16",
@@ -155,6 +168,10 @@ class VoiceChatSession {
       },
     };
 
+    console.log(
+      `Initializing voice session ${this.sessionId} with config:`,
+      JSON.stringify(sessionConfig, null, 2)
+    );
     this.sendToAzure(sessionConfig);
   }
 
@@ -222,6 +239,9 @@ class VoiceChatSession {
           break;
         case "response.audio.delta":
           // Audio response chunk - forward to client
+          console.log(
+            `Audio delta received for session ${this.sessionId}, size: ${message.delta?.length || 0}`
+          );
           this.sendToClient({
             type: "audio_response_chunk",
             audio: message.delta,
@@ -234,12 +254,46 @@ class VoiceChatSession {
             text: message.delta,
           });
           break;
+        case "response.audio.done":
+          // Audio response complete
+          this.sendToClient({
+            type: "audio_response_done",
+            response_id: message.response_id,
+            item_id: message.item_id,
+          });
+          break;
         case "response.done":
           // Response complete - save to conversation
           this.handleResponseComplete(message);
           break;
+        case "response.audio_transcript.delta":
+          // Audio transcript chunk - forward to client
+          this.sendToClient({
+            type: "audio_transcript_chunk",
+            transcript: message.delta,
+          });
+          break;
+        case "response.audio_transcript.done":
+          // Audio transcript complete
+          this.sendToClient({
+            type: "audio_transcript_done",
+            transcript: message.transcript,
+          });
+          break;
+        case "session.updated":
+          // Session configuration confirmed
+          console.log(`Voice session ${this.sessionId} configuration updated`);
+          this.sendToClient({
+            type: "session_configured",
+            message: "Voice session ready",
+          });
+          break;
         case "error":
           // Error from Azure - forward to client
+          console.error(
+            `Azure API error for session ${this.sessionId}:`,
+            message.error
+          );
           this.sendToClient({
             type: "error",
             error: message.error,
@@ -247,6 +301,10 @@ class VoiceChatSession {
           break;
         default:
           // Forward other events to client for debugging
+          console.log(
+            `Unhandled Azure event for session ${this.sessionId}:`,
+            message.type
+          );
           this.sendToClient(message);
           break;
       }
@@ -422,8 +480,15 @@ function voiceChatWebSocket(app) {
     const workspaceSlug = request.query.workspace;
     const userId = request.query.userId || null;
 
+    console.log(
+      `[VoiceChat] WebSocket connection attempt - Session: ${sessionId}, Workspace: ${workspaceSlug}, User: ${userId}`
+    );
+
     try {
       if (!workspaceSlug) {
+        console.error(
+          `[VoiceChat] Missing workspace slug for session ${sessionId}`
+        );
         socket.send(
           JSON.stringify({
             type: "error",
@@ -436,7 +501,14 @@ function voiceChatWebSocket(app) {
 
       // Check if voice chat is enabled
       const settings = await SystemSettings.currentSettings();
+      console.log(
+        `[VoiceChat] Settings check - VoiceChatEnabled: ${settings.VoiceChatEnabled}, AzureEndpoint: ${settings.AzureRealtimeEndpoint ? "SET" : "NOT SET"}, AzureKey: ${settings.AzureRealtimeKey ? "SET" : "NOT SET"}`
+      );
+
       if (!settings.VoiceChatEnabled) {
+        console.error(
+          `[VoiceChat] Voice chat disabled for session ${sessionId}`
+        );
         socket.send(
           JSON.stringify({
             type: "error",
@@ -451,19 +523,21 @@ function voiceChatWebSocket(app) {
       let session = VoiceChatSession.get(sessionId);
       if (!session) {
         console.log(
-          `Creating new voice chat session ${sessionId} for workspace ${workspaceSlug}`
+          `[VoiceChat] Creating new voice chat session ${sessionId} for workspace ${workspaceSlug}`
         );
         session = VoiceChatSession.create(sessionId, workspaceSlug, userId);
         try {
+          console.log(`[VoiceChat] Initializing session ${sessionId}...`);
           await session.initialize();
           console.log(
-            `Voice chat session ${sessionId} initialized successfully`
+            `[VoiceChat] Voice chat session ${sessionId} initialized successfully`
           );
         } catch (initError) {
           console.error(
-            `Failed to initialize voice chat session ${sessionId}:`,
+            `[VoiceChat] Failed to initialize voice chat session ${sessionId}:`,
             initError.message
           );
+          console.error(`[VoiceChat] Full error:`, initError);
           socket.send(
             JSON.stringify({
               type: "error",
@@ -476,21 +550,32 @@ function voiceChatWebSocket(app) {
           VoiceChatSession.close(sessionId);
           return;
         }
+      } else {
+        console.log(`[VoiceChat] Reusing existing session ${sessionId}`);
       }
 
       session.setClientSocket(socket);
 
       socket.on("message", (data) => {
+        console.log(
+          `[VoiceChat] Client message received for session ${sessionId}:`,
+          typeof data
+        );
         session.handleClientMessage(data);
       });
 
       socket.on("close", () => {
-        console.log(`Client disconnected from voice chat session ${sessionId}`);
+        console.log(
+          `[VoiceChat] Client disconnected from voice chat session ${sessionId}`
+        );
         // Keep Azure connection alive for potential reconnection
         // Only close Azure connection on timeout
       });
 
       // Send connection success to client
+      console.log(
+        `[VoiceChat] Sending connection success to client for session ${sessionId}`
+      );
       socket.send(
         JSON.stringify({
           type: "connection_established",
@@ -500,7 +585,10 @@ function voiceChatWebSocket(app) {
 
       await Telemetry.sendTelemetry("voice_chat_started");
     } catch (error) {
-      console.error(`Voice chat session error for ${sessionId}:`, error);
+      console.error(
+        `[VoiceChat] Voice chat session error for ${sessionId}:`,
+        error
+      );
       socket?.send(
         JSON.stringify({
           type: "error",
