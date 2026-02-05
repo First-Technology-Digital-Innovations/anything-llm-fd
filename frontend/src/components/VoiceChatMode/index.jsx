@@ -60,6 +60,7 @@ export default function VoiceChatMode({ workspace, onClose, isVisible = false })
       
       switch (message.type) {
         case 'session.created':
+        case 'session_configured':
           setCurrentState('idle');
           setStatusMessage('Ready to chat - click microphone to start');
           break;
@@ -75,18 +76,28 @@ export default function VoiceChatMode({ workspace, onClose, isVisible = false })
           break;
           
         case 'response.audio_transcript.delta':
+        case 'audio_transcript_chunk':
           setCurrentState('speaking');
           setStatusMessage('AI is speaking...');
           break;
           
         case 'response.audio.delta':
-          // Play audio chunk
+          // Play audio chunk (direct Azure format)
           if (message.delta) {
             playAudioChunk(message.delta);
           }
           break;
           
+        case 'audio_response_chunk':
+          // Play audio chunk (server proxied format)
+          if (message.audio) {
+            console.log('[VoiceChatMode] Playing audio chunk, length:', message.audio.length);
+            playAudioChunk(message.audio);
+          }
+          break;
+          
         case 'response.done':
+        case 'audio_response_done':
           setCurrentState('idle');
           setStatusMessage('Click microphone to continue');
           break;

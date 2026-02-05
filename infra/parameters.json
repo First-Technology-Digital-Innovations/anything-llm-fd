@@ -72,7 +72,7 @@
             "value": "true"
         },
         "azureRealtimeEndpoint": {
-            "value": "https://bcp-ai-east-us-2-resource.cognitiveservices.azure.com"
+            "value": "bcp-ai-east-us-2-resource.cognitiveservices.azure.com"
         },
         "azureRealtimeKey": {
             "value": "17ZJuvQBfBT5GhyUT2mfow2H97XTjKEeXZb7pQNJuMviKbExNyedJQQJ99CAACHYHv6XJ3w3AAAAACOGahqG"

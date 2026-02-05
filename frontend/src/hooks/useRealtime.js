@@ -19,11 +19,15 @@ export function useRealtime(sessionId, workspaceSlug, userId) {
       setConnectionStatus("connecting");
 
       const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      console.log("wsProtocol: ", wsProtocol);
       const wsHost = import.meta.env.DEV
         ? "localhost:3001"
         : window.location.host;
-      const wsUrl = `${wsProtocol}//${wsHost}/voice-chat/${sessionId}?workspace=${workspaceSlug}&userId=${userId || "anonymous"}`;
+      console.log("wsHost: ", wsHost);
 
+      // Note: Voice chat WebSocket is mounted on /api router
+      const wsUrl = `${wsProtocol}//${wsHost}/api/voice-chat/${sessionId}?workspace=${workspaceSlug}&userId=${userId || "anonymous"}`;
+      console.log("wsUrl: ", wsUrl);
       const ws = new WebSocket(wsUrl);
 
       return new Promise((resolve, reject) => {
@@ -44,7 +48,7 @@ export function useRealtime(sessionId, workspaceSlug, userId) {
         ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-
+            console.log("ws.onmessage data: ", data);
             // Call registered message handlers
             messageHandlersRef.current.forEach((handler) => {
               try {
