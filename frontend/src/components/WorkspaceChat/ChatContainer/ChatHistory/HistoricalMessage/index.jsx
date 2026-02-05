@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Info, Warning } from "@phosphor-icons/react";
+import { Info, Warning, Microphone } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -37,6 +37,7 @@ const HistoricalMessage = ({
   forkThread,
   metrics = {},
   alignmentCls = "",
+  messageType = null,
 }) => {
   const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
@@ -52,6 +53,7 @@ const HistoricalMessage = ({
 
   const isRefusalMessage =
     role === "assistant" && message === chatQueryRefusalResponse(workspace);
+  const isVoiceMessage = messageType === "voice";
 
   if (!!error) {
     return (
@@ -90,7 +92,17 @@ const HistoricalMessage = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className={`flex gap-x-5 ${alignmentCls}`}>
           <div className="flex flex-col items-center">
-            <ProfileImage role={role} workspace={workspace} />
+            <div className="relative">
+              <ProfileImage role={role} workspace={workspace} />
+              {isVoiceMessage && (
+                <div 
+                  className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5"
+                  title="Voice message"
+                >
+                  <Microphone className="w-3 h-3 text-white" weight="fill" />
+                </div>
+              )}
+            </div>
             <div className="mt-1 -mb-10">
               {role === "assistant" && (
                 <TTSMessage

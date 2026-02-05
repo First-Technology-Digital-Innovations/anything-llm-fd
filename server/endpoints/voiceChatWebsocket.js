@@ -2,6 +2,7 @@ const { Telemetry } = require("../models/telemetry");
 const { SystemSettings } = require("../models/systemSettings");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { WorkspaceThread } = require("../models/workspaceThread");
 const { safeJsonParse } = require("../utils/http");
 const WebSocket = require("ws");
 
@@ -115,10 +116,15 @@ function wrapRealtimeError(err) {
 const voiceChatSessions = new Map();
 
 class VoiceChatSession {
-  constructor(sessionId, workspaceSlug, userId) {
+  constructor(sessionId, workspaceSlug, userId, threadSlug = null) {
     this.sessionId = sessionId;
     this.workspaceSlug = workspaceSlug;
-    this.userId = userId;
+    // Parse userId to Int for Prisma, null for anonymous/NaN
+    this.userId =
+      userId && !isNaN(parseInt(userId, 10)) ? parseInt(userId, 10) : null;
+    // Parse threadSlug (will be resolved to threadId during initialization)
+    this.threadSlug = threadSlug;
+    this.threadId = null;
     this.realtimeClient = null;
     this.clientSocket = null;
     this.isConnected = false;
@@ -127,6 +133,10 @@ class VoiceChatSession {
     this.warningTimeout = null;
     this.conversationId = null;
     this.settings = null;
+    this.workspace = null;
+    // Track pending transcripts for proper message saving
+    this.pendingUserTranscript = null;
+    this.pendingAITranscript = "";
   }
 
   async initialize() {
@@ -141,6 +151,65 @@ class VoiceChatSession {
       ) {
         throw new Error("Azure Realtime API not configured");
       }
+
+      // Load workspace configuration
+      this.workspace = await Workspace.get({ slug: this.workspaceSlug });
+      if (!this.workspace) {
+        throw new Error(`Workspace '${this.workspaceSlug}' not found`);
+      }
+
+      // Resolve threadSlug to threadId if provided
+      if (this.threadSlug) {
+        const thread = await WorkspaceThread.get({ slug: this.threadSlug });
+        if (thread) {
+          this.threadId = thread.id;
+          console.log(
+            `[VoiceChat] Resolved thread slug '${this.threadSlug}' to ID ${this.threadId}`
+          );
+        } else {
+          console.warn(
+            `[VoiceChat] Thread slug '${this.threadSlug}' not found, using default thread`
+          );
+        }
+      }
+
+      // Load chat history for context
+      const historyLimit = this.workspace.openAiHistory || 20;
+      let chatHistory = [];
+
+      if (this.threadId) {
+        // Load thread-specific history
+        chatHistory = await WorkspaceChats.where(
+          {
+            workspaceId: this.workspace.id,
+            thread_id: this.threadId,
+            include: true,
+          },
+          historyLimit,
+          { id: "desc" }
+        );
+      } else if (this.userId) {
+        // Load user's default thread history
+        chatHistory = await WorkspaceChats.forWorkspaceByUser(
+          this.workspace.id,
+          this.userId,
+          historyLimit,
+          { id: "desc" }
+        );
+      } else {
+        // Load workspace default history
+        chatHistory = await WorkspaceChats.forWorkspace(
+          this.workspace.id,
+          historyLimit,
+          { id: "desc" }
+        );
+      }
+
+      // Reverse to get chronological order
+      this.chatHistory = chatHistory.reverse();
+      console.log(
+        `[VoiceChat] Loaded ${this.chatHistory.length} history messages for context`
+      );
 
       // Clean the endpoint - remove any protocol prefix and trailing paths
       const azureEndpoint = settings.AzureRealtimeEndpoint.replace(
@@ -306,6 +375,10 @@ class VoiceChatSession {
         break;
 
       case "response.audio_transcript.delta":
+        // Accumulate AI transcript chunks
+        if (event.delta) {
+          this.pendingAITranscript += event.delta;
+        }
         this.sendToClient({
           type: "audio_transcript_chunk",
           transcript: event.delta,
@@ -313,6 +386,7 @@ class VoiceChatSession {
         break;
 
       case "response.audio_transcript.done":
+        // Final AI transcript is now complete
         this.sendToClient({
           type: "audio_transcript_done",
           transcript: event.transcript,
@@ -363,13 +437,17 @@ class VoiceChatSession {
   }
 
   initializeSession(settings) {
+    // Get workspace system prompt or use default
+    const systemPrompt =
+      this.workspace?.openAiPrompt ||
+      "You are a helpful AI assistant. Respond naturally and conversationally.";
+
     // Configure Azure Realtime session using the SDK's send method
     const sessionConfig = {
       type: "session.update",
       session: {
         modalities: ["text", "audio"],
-        instructions:
-          "You are a helpful AI assistant. Respond naturally and conversationally.",
+        instructions: systemPrompt,
         voice: settings.VoiceChatDefaultVoice || "alloy",
         input_audio_format: "pcm16",
         output_audio_format: "pcm16",
@@ -389,9 +467,96 @@ class VoiceChatSession {
     };
 
     console.log(
-      `[VoiceChat] Initializing voice session ${this.sessionId} with config`
+      `[VoiceChat] Initializing voice session ${this.sessionId} with workspace prompt`
     );
     this.sendToAzure(sessionConfig);
+
+    // Inject chat history as conversation items after session is configured
+    if (this.chatHistory && this.chatHistory.length > 0) {
+      console.log(
+        `[VoiceChat] Injecting ${this.chatHistory.length} history items into conversation`
+      );
+      this.injectChatHistory();
+    }
+  }
+
+  /**
+   * Inject chat history into Azure Realtime session as conversation items
+   */
+  injectChatHistory() {
+    if (!this.chatHistory || this.chatHistory.length === 0) return;
+
+    for (const chat of this.chatHistory) {
+      // Inject user message
+      if (chat.prompt) {
+        this.sendToAzure({
+          type: "conversation.item.create",
+          item: {
+            type: "message",
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: chat.prompt,
+              },
+            ],
+          },
+        });
+      }
+
+      // Inject assistant response
+      if (chat.response) {
+        try {
+          const responseData =
+            typeof chat.response === "string"
+              ? JSON.parse(chat.response)
+              : chat.response;
+          const responseText =
+            responseData?.text ||
+            responseData?.textResponse ||
+            String(responseData);
+
+          if (
+            responseText &&
+            responseText !== "null" &&
+            responseText !== "undefined"
+          ) {
+            this.sendToAzure({
+              type: "conversation.item.create",
+              item: {
+                type: "message",
+                role: "assistant",
+                content: [
+                  {
+                    type: "text",
+                    text: responseText,
+                  },
+                ],
+              },
+            });
+          }
+        } catch (e) {
+          // If response is plain text, use it directly
+          if (typeof chat.response === "string" && chat.response.trim()) {
+            this.sendToAzure({
+              type: "conversation.item.create",
+              item: {
+                type: "message",
+                role: "assistant",
+                content: [
+                  {
+                    type: "text",
+                    text: chat.response,
+                  },
+                ],
+              },
+            });
+          }
+        }
+      }
+    }
+
+    console.log(`[VoiceChat] Chat history injection complete`);
   }
 
   setupSessionTimeout() {
@@ -469,18 +634,14 @@ class VoiceChatSession {
       const transcription = event.transcript;
       if (!transcription) return;
 
-      // Save user message to workspace thread
-      const workspace = await Workspace.get({ slug: this.workspaceSlug });
-      if (workspace) {
-        await WorkspaceChats.new({
-          workspaceId: workspace.id,
-          prompt: transcription,
-          response: null, // Will be filled when response completes
-          user: { id: this.userId },
-          threadId: null, // Use default thread
-          chatMode: "chat",
-        });
-      }
+      // Store pending user transcript - will be saved when response completes
+      this.pendingUserTranscript = transcription;
+      // Reset AI transcript accumulator for new response
+      this.pendingAITranscript = "";
+
+      console.log(
+        `[VoiceChat] User transcription received: "${transcription.substring(0, 50)}..."`
+      );
 
       // Forward transcription to client
       this.sendToClient({
@@ -497,39 +658,63 @@ class VoiceChatSession {
 
   async handleResponseComplete(event) {
     try {
-      // Extract response text from event
-      const responseText = event.response?.output
-        ?.find((item) => item.type === "message")
-        ?.content?.find((part) => part.type === "text")?.text;
+      // Get final transcript from accumulated chunks or from event
+      // Use accumulated transcript if available, fall back to extracting from event
+      let responseText = this.pendingAITranscript;
 
-      if (responseText) {
-        // Update the last chat entry with the response
-        const workspace = await Workspace.get({ slug: this.workspaceSlug });
-        if (workspace) {
-          const lastChat = await WorkspaceChats.where(
-            {
-              workspaceId: workspace.id,
-              user_id: this.userId,
-              response: null,
-            },
-            1,
-            { id: "desc" }
-          );
+      if (!responseText) {
+        // Try to extract from response.done event structure
+        responseText = event.response?.output
+          ?.find((item) => item.type === "message")
+          ?.content?.find(
+            (part) => part.type === "text" || part.type === "audio"
+          )?.text;
+      }
 
-          if (lastChat && lastChat.length > 0) {
-            await WorkspaceChats.update(lastChat[0].id, {
-              response: responseText,
-              createdAt: new Date().toISOString(),
-            });
-          }
+      // Only save if we have both user prompt and AI response
+      if (this.pendingUserTranscript && responseText) {
+        console.log(`[VoiceChat] Saving voice chat exchange to database`);
+
+        // Save complete exchange with type: "voice" marker
+        const { chat } = await WorkspaceChats.new({
+          workspaceId: this.workspace.id,
+          prompt: this.pendingUserTranscript,
+          response: {
+            text: responseText,
+            sources: [],
+            type: "voice",
+          },
+          user: this.userId ? { id: this.userId } : null,
+          threadId: this.threadId,
+        });
+
+        if (chat) {
+          console.log(`[VoiceChat] Voice chat saved with ID: ${chat.id}`);
+
+          // Send chat_saved message to frontend for history refresh
+          this.sendToClient({
+            type: "chat_saved",
+            chatId: chat.id,
+            prompt: this.pendingUserTranscript,
+            response: responseText,
+            threadId: this.threadId,
+          });
         }
 
-        // Forward to client
-        this.sendToClient({
-          type: "response_complete",
-          text: responseText,
-        });
+        // Clear pending transcripts
+        this.pendingUserTranscript = null;
+        this.pendingAITranscript = "";
+      } else if (responseText) {
+        console.log(
+          `[VoiceChat] Response complete but no pending user transcript to pair with`
+        );
       }
+
+      // Forward to client
+      this.sendToClient({
+        type: "response_complete",
+        text: responseText || "",
+      });
     } catch (error) {
       console.error(
         `[VoiceChat] Error handling response complete for session ${this.sessionId}:`,
@@ -613,8 +798,13 @@ class VoiceChatSession {
     return voiceChatSessions.get(sessionId);
   }
 
-  static create(sessionId, workspaceSlug, userId) {
-    const session = new VoiceChatSession(sessionId, workspaceSlug, userId);
+  static create(sessionId, workspaceSlug, userId, threadSlug = null) {
+    const session = new VoiceChatSession(
+      sessionId,
+      workspaceSlug,
+      userId,
+      threadSlug
+    );
     voiceChatSessions.set(sessionId, session);
     return session;
   }
@@ -634,9 +824,10 @@ function voiceChatWebSocket(app) {
     const sessionId = request.params.sessionId;
     const workspaceSlug = request.query.workspace;
     const userId = request.query.userId || null;
+    const threadSlug = request.query.threadSlug || null;
 
     console.log(
-      `[VoiceChat] WebSocket connection attempt - Session: ${sessionId}, Workspace: ${workspaceSlug}, User: ${userId}`
+      `[VoiceChat] WebSocket connection attempt - Session: ${sessionId}, Workspace: ${workspaceSlug}, User: ${userId}, Thread: ${threadSlug}`
     );
 
     try {
@@ -678,9 +869,14 @@ function voiceChatWebSocket(app) {
       let session = VoiceChatSession.get(sessionId);
       if (!session) {
         console.log(
-          `[VoiceChat] Creating new voice chat session ${sessionId} for workspace ${workspaceSlug}`
+          `[VoiceChat] Creating new voice chat session ${sessionId} for workspace ${workspaceSlug} thread ${threadSlug || "default"}`
         );
-        session = VoiceChatSession.create(sessionId, workspaceSlug, userId);
+        session = VoiceChatSession.create(
+          sessionId,
+          workspaceSlug,
+          userId,
+          threadSlug
+        );
         try {
           console.log(`[VoiceChat] Initializing session ${sessionId}...`);
           await session.initialize();

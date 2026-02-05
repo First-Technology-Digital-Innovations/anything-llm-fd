@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -22,6 +22,9 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+
+// Event for voice chat to trigger chat history refresh
+export const VOICE_CHAT_SAVED_EVENT = "voice_chat_saved";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -225,6 +228,38 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
+
+  // Handle voice chat saved events - refresh chat history when voice messages are saved
+  const handleVoiceChatSaved = useCallback(async (event) => {
+    const { prompt, response, chatId } = event.detail || {};
+    if (!prompt || !response) return;
+
+    console.log('[ChatContainer] Voice chat saved, updating history:', chatId);
+    
+    // Add the new messages to the chat history
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      {
+        content: prompt,
+        role: "user",
+        chatId: chatId,
+      },
+      {
+        content: response,
+        role: "assistant",
+        type: "voice",
+        sources: [],
+        chatId: chatId,
+      },
+    ]);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener(VOICE_CHAT_SAVED_EVENT, handleVoiceChatSaved);
+    return () => {
+      window.removeEventListener(VOICE_CHAT_SAVED_EVENT, handleVoiceChatSaved);
+    };
+  }, [handleVoiceChatSaved]);
 
   // TODO: Simplify this WSS stuff
   useEffect(() => {

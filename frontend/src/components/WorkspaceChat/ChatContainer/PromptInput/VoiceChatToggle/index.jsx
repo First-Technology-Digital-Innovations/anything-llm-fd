@@ -2,16 +2,18 @@ import { Tooltip } from "react-tooltip";
 import { Microphone, MicrophoneSlash, WifiHigh, WifiSlash } from "@phosphor-icons/react";
 import { useTheme } from "@/hooks/useTheme";
 import { useRef, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useUser from "@/hooks/useUser";
 import System from "@/models/system";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import VoiceChatMode from "@/components/VoiceChatMode";
 
-export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = () => {} }) {
+export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = () => {}, onChatSaved = () => {} }) {
   const tooltipRef = useRef(null);
   const { theme } = useTheme();
   const { user } = useUser();
+  const { threadSlug = null } = useParams();
   const [isVoiceAvailable, setIsVoiceAvailable] = useState(false);
   const [showVoiceChatMode, setShowVoiceChatMode] = useState(false);
 
@@ -86,8 +88,10 @@ export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = (
       
       <VoiceChatMode
         workspace={workspace}
+        threadSlug={threadSlug}
         isVisible={showVoiceChatMode}
         onClose={handleVoiceChatClose}
+        onChatSaved={onChatSaved}
       />
     </>
   );

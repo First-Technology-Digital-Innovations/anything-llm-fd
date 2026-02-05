@@ -2,7 +2,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 // Hook for managing the WebSocket connection to the Realtime API
-export function useRealtime(sessionId, workspaceSlug, userId) {
+export function useRealtime(
+  sessionId,
+  workspaceSlug,
+  userId,
+  threadSlug = null
+) {
   const [connectionStatus, setConnectionStatus] = useState("disconnected"); // 'disconnected', 'connecting', 'connected', 'error'
   const [isReady, setIsReady] = useState(false);
   const wsRef = useRef(null);
@@ -25,8 +30,17 @@ export function useRealtime(sessionId, workspaceSlug, userId) {
         : window.location.host;
       console.log("wsHost: ", wsHost);
 
+      // Build WebSocket URL with all parameters
+      const params = new URLSearchParams({
+        workspace: workspaceSlug,
+        userId: userId || "anonymous",
+      });
+      if (threadSlug) {
+        params.append("threadSlug", threadSlug);
+      }
+
       // Note: Voice chat WebSocket is mounted on /api router
-      const wsUrl = `${wsProtocol}//${wsHost}/api/voice-chat/${sessionId}?workspace=${workspaceSlug}&userId=${userId || "anonymous"}`;
+      const wsUrl = `${wsProtocol}//${wsHost}/api/voice-chat/${sessionId}?${params.toString()}`;
       console.log("wsUrl: ", wsUrl);
       const ws = new WebSocket(wsUrl);
 
@@ -92,7 +106,7 @@ export function useRealtime(sessionId, workspaceSlug, userId) {
       setIsReady(false);
       throw error;
     }
-  }, [sessionId, workspaceSlug, userId]);
+  }, [sessionId, workspaceSlug, userId, threadSlug]);
 
   // Schedule reconnection attempt
   const scheduleReconnect = useCallback(() => {

@@ -5,16 +5,20 @@ import { X, Microphone, MicrophoneSlash, Waveform } from '@phosphor-icons/react'
 import { useRealtime } from '@/hooks/useRealtime';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import useUser from '@/hooks/useUser';
+import { VOICE_CHAT_SAVED_EVENT } from '@/components/WorkspaceChat/ChatContainer';
 import './VoiceChatMode.css';
 
-export default function VoiceChatMode({ workspace, onClose, isVisible = false }) {
+export default function VoiceChatMode({ workspace, threadSlug = null, onClose, isVisible = false, onChatSaved = () => {} }) {
+  const { user } = useUser();
   const [sessionId] = useState(() => `voice-${Date.now()}-${Math.random().toString(36).substring(2)}`);
   const [currentState, setCurrentState] = useState('idle'); // 'idle', 'listening', 'processing', 'speaking', 'error'
   const [statusMessage, setStatusMessage] = useState('Click the microphone to start');
   const [audioLevel, setAudioLevel] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Voice chat hooks
+  // Voice chat hooks - pass user ID for proper message attribution
+  const userId = user?.id || null;
   const {
     connectionStatus,
     isReady,
@@ -23,7 +27,7 @@ export default function VoiceChatMode({ workspace, onClose, isVisible = false })
     inputAudioBufferClear,
     onMessage,
     disconnect
-  } = useRealtime(sessionId, workspace?.slug, null);
+  } = useRealtime(sessionId, workspace?.slug, userId, threadSlug);
 
   const {
     isRecording,
@@ -100,6 +104,22 @@ export default function VoiceChatMode({ workspace, onClose, isVisible = false })
         case 'audio_response_done':
           setCurrentState('idle');
           setStatusMessage('Click microphone to continue');
+          break;
+
+        case 'chat_saved':
+          // Voice chat exchange was saved to database - trigger refresh
+          console.log('[VoiceChatMode] Chat saved:', message.chatId);
+          // Dispatch event for ChatContainer to update history
+          window.dispatchEvent(
+            new CustomEvent(VOICE_CHAT_SAVED_EVENT, {
+              detail: {
+                chatId: message.chatId,
+                prompt: message.prompt,
+                response: message.response,
+              },
+            })
+          );
+          onChatSaved(message);
           break;
           
         case 'error':
