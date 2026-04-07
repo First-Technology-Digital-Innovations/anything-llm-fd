@@ -50,6 +50,9 @@ const GeneralTranscriptionPreference = lazy(
 const GeneralAudioPreference = lazy(
   () => import("@/pages/GeneralSettings/AudioPreference")
 );
+const GeneralVoiceChatSettings = lazy(
+  () => import("@/pages/GeneralSettings/VoiceChat")
+);
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
@@ -151,6 +154,12 @@ export default function App() {
                       path="/settings/audio-preference"
                       element={
                         <AdminRoute Component={GeneralAudioPreference} />
+                      }
+                    />
+                    <Route
+                      path="/settings/voice-chat"
+                      element={
+                        <AdminRoute Component={GeneralVoiceChatSettings} />
                       }
                     />
                     <Route

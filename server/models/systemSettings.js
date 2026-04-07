@@ -61,6 +61,15 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // Voice Chat - Azure Realtime API Settings
+    "VoiceChatEnabled",
+    "AzureRealtimeEndpoint",
+    "AzureRealtimeKey",
+    "AzureRealtimeModel",
+    "VoiceChatDefaultVoice",
+    "VoiceChatVADThreshold",
+    "VoiceChatSessionTimeout",
   ],
   validations: {
     footer_data: (updates) => {
@@ -202,6 +211,45 @@ const SystemSettings = {
         return SystemSettings.saneDefaultSystemPrompt;
       return String(prompt.trim());
     },
+
+    // Voice Chat validations
+    VoiceChatEnabled: (enabled) => {
+      return enabled === true || enabled === "true" || enabled === "enabled";
+    },
+    AzureRealtimeEndpoint: (endpoint) => {
+      if (!endpoint) return null;
+      try {
+        // Remove protocol if present and ensure it's a valid endpoint format
+        const cleanEndpoint = endpoint.replace(/^https?:\/\//, "");
+        if (!cleanEndpoint || !cleanEndpoint.includes(".")) return null;
+        return cleanEndpoint;
+      } catch {
+        return null;
+      }
+    },
+    AzureRealtimeKey: (key) => {
+      if (!key || typeof key !== "string") return null;
+      return String(key.trim());
+    },
+    AzureRealtimeModel: (model) => {
+      if (!model) return "gpt-realtime";
+      return String(model);
+    },
+    VoiceChatDefaultVoice: (voice) => {
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+      if (!voice || !validVoices.includes(voice)) return "alloy";
+      return voice;
+    },
+    VoiceChatVADThreshold: (threshold) => {
+      const value = parseFloat(threshold);
+      if (isNaN(value) || value < 0 || value > 1) return 0.5;
+      return value;
+    },
+    VoiceChatSessionTimeout: (timeout) => {
+      const value = parseInt(timeout);
+      if (isNaN(value) || value < 60000) return 1500000; // minimum 1 minute, default 25 minutes
+      return value;
+    },
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
@@ -281,6 +329,19 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+
+      // --------------------------------------------------------
+      // Voice Chat - Azure Realtime API Settings & Configs
+      // --------------------------------------------------------
+      VoiceChatEnabled: process.env.VOICE_CHAT_ENABLED === "true",
+      AzureRealtimeEndpoint: process.env.AZURE_REALTIME_ENDPOINT || null,
+      AzureRealtimeKey: process.env.AZURE_REALTIME_KEY || null,
+      AzureRealtimeModel: process.env.AZURE_REALTIME_MODEL || "gpt-realtime",
+      VoiceChatDefaultVoice: process.env.VOICE_CHAT_DEFAULT_VOICE || "alloy",
+      VoiceChatVADThreshold:
+        parseFloat(process.env.VOICE_CHAT_VAD_THRESHOLD) || 0.5,
+      VoiceChatSessionTimeout:
+        parseInt(process.env.VOICE_CHAT_SESSION_TIMEOUT) || 1500000, // 25 minutes in ms
 
       // --------------------------------------------------------
       // Agent Settings & Configs

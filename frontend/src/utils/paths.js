@@ -120,6 +120,9 @@ export default {
     audioPreference: () => {
       return "/settings/audio-preference";
     },
+    voiceChat: () => {
+      return "/settings/voice-chat";
+    },
     defaultSystemPrompt: () => {
       return "/settings/default-system-prompt";
     },
@@ -182,7 +185,7 @@ export default {
   communityHub: {
     website: () => {
       return import.meta.env.DEV
-        ? `http://localhost:5173`
+        ? `http://localhost:3000`
         : `https://hub.anythingllm.com`;
     },
     /**

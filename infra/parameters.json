@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "timeZone": {
+            "value": "Africa/Johannesburg"
+        },
+        "containerGroupName": {
+            "value": "bcpai"
+        },
+        "storageAccountName": {
+            "value": "bcpai"
+        },
+        "overridePublicUrl": {
+            "value": ""
+        },
+        "secureAuthToken": {
+            "value": "1ntY2Vtv*IGHYYf%"
+        },
+        "secureJwtSecret": {
+            "value": "RUhUQ!8VVn#QuYzId2Mh##oIc8n#Qz1ha&R7WouzKe"
+        },
+        "postgresAdminUsername": {
+            "value": "bcpallmAdmin"
+        },
+        "postgresAdminPassword": {
+            "value": "PwpOkYo987YB4V4IukPS"
+        },
+        "containerImage": {
+            "value": "rgbcpaiacr.azurecr.io/anythingllm:latest"
+        },
+        "acrServer": {
+            "value": "rgbcpaiacr.azurecr.io"
+        },
+        "acrUsername": {
+            "value": "rgbcpaiacr"
+        },
+        "acrPassword": {
+            "value": "qqKCTDvu+W7doMMDoRQ3eHZs2iLUor4UEZzKXGIC5O+ACRCpKyY7"
+        },
+        "azureOpenAIEndpoint": {
+            "value": "https://natha-mfdq282o-eastus2.openai.azure.com/"
+        },
+        "azureOpenAIKey": {
+            "value": "3TqOZMZMMjyJBQrhO407rnCLHgA7V65ZXXCzOBW5uleBteH9AkZCJQQJ99BIACHYHv6XJ3w3AAAAACOGHO7A"
+        },
+        "azureOpenAIModel": {
+            "value": "gpt-5.1-chat"
+        },
+        "llmProvider": {
+            "value": "azure"
+        },
+        "embeddingEngine": {
+            "value": "azure"
+        },
+        "embeddingModelPref": {
+            "value": "text-embedding-ada-002"
+        },
+        "azureAdClientId": {
+            "value": "9b09e4c5-806b-41dd-8f70-310d9311dcf3"
+        },
+        "azureAdTenantId": {
+            "value": "03c6495c-8727-480c-b411-808e8a551337"
+        },
+        "azureAdClientSecret": {
+            "value": "Wwk8Q~vw2K8fJXrB8sw.bqkGI6ytbYs7jXChMdsK"
+        },
+        "azureAdAdminEmail": {
+            "value": "nathang@yamahadistributors.onmicrosoft.com"
+        },
+        "voiceChatEnabled": {
+            "value": "true"
+        },
+        "azureRealtimeEndpoint": {
+            "value": "bcp-ai-east-us-2-resource.cognitiveservices.azure.com"
+        },
+        "azureRealtimeKey": {
+            "value": "17ZJuvQBfBT5GhyUT2mfow2H97XTjKEeXZb7pQNJuMviKbExNyedJQQJ99CAACHYHv6XJ3w3AAAAACOGahqG"
+        },
+        "azureRealtimeModel": {
+            "value": "gpt-realtime"
+        },
+        "voiceChatDefaultVoice": {
+            "value": "alloy"
+        },
+        "voiceChatVadThreshold": {
+            "value": "0.5"
+        },
+        "voiceChatSessionTimeout": {
+            "value": "1500000"
+        }
+    }
+}

@@ -349,6 +349,7 @@ function buildMessages({
           forkThread={forkThread}
           metrics={props.metrics}
           alignmentCls={getMessageAlignment?.(props.role)}
+          messageType={props.type}
         />
       );
     }
