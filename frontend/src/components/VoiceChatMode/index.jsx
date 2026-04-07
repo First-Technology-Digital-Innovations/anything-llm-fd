@@ -1,6 +1,6 @@
 // Voice Chat UI Component
 // Provides a full-screen voice chat interface with animations and visual feedback
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Microphone, MicrophoneSlash, Waveform } from '@phosphor-icons/react';
 import { useRealtime } from '@/hooks/useRealtime';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
@@ -16,6 +16,10 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
   const [statusMessage, setStatusMessage] = useState('Click the microphone to start');
   const [audioLevel, setAudioLevel] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [userTranscript, setUserTranscript] = useState('');
+  const [aiTranscript, setAiTranscript] = useState('');
+  const isListeningRef = useRef(false);
+  const isRecordingRef = useRef(false);
 
   // Voice chat hooks - pass user ID for proper message attribution
   const userId = user?.id || null;
@@ -46,6 +50,9 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     clearQueue
   } = useAudioPlayer();
 
+  // Keep refs in sync for use inside message handler closures
+  useEffect(() => { isRecordingRef.current = isRecording; }, [isRecording]);
+
   // Initialize voice chat session when visible
   useEffect(() => {
     if (isVisible && !isInitialized) {
@@ -60,56 +67,70 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     if (!isReady) return;
 
     const unsubscribe = onMessage((message) => {
-      console.log('[VoiceChatMode] Received message:', message.type);
-      
       switch (message.type) {
-        case 'session.created':
         case 'session_configured':
           setCurrentState('idle');
-          setStatusMessage('Ready to chat - click microphone to start');
+          setStatusMessage('Ready — click microphone to start');
           break;
-          
+
         case 'input_audio_buffer.speech_started':
+          // Barge-in: immediately stop AI audio playback so user can speak
+          stopPlayback();
+          clearQueue();
+          isListeningRef.current = true;
           setCurrentState('listening');
           setStatusMessage('Listening...');
+          setUserTranscript('');
+          setAiTranscript('');
           break;
-          
+
         case 'input_audio_buffer.speech_stopped':
+          isListeningRef.current = false;
           setCurrentState('processing');
-          setStatusMessage('Processing...');
+          setStatusMessage('Thinking...');
           break;
-          
-        case 'response.audio_transcript.delta':
+
+        case 'user_transcription':
+          if (message.text) setUserTranscript(message.text);
+          break;
+
         case 'audio_transcript_chunk':
           setCurrentState('speaking');
-          setStatusMessage('AI is speaking...');
-          break;
-          
-        case 'response.audio.delta':
-          // Play audio chunk (direct Azure format)
-          if (message.delta) {
-            playAudioChunk(message.delta);
+          setStatusMessage('');
+          if (message.transcript) {
+            setAiTranscript(prev => prev + message.transcript);
           }
           break;
-          
+
+        case 'audio_transcript_done':
+          if (message.transcript) setAiTranscript(message.transcript);
+          break;
+
         case 'audio_response_chunk':
-          // Play audio chunk (server proxied format)
-          if (message.audio) {
-            console.log('[VoiceChatMode] Playing audio chunk, length:', message.audio.length);
+          // Play audio chunk — skip if user is speaking (barge-in)
+          if (message.audio && !isListeningRef.current) {
+            setCurrentState('speaking');
+            setStatusMessage('');
             playAudioChunk(message.audio);
           }
           break;
-          
-        case 'response.done':
+
         case 'audio_response_done':
-          setCurrentState('idle');
-          setStatusMessage('Click microphone to continue');
+          // Audio stream finished — all chunks sent
+          break;
+
+        case 'response_complete':
+          if (message.cancelled) break;
+          if (isRecordingRef.current) {
+            setCurrentState('listening');
+            setStatusMessage('Go ahead, I\'m listening...');
+          } else {
+            setCurrentState('idle');
+            setStatusMessage('Click microphone to start speaking');
+          }
           break;
 
         case 'chat_saved':
-          // Voice chat exchange was saved to database - trigger refresh
-          console.log('[VoiceChatMode] Chat saved:', message.chatId);
-          // Dispatch event for ChatContainer to update history
           window.dispatchEvent(
             new CustomEvent(VOICE_CHAT_SAVED_EVENT, {
               detail: {
@@ -121,21 +142,20 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           );
           onChatSaved(message);
           break;
-          
+
         case 'error':
-          console.error('[VoiceChatMode] API error:', message.error);
+          console.error('[VoiceChatMode] Error:', message.error);
           setCurrentState('error');
-          setStatusMessage(`Error: ${message.error.message || 'Unknown error'}`);
+          setStatusMessage(`Error: ${message.error?.message || 'Unknown error'}`);
           break;
-          
+
         default:
-          // Handle other message types as needed
           break;
       }
     });
 
     return unsubscribe;
-  }, [isReady, onMessage, playAudioChunk]);
+  }, [isReady, onMessage, playAudioChunk, stopPlayback, clearQueue]);
 
   const initializeSession = async () => {
     try {
@@ -170,17 +190,21 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     if (isRecording) {
       // Stop recording
       stopRecording();
+      stopPlayback();
+      clearQueue();
       inputAudioBufferClear();
+      isListeningRef.current = false;
       setCurrentState('idle');
       setStatusMessage('Click microphone to start speaking');
+      setUserTranscript('');
+      setAiTranscript('');
     } else {
       // Start recording
       try {
         setCurrentState('listening');
-        setStatusMessage('Speak now...');
+        setStatusMessage('Go ahead, I\'m listening...');
         
         await startRecording((audioData) => {
-          // Send audio data to Realtime API
           addUserAudio(audioData);
         });
         
@@ -196,9 +220,12 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     stopRecording();
     stopPlayback();
     disconnect();
+    isListeningRef.current = false;
     setIsInitialized(false);
     setCurrentState('idle');
     setStatusMessage('Click the microphone to start');
+    setUserTranscript('');
+    setAiTranscript('');
   };
 
   const handleClose = () => {
@@ -253,7 +280,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           {/* Status message */}
           <div className="voice-chat-status">
             <h2 className="voice-chat-title">Voice Chat</h2>
-            <p className="voice-chat-message">{statusMessage}</p>
+            {statusMessage && <p className="voice-chat-message">{statusMessage}</p>}
             {connectionStatus === 'connecting' && (
               <div className="voice-chat-spinner" />
             )}
@@ -275,7 +302,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
               onClick={handleMicrophoneToggle}
               className={`voice-chat-mic-button ${currentState}`}
               style={{ '--state-color': getStateColor() }}
-              disabled={currentState === 'processing' || connectionStatus === 'connecting'}
+              disabled={connectionStatus === 'connecting'}
               aria-label={isRecording ? 'Stop recording' : 'Start recording'}
             >
               {renderMicrophoneIcon()}
@@ -295,6 +322,24 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
                   }} 
                 />
               ))}
+            </div>
+          )}
+
+          {/* Live transcripts */}
+          {(userTranscript || aiTranscript) && (
+            <div className="voice-chat-transcripts">
+              {userTranscript && (
+                <div className="voice-chat-transcript user">
+                  <span className="transcript-label">You</span>
+                  <p className="transcript-text">{userTranscript}</p>
+                </div>
+              )}
+              {aiTranscript && (
+                <div className="voice-chat-transcript ai">
+                  <span className="transcript-label">AI</span>
+                  <p className="transcript-text">{aiTranscript}</p>
+                </div>
+              )}
             </div>
           )}
 

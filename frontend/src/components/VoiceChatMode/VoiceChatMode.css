@@ -373,6 +373,56 @@
   }
 }
 
+/* Live transcript display */
+.voice-chat-transcripts {
+  margin-top: 24px;
+  padding: 0 8px;
+  max-height: 160px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.voice-chat-transcript {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.voice-chat-transcript.user {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid #ef4444;
+}
+
+.voice-chat-transcript.ai {
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 3px solid #3b82f6;
+}
+
+.transcript-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.voice-chat-transcript.user .transcript-label {
+  color: #fca5a5;
+}
+
+.voice-chat-transcript.ai .transcript-label {
+  color: #93c5fd;
+}
+
+.transcript-text {
+  font-size: 0.875rem;
+  color: var(--theme-text-primary, #fff);
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* Mobile responsive */
 @media (max-width: 640px) {
   .voice-chat-container {

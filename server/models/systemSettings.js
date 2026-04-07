@@ -69,6 +69,10 @@ const SystemSettings = {
     "AzureRealtimeModel",
     "VoiceChatDefaultVoice",
     "VoiceChatVADThreshold",
+    "VoiceChatVADPrefixPaddingMs",
+    "VoiceChatVADSilenceDurationMs",
+    "VoiceChatMaxResponseTokens",
+    "VoiceChatTemperature",
     "VoiceChatSessionTimeout",
   ],
   validations: {
@@ -245,6 +249,27 @@ const SystemSettings = {
       if (isNaN(value) || value < 0 || value > 1) return 0.5;
       return value;
     },
+    VoiceChatVADPrefixPaddingMs: (ms) => {
+      const value = parseInt(ms);
+      if (isNaN(value) || value < 0 || value > 2000) return 200;
+      return value;
+    },
+    VoiceChatVADSilenceDurationMs: (ms) => {
+      const value = parseInt(ms);
+      if (isNaN(value) || value < 100 || value > 5000) return 300;
+      return value;
+    },
+    VoiceChatMaxResponseTokens: (tokens) => {
+      if (!tokens || tokens === "inf") return "inf";
+      const value = parseInt(tokens);
+      if (isNaN(value) || value < 1) return 1638;
+      return value;
+    },
+    VoiceChatTemperature: (temp) => {
+      const value = parseFloat(temp);
+      if (isNaN(value) || value < 0 || value > 2) return 0.7;
+      return value;
+    },
     VoiceChatSessionTimeout: (timeout) => {
       const value = parseInt(timeout);
       if (isNaN(value) || value < 60000) return 1500000; // minimum 1 minute, default 25 minutes
@@ -340,6 +365,14 @@ const SystemSettings = {
       VoiceChatDefaultVoice: process.env.VOICE_CHAT_DEFAULT_VOICE || "alloy",
       VoiceChatVADThreshold:
         parseFloat(process.env.VOICE_CHAT_VAD_THRESHOLD) || 0.5,
+      VoiceChatVADPrefixPaddingMs:
+        parseInt(process.env.VOICE_CHAT_VAD_PREFIX_PADDING_MS) || 200,
+      VoiceChatVADSilenceDurationMs:
+        parseInt(process.env.VOICE_CHAT_VAD_SILENCE_DURATION_MS) || 300,
+      VoiceChatMaxResponseTokens:
+        process.env.VOICE_CHAT_MAX_RESPONSE_TOKENS || 1638,
+      VoiceChatTemperature:
+        parseFloat(process.env.VOICE_CHAT_TEMPERATURE) || 0.7,
       VoiceChatSessionTimeout:
         parseInt(process.env.VOICE_CHAT_SESSION_TIMEOUT) || 1500000, // 25 minutes in ms
 
