@@ -207,6 +207,126 @@
   --theme-button-delete-hover-bg: #fee4e2;
 }
 
+[data-theme="FirstDigital"] {
+  --theme-loader: #000000;
+  --theme-bg-primary: #f8faff;
+  --theme-bg-secondary: #ffffff;
+  --theme-bg-sidebar: #e0ecf8;
+  --theme-bg-container: #f0f5fc;
+  --theme-popup-menu-bg: #c2d9f7;
+
+  --theme-bg-chat: #ffffff;
+  --theme-bg-chat-input: #e8eef6;
+  --theme-text-primary: #0e1726;
+  --theme-text-secondary: #5a6a7e;
+  --theme-placeholder: #8b9bb5;
+  --theme-sidebar-item-default: #ffffff;
+  --theme-sidebar-item-selected: #ffffff;
+  --theme-sidebar-item-hover: #c5ddf5;
+
+  --theme-sidebar-item-text-inactive: #5a6a7e;
+  --theme-sidebar-item-text-active: #1a3f6f;
+
+  --theme-sidebar-item-workspace-active: #0e1726;
+  --theme-sidebar-item-workspace-inactive: #5a6a7e;
+
+  --theme-sidebar-subitem-default: transparent;
+  --theme-sidebar-subitem-selected: #d4e2f4;
+  --theme-sidebar-thread-selected: #ffffff;
+  --theme-sidebar-subitem-hover: #d4e2f4;
+  --theme-sidebar-border: #bccde0;
+
+  --theme-sidebar-footer-icon: #ffffff;
+  --theme-sidebar-footer-icon-fill: #4a6a8f;
+  --theme-sidebar-footer-icon-hover: #c5d5e8;
+
+  --theme-chat-input-border: #b0c4de;
+  --theme-action-menu-bg: #e8eef6;
+  --theme-action-menu-item-hover: rgba(26, 86, 219, 0.1);
+  --theme-settings-input-bg: #e0ecf8;
+  --theme-settings-input-placeholder: rgba(0, 0, 0, 0.5);
+  --theme-settings-input-active: rgba(26, 86, 219, 0.2);
+  --theme-settings-input-text: #0e1726;
+  --theme-modal-border: #bccde0;
+
+  --theme-button-primary: #1a56db;
+  --theme-button-primary-hover: #d4e2f4;
+
+  --theme-button-cta: #2563eb;
+
+  --theme-file-row-even: #f0f5fc;
+  --theme-file-row-odd: #e4ecf7;
+  --theme-file-row-selected-even: #1a56db;
+  --theme-file-row-selected-odd: #1a56db;
+  --theme-file-picker-hover: #d4e2f4;
+
+  --theme-home-text: #0e1726;
+  --theme-home-text-secondary: #5a6a7e;
+  --theme-home-bg-card: #e0ecf8;
+  --theme-home-bg-button: #edf2fa;
+  --theme-home-border: rgba(26, 86, 219, 0.15);
+  --theme-home-button-primary: #1a56db;
+  --theme-home-button-primary-hover: rgba(26, 86, 219, 0.85);
+  --theme-home-button-secondary: #d0e0f5;
+  --theme-home-button-secondary-hover: #a8c4e8;
+  --theme-home-button-secondary-text: #1a3f6f;
+  --theme-home-button-secondary-hover-text: #1a3f6f;
+  --theme-home-update-card-bg: #e0ecf8;
+  --theme-home-update-card-hover: #edf2fa;
+  --theme-home-update-source: #1a56db;
+
+  --theme-checklist-item-bg: #c5ddf5;
+  --theme-checklist-item-bg-hover: #a3c8f0;
+  --theme-checklist-item-text: #0e2a4f;
+  --theme-checklist-item-completed-bg: #d8f3ea;
+  --theme-checklist-item-completed-text: #039855;
+  --theme-checklist-checkbox-fill: #6ce9a6;
+  --theme-checklist-checkbox-text: #ffffff;
+  --theme-checklist-item-hover: #1a56db;
+  --theme-checklist-checkbox-border: #6b7280;
+  --theme-checklist-button-border: #1a56db;
+  --theme-checklist-button-text: #1a56db;
+  --theme-checklist-button-hover-bg: rgba(26, 86, 219, 0.1);
+  --theme-checklist-button-hover-border: rgba(26, 86, 219, 0.8);
+
+  --theme-home-button-secondary-border: #a8c4e8;
+  --theme-home-button-secondary-border-hover: #1a3f6f;
+
+  --theme-attachment-bg: #e0ecf8;
+  --theme-attachment-error-bg: rgba(180, 35, 24, 0.3);
+  --theme-attachment-success-bg: #e8eef6;
+  --theme-attachment-text: #0e1726;
+  --theme-attachment-text-secondary: rgba(0, 0, 0, 0.8);
+  --theme-attachment-icon: #ffffff;
+  --theme-attachment-icon-spinner: #2563eb;
+  --theme-attachment-icon-spinner-bg: #ffffff;
+
+  --theme-button-text: #7a8a9e;
+  --theme-button-code-hover-text: #1a56db;
+  --theme-button-code-hover-bg: #dbeafe;
+  --theme-button-disable-hover-text: #854708;
+  --theme-button-disable-hover-bg: #fef7e6;
+  --theme-button-delete-hover-text: #b42318;
+  --theme-button-delete-hover-bg: #fee4e2;
+}
+
+[data-theme="FirstDigital"] .text-white {
+  color: var(--theme-text-primary);
+}
+
+[data-theme="FirstDigital"] .text-description,
+[data-theme="FirstDigital"] .text-white\/60 {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme="FirstDigital"] .bg-theme-bg-secondary {
+  border: 1px solid var(--theme-sidebar-border);
+}
+
+[data-theme="FirstDigital"] .border-white\/10 {
+  border-color: var(--theme-sidebar-border);
+}
+
 [data-theme="light"] .text-white {
   color: var(--theme-text-primary);
 }
@@ -799,6 +919,12 @@ dialog::backdrop {
   color: #000;
 }
 
+[data-theme="FirstDigital"] .markdown table,
+[data-theme="FirstDigital"] .markdown table th,
+[data-theme="FirstDigital"] .markdown table td {
+  color: #0e1726;
+}
+
 /* List Styles */
 .markdown ol {
   list-style: decimal-leading-zero;
@@ -915,6 +1041,11 @@ dialog::backdrop {
   border-bottom: 1px solid rgba(222, 222, 222, 0.5);
 }
 
+[data-theme="FirstDigital"] .file-row.selected:nth-child(even),
+[data-theme="FirstDigital"] .file-row.selected:nth-child(odd) {
+  border-bottom: 1px solid rgba(188, 205, 224, 0.5);
+}
+
 /* Flex upload modal to be a column when on small screens so that the UI
 does not extend the close button beyond the viewport. */
 @media (max-width: 1330px) {
@@ -971,6 +1102,10 @@ does not extend the close button beyond the viewport. */
 
 [data-theme="light"] .recharts-text > * {
   fill: #000;
+}
+
+[data-theme="FirstDigital"] .recharts-text > * {
+  fill: #0e1726;
 }
 
 .recharts-legend-wrapper {
@@ -1036,6 +1171,10 @@ does not extend the close button beyond the viewport. */
 }
 
 [data-theme="light"] .search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(0) brightness(0) opacity(0.5);
+}
+
+[data-theme="FirstDigital"] .search-input::-webkit-search-cancel-button {
   filter: grayscale(100%) invert(0) brightness(0) opacity(0.5);
 }
 

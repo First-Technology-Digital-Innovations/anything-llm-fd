@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 const availableThemes = {
   default: "Default",
   light: "Light",
+  FirstDigital: "FirstDigital",
 };
 
 /**
  * Determines the current theme of the application
- * @returns {{theme: ('default' | 'light'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
+ * @returns {{theme: ('default' | 'light' | 'FirstDigital'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
  */
 export function useTheme() {
   const [theme, _setTheme] = useState(() => {
@@ -25,7 +26,8 @@ export function useTheme() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    document.body.classList.toggle("light", theme === "light");
+    document.body.classList.toggle("light", theme === "light" || theme === "FirstDigital");
+    document.body.classList.toggle("FirstDigital", theme === "FirstDigital");
     localStorage.setItem("theme", theme);
     window.dispatchEvent(new Event(REFETCH_LOGO_EVENT));
   }, [theme]);

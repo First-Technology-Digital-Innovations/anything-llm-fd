@@ -133,6 +133,7 @@ FROM build AS frontend-build
 COPY --chown=anythingllm:anythingllm ./frontend /app/frontend/
 WORKDIR /app/frontend
 RUN yarn install --network-timeout 100000 && yarn cache clean
+ENV VITE_API_BASE='/api'
 RUN yarn build && \
     cp -r dist /tmp/frontend-build && \
     rm -rf * && \
