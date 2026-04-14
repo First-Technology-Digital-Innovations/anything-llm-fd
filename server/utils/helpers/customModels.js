@@ -1,4 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
+const {
+  fetchOpenRouterEmbeddingModels,
+} = require("../EmbeddingEngines/openRouter");
 const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
@@ -10,6 +13,8 @@ const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
 const { parseFoundryBasePath } = require("../AiProviders/foundry");
+const { getDockerModels } = require("../AiProviders/dockerModelRunner");
+const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -39,9 +44,16 @@ const SUPPORT_CUSTOM_MODELS = [
   "foundry",
   "cohere",
   "zai",
+  "giteeai",
+  "docker-model-runner",
+  "privatemode",
+  "sambanova",
+  "lemonade",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
+  "openrouter-embedder",
+  "lemonade-embedder",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -68,7 +80,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "openrouter":
       return await getOpenRouterModels();
     case "lmstudio":
-      return await getLMStudioModels(basePath);
+      return await getLMStudioModels(basePath, apiKey);
     case "koboldcpp":
       return await getKoboldCPPModels(basePath);
     case "litellm":
@@ -107,6 +119,20 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNativeEmbedderModels();
     case "cohere-embedder":
       return await getCohereModels(apiKey, "embed");
+    case "openrouter-embedder":
+      return await getOpenRouterEmbeddingModels();
+    case "giteeai":
+      return await getGiteeAIModels(apiKey);
+    case "docker-model-runner":
+      return await getDockerModelRunnerModels(basePath);
+    case "privatemode":
+      return await getPrivatemodeModels(basePath, "generate");
+    case "sambanova":
+      return await getSambaNovaModels(apiKey);
+    case "lemonade":
+      return await getLemonadeModels(basePath);
+    case "lemonade-embedder":
+      return await getLemonadeModels(basePath, "embedding");
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -312,14 +338,19 @@ async function liteLLMModels(basePath = null, apiKey = null) {
   return { models, error: null };
 }
 
-async function getLMStudioModels(basePath = null) {
+async function getLMStudioModels(basePath = null, _apiKey = null) {
   try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.LMSTUDIO_AUTH_TOKEN
+        : _apiKey || process.env.LMSTUDIO_AUTH_TOKEN || null;
+
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
       baseURL: parseLMStudioBasePath(
         basePath || process.env.LMSTUDIO_BASE_PATH
       ),
-      apiKey: null,
+      apiKey: apiKey || null,
     });
     const models = await openai.models
       .list()
@@ -590,6 +621,20 @@ async function getDeepSeekModels(apiKey = null) {
   return { models, error: null };
 }
 
+async function getGiteeAIModels() {
+  const { giteeAiModels } = require("../AiProviders/giteeai");
+  const modelMap = await giteeAiModels();
+  if (!Object.keys(modelMap).length === 0) return { models: [], error: null };
+  const models = Object.values(modelMap).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization ?? "GiteeAI",
+      name: model.id,
+    };
+  });
+  return { models, error: null };
+}
+
 async function getXAIModels(_apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const apiKey =
@@ -690,7 +735,9 @@ async function getDellProAiStudioModels(basePath = null) {
       .then((results) => results.data)
       .then((models) => {
         return models
-          .filter((model) => model.capability === "TextToText") // Only include text-to-text models for this handler
+          .filter(
+            (model) => model?.capability?.includes("TextToText") // Only include text-to-text models for this handler
+          )
           .map((model) => {
             return {
               id: model.id,
@@ -789,7 +836,7 @@ async function getCohereModels(_apiKey = null, type = "chat") {
     .then((results) => results.models)
     .then((models) =>
       models.map((model) => ({
-        id: model.id,
+        id: model.name,
         name: model.name,
       }))
     )
@@ -822,6 +869,139 @@ async function getZAiModels(_apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.ZAI_API_KEY = apiKey;
   return { models, error: null };
+}
+
+async function getOpenRouterEmbeddingModels() {
+  const knownModels = await fetchOpenRouterEmbeddingModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getDockerModelRunnerModels(basePath = null) {
+  try {
+    const models = await getDockerModels(basePath);
+    return { models, error: null };
+  } catch (e) {
+    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
+    return {
+      models: [],
+      error: "Could not fetch Docker Model Runner Models",
+    };
+  }
+}
+
+async function getLemonadeModels(basePath = null, task = "chat") {
+  try {
+    const models = await getAllLemonadeModels(basePath, task);
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Lemonade:getLemonadeModels`, e.message);
+    return { models: [], error: "Could not fetch Lemonade Models" };
+  }
+}
+
+/**
+ * Get Privatemode models
+ * @param {string} basePath - The base path of the Privatemode endpoint.
+ * @param {'any' | 'generate' | 'embed' | 'transcribe'} task - The task to fetch the models for.
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getPrivatemodeModels(basePath = null, task = "any") {
+  try {
+    const { PrivatemodeLLM } = require("../AiProviders/privatemode");
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: PrivatemodeLLM.parseBasePath(
+        basePath || process.env.PRIVATEMODE_LLM_BASE_PATH
+      ),
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then(
+        (models) =>
+          models
+            .filter((model) => !model.id.includes("/")) // remove legacy prefixed models
+            .filter((model) =>
+              task === "any" ? true : model.tasks.includes(task)
+            ) // filter by task or show all if task is any
+      )
+      .then((models) =>
+        models.map((model) => ({
+          id: model.id,
+          organization: "Privatemode",
+          name: model.id
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+        }))
+      )
+      .catch((e) => {
+        console.error(`Privatemode:listModels`, e.message);
+        return [];
+      });
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Privatemode:getPrivatemodeModels`, e.message);
+    return { models: [], error: "Could not fetch Privatemode Models" };
+  }
+}
+
+/**
+ * Get SambaNova models
+ * @param {string} _apiKey - The API key to use
+ * @returns {Promise<{models: Array<{id: string, organization: string, name: string}>, error: string | null}>}
+ */
+async function getSambaNovaModels(_apiKey = null) {
+  try {
+    const apiKey =
+      _apiKey === true
+        ? process.env.SAMBANOVA_LLM_API_KEY
+        : _apiKey || process.env.SAMBANOVA_LLM_API_KEY || null;
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: "https://api.sambanova.ai/v1",
+      apiKey,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) =>
+        models.filter((model) => !model.id.toLowerCase().startsWith("whisper"))
+      )
+      .then((models) =>
+        models.map((model) => {
+          const organization =
+            model.hasOwnProperty("owned_by") &&
+            model.owned_by !== "no-reply@sambanova.ai"
+              ? model.owned_by
+              : "SambaNova";
+          return {
+            id: model.id,
+            organization,
+            name: model.id,
+          };
+        })
+      )
+      .catch((e) => {
+        console.error(`SambaNova:listModels`, e.message);
+        return [];
+      });
+    return { models, error: null };
+  } catch (e) {
+    console.error(`SambaNova:getSambaNovaModels`, e.message);
+    return { models: [], error: "Could not fetch SambaNova Models" };
+  }
 }
 
 module.exports = {

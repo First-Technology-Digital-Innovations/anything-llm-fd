@@ -36,6 +36,9 @@ import Japanese from "./ja/common.js";
 import Lativian from "./lv/common.js";
 import Polish from "./pl/common.js";
 import Romanian from "./ro/common.js";
+import Czech from "./cs/common.js";
+import Lithuanian from "./lt/common.js";
+import Catalan from "./ca/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -104,5 +107,14 @@ export const resources = {
   },
   ro: {
     common: Romanian,
+  },
+  cs: {
+    common: Czech,
+  },
+  lt: {
+    common: Lithuanian,
+  },
+  ca: {
+    common: Catalan,
   },
 };

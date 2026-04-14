@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Tere tulemast",
       getStarted: "Alusta",
+      welcome: "Tere tulemast",
     },
     llm: {
       title: "LLM-i eelistus",
@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Salvesta see parool hoolikalt, sest taastamisvõimalust ei ole.",
       adminUsername: "Admini kasutajanimi",
-      adminUsernameReq:
-        "Kasutajanimi peab olema vähemalt 6 märki ning võib sisaldada ainult väiketähti, numbreid, alakriipse ja sidekriipse.",
       adminPassword: "Admini parool",
       adminPasswordReq: "Parool peab olema vähemalt 8 märki.",
       teamHint:
@@ -50,16 +48,9 @@ const TRANSLATIONS = {
       skip: "Jäta vahele",
       thankYou: "Aitäh tagasiside eest!",
     },
-    workspace: {
-      title: "Loo oma esimene tööruum",
-      description: "Loo esimene tööruum ja alusta AnythingLLM-iga.",
-    },
   },
   common: {
     "workspaces-name": "Tööruumide nimi",
-    error: "viga",
-    success: "õnnestus",
-    user: "Kasutaja",
     selection: "Mudeli valik",
     saving: "Salvestan…",
     save: "Salvesta muudatused",
@@ -68,11 +59,17 @@ const TRANSLATIONS = {
     optional: "Valikuline",
     yes: "Jah",
     no: "Ei",
-    search: null,
+    search: "otsing",
+    username_requirements:
+      "Kasutajanimi peab olema 2–32 tähemärki, algama väiketähega ning sisaldama ainult väiketähti, numbreid, alakriipse, sidekriipse ja punkte.",
+    on: "On",
+    none: "Ei",
+    stopped: "Peatas",
+    loading: "Laadimine",
+    refresh: "Värskendada",
   },
   settings: {
     title: "Instantsi seaded",
-    system: "Üldseaded",
     invites: "Kutsed",
     users: "Kasutajad",
     workspaces: "Tööruumid",
@@ -89,7 +86,6 @@ const TRANSLATIONS = {
     "voice-speech": "Hääle ja kõne seaded",
     "vector-database": "Vektoriandmebaas",
     embeds: "Vestluse embed",
-    "embed-chats": "Embed-vestluste ajalugu",
     security: "Turvalisus",
     "event-logs": "Sündmuste logid",
     privacy: "Privaatsus ja andmed",
@@ -101,6 +97,17 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentaalsed funktsioonid",
     contact: "Tugi",
     "browser-extension": "Brauserilaiend",
+    "mobile-app": "AnythingLLM mobiilversioon",
+    "community-hub": {
+      title: "Kogukonna keskpunkt",
+      trending: "Avasta populaarseid",
+      "your-account": "Teie konto",
+      "import-item": "Importeeritud toode",
+    },
+    channels: "Kaasavad",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -112,99 +119,21 @@ const TRANSLATIONS = {
       "forgot-pass": "Unustasid parooli",
       reset: "Lähtesta",
     },
-    "sign-in": {
-      start: "Logi sisse oma",
-      end: "kontosse.",
-    },
+    "sign-in": "Logi sisse oma {{appName}} kontosse.",
     "password-reset": {
       title: "Parooli lähtestamine",
       description: "Sisesta all vajalik info, et parool lähtestada.",
       "recovery-codes": "Taastamiskoodid",
-      "recovery-code": "Taastamiskood {{index}}",
       "back-to-login": "Tagasi sisselogimisele",
     },
   },
   "main-page": {
-    noWorkspaceError: "Enne vestlust loo tööruum.",
-    checklist: {
-      title: "Alustamine",
-      tasksLeft: "ülesannet jäänud",
-      completed: "Oled teel AnythingLLM-i eksperdiks saama!",
-      dismiss: "sulge",
-      tasks: {
-        create_workspace: {
-          title: "Loo tööruum",
-          description: "Loo esimene tööruum alustamiseks",
-          action: "Loo",
-        },
-        send_chat: {
-          title: "Saada vestlus",
-          description: "Alusta vestlust oma AI-abilisega",
-          action: "Vestle",
-        },
-        embed_document: {
-          title: "Põimi dokument",
-          description: "Lisa esimene dokument oma tööruumi",
-          action: "Põimi",
-        },
-        setup_system_prompt: {
-          title: "Seadista süsteemprompt",
-          description: "Määra AI-abilise käitumine",
-          action: "Seadista",
-        },
-        define_slash_command: {
-          title: "Loo kaldkriipskäsk",
-          description: "Tee oma abilise jaoks kohandatud käsud",
-          action: "Loo",
-        },
-        visit_community: {
-          title: "Külasta kogukonna keskust",
-          description: "Uuri kogukonna ressursse ja malle",
-          action: "Sirvi",
-        },
-      },
+    quickActions: {
+      createAgent: "Loo agent",
+      editWorkspace: "Redige tööruum",
+      uploadDocument: "Lae fail üles",
     },
-    quickLinks: {
-      title: "Kiirlingid",
-      sendChat: "Saada vestlus",
-      embedDocument: "Põimi dokument",
-      createWorkspace: "Loo tööruum",
-    },
-    exploreMore: {
-      title: "Avasta rohkem funktsioone",
-      features: {
-        customAgents: {
-          title: "Kohandatud AI-agendid",
-          description: "Ehita võimsaid agente ja automatsioone ilma koodita.",
-          primaryAction: "Vestle @agent abil",
-          secondaryAction: "Loo agendivoog",
-        },
-        slashCommands: {
-          title: "Kaldkriipskäsklused",
-          description: "Säästa aega ja lisa käske kohandatud käskudega.",
-          primaryAction: "Loo kaldkriipskäsk",
-          secondaryAction: "Sirvi Hubs",
-        },
-        systemPrompts: {
-          title: "Süsteempromptid",
-          description:
-            "Muuda süsteemprompti, et kohandada AI vastuseid tööruumis.",
-          primaryAction: "Muuda süsteemprompti",
-          secondaryAction: "Halda prompt-muutujaid",
-        },
-      },
-    },
-    announcements: {
-      title: "Uuendused ja teadaanded",
-    },
-    resources: {
-      title: "Ressursid",
-      links: {
-        docs: "Dokumentatsioon",
-        star: "GitHubi tärn",
-      },
-      keyboardShortcuts: "Klaviatuuri otseteed",
-    },
+    greeting: "Kuidas saan teid täna aidata?",
   },
   "new-workspace": {
     title: "Uus tööruum",
@@ -233,12 +162,6 @@ const TRANSLATIONS = {
       heading: "Selgita mulle",
       body: "AnythingLLM eeliseid",
     },
-    pfp: {
-      title: "Abilise profiilipilt",
-      description: "Kohanda selle tööruumi abilise profiilipilti.",
-      image: "Tööruumi pilt",
-      remove: "Eemalda tööruumi pilt",
-    },
     delete: {
       title: "Kustuta tööruum",
       description:
@@ -261,21 +184,23 @@ const TRANSLATIONS = {
       title: "Tööruumi vestlusmudel",
       description:
         "Vestlusmudel, mida tööruumis kasutatakse. Kui tühi, kasutatakse süsteemi LLM-eelistust.",
-      wait: "-- laadib mudeleid --",
     },
     mode: {
       title: "Vestlusrežiim",
       chat: {
         title: "Vestlus",
-        "desc-start": "annab vastuseid LLM-i üldteadmistest",
-        and: "ja",
-        "desc-end": "leitud dokumendikontekstist.",
+        description:
+          "teenab vastuseid, kasutades LLM-i üldist teadmist ja dokumenti konteksti, mis on leitav.<br /> Selleks peate kasutama @agent käsku, et kasutada erinevaid tööriime.",
       },
       query: {
         title: "Päring",
-        "desc-start": "annab vastuseid",
-        only: "ainult",
-        "desc-end": "kui leitakse dokumendikontekst.",
+        description:
+          'teenib vastuseid <b> ainult__, kui dokumendi kontekst on leitav.</b> Vajate kasutama käitu "@agent", et kasutada tööriime.',
+      },
+      automatic: {
+        title: "Automaailm",
+        description:
+          'kasutab automaatselt tööriistu, kui mudel ja pakkuja toetavad native töörieste kasutamist. <br />Kui native töörieste kasutamine ei toeta, peate kasutama käsku "@agent", et tööriiste kasutada.',
       },
     },
     history: {
@@ -307,8 +232,9 @@ const TRANSLATIONS = {
       query: "päringu",
       "desc-end":
         "režiimis, võib määrata kohandatud vastuse, kui konteksti ei leita.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Miks ma seda näen?",
+      "tooltip-description":
+        "Olete küsimise režiimis, mis kasutab ainult teie dokumentidest saadavat teavet. Valige vestlemise režiim, et pidada paindlikumaid vestlusi, või klõpsake siin, et külastada meie dokumentatsiooni ja saada lisateavet vestlemise režiimide kohta.",
     },
     temperature: {
       title: "LLM-i temperatuur",
@@ -362,9 +288,6 @@ const TRANSLATIONS = {
       wait: "-- laadib mudeleid --",
     },
     skill: {
-      title: "Agendi vaikimisi oskused",
-      description:
-        "Paranda vaikimisi agendi loomulikke oskusi nende eelnevalt ehitatud võimetega. Kehtib kõikidele tööruumidele.",
       rag: {
         title: "RAG ja pikaajaline mälu",
         description:
@@ -383,16 +306,261 @@ const TRANSLATIONS = {
         title: "Loo diagramme",
         description: "Lubab agendil luua erinevaid diagramme antud andmetest.",
       },
-      save: {
-        title: "Loo ja salvesta faile brauserisse",
-        description:
-          "Lubab agendil luua faile, mis salvestatakse ja allalaaditakse brauseris.",
-      },
       web: {
         title: "Reaalajas veebihaku tugi",
-        "desc-start":
-          "Lubab agendil kasutada veebiotsingut küsimustele vastamiseks, ühendudes SERP-teenusega.",
-        "desc-end": "Veebiotsing ei tööta enne, kui seadistus on tehtud.",
+        description:
+          "Lisage oma esindajale võimalus veebis otsida, et vastata teie küsimustele, ühendades selle veebiotsingu (SERP) teenusega.",
+      },
+      sql: {
+        title: "SQL-i ühendus",
+        description:
+          "Tagage, et teie esindaja saaks kasutada SQL-i, et vastata teie küsimustele, ühendades erinevate SQL andmebaasiteenustega.",
+      },
+      default_skill:
+        "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
+      filesystem: {
+        title: "Failisüsteemi juurdepääs",
+        description:
+          "Lisage oma agentile võimalus lugeda, kirjutada, otsida ja hallata faili, mis asub kindlalt määratud kaustas. Toetab failide redakteerimist, kaustade navigeerimist ja sisu otsimist.",
+        learnMore: "Lisateabe saamiseks, kuidas seda oskust kasutada",
+        configuration: "Konfiguratsioon",
+        readActions: "Leia toimingud",
+        writeActions: "Toimingud",
+        warning:
+          "Failisüsteemi juurimine võib olla ohtlik, kuna see võib muuta või kustutada faile. Enne selle aktiveerimist, palun vaadake <link>dokumentatsiooni</link>.",
+        skills: {
+          "read-text-file": {
+            title: "Ava fail",
+            description:
+              "Leia failide sisu (tekst, kood, PDF-failid, pildid jne)",
+          },
+          "read-multiple-files": {
+            title: "Lugege mitut faili",
+            description: "Lugege mitut faili üheaegselt",
+          },
+          "list-directory": {
+            title: "Loend",
+            description: "Looge failide ja kaustade loend ühes kaustas",
+          },
+          "search-files": {
+            title: "Failide otsimine",
+            description: "Leidke failid nime või sisu järgi",
+          },
+          "get-file-info": {
+            title: "Hankige faili teave",
+            description: "Hankige üksikasjalik teavet failide kohta",
+          },
+          "edit-file": {
+            title: "Faili redigeerimine",
+            description: "Muuda teksti failide sisu rida- järgselt.",
+          },
+          "create-directory": {
+            title: "Loo kaust",
+            description: "Loo uusi kahteid",
+          },
+          "move-file": {
+            title: "Faili liiguta/nime muuda",
+            description: "Liigu või nime muuta failid ja kaardid",
+          },
+          "copy-file": {
+            title: "Kopeeri fail",
+            description: "Kopeeri failid ja kaardi",
+          },
+          "write-text-file": {
+            title: "Loo teksti fail",
+            description:
+              "Loo uusi teksti faili või asenda olemasolevaid teksti faile",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumendi koostamine",
+        description:
+          "Laske oma esindajal luua binaarsed dokumendiformaadid, näiteks PowerPointi esitlused, Exceli lehed, Wordi dokumendid ja PDF-failid. Failid saab alla laadida otse vestlusaknast.",
+        configuration: "Saadaval olevad dokumendi tüübid",
+        skills: {
+          "create-text-file": {
+            title: "Tekstifailid",
+            description:
+              "Loo teksti failid, milles on mis tahes sisu ja laiendus (esimärkid .txt, .md, .json, .csv jne).",
+          },
+          "create-pptx": {
+            title: "PowerPointi esitlused",
+            description:
+              "Loo uusi PowerPointi esitlusi, mis sisaldavad slaidide, pealkirjade ja punktide.",
+          },
+          "create-pdf": {
+            title: "PDF-failid",
+            description:
+              "Loo PDF-failid Markdown- või tavaline tekstist, kasutades lihtsaid stiilid",
+          },
+          "create-xlsx": {
+            title: "Excel-i lehed",
+            description:
+              "Loo Excel-failid, mis sisaldavad tabeli andmeid, lehtede ja stiilidega.",
+          },
+          "create-docx": {
+            title: "Microsoft Word-failid",
+            description:
+              "Loo Microsoft Wordi dokumende, kasutades põhise stiili ja vormistuse",
+          },
+        },
+      },
+      gmail: {
+        title: "GMail-iga ühendamine",
+        description:
+          "Lase oma esindajal interakteeruda Gmailiga – otsida e-kirju, lugeda teemasid, luua esialgseid versioone, saatada e-kirju ja hallata oma postkasti. <a>Vaata dokumentatsiooni</a>.",
+        multiUserWarning:
+          "Gmaili integreerimine ei ole saadaval mitme kasutaja režiimis turvalisuse huvides. Palun deaktiveerige mitme kasutaja režiim, et kasutada seda funktsiooni.",
+        configuration: "Gmaili seadmine",
+        deploymentId: "Paigaldamis ID",
+        deploymentIdHelp: "Veebirakenduse Google Apps Scripti ID",
+        apiKey: "API võti",
+        apiKeyHelp:
+          "API võti, mida olete konfigureerinud oma Google Apps Scripti rakenduses.",
+        configurationRequired:
+          'Palun konfigureerige "Deployment ID" ja API võti, et Gmaili funktsionaalsus oleks aktiivne.',
+        configured: "Konfigureeritud",
+        searchSkills: "otsinguteadused...",
+        noSkillsFound: "Leidke ei leitud sobivaid oskusi teie otsingu põhjal.",
+        categories: {
+          search: {
+            title: "Leia ja luge e-kirju",
+            description: "Kutsutage ja looge Gmaili postkasti olevad e-kirjad",
+          },
+          drafts: {
+            title: "Esimesed kirjad",
+            description: "Loo, muuda ja hallata e-kirjade projekte",
+          },
+          send: {
+            title: "Saada ja vastata e-kirjadele",
+            description: "Saada e-kirju ja vastata teemades kohe",
+          },
+          threads: {
+            title: "Hallata e-kirjade seeriaid",
+            description:
+              "Hallata e-posti vestlusi – märgistada kui lugemata/lugemata, salvestada, kustutada",
+          },
+          account: {
+            title: "Integreerimise statistika",
+            description: "Vaata postkasti statistikat ja konto teavet.",
+          },
+        },
+        skills: {
+          search: {
+            title: "E-kirjade otsing",
+            description: "Kutse e-kirju Gmaili küsimismängu sintaksiga",
+          },
+          readThread: {
+            title: "Loe teemat",
+            description: "Vaata kogu e-kirjade sarja ID järgi",
+          },
+          createDraft: {
+            title: "Loo esialgne versioon",
+            description: "Loo uus e-posti eelnäide",
+          },
+          createDraftReply: {
+            title: "Loo esialgne vastus",
+            description: "Loo esialgne vastus olemasolevale teemale.",
+          },
+          updateDraft: {
+            title: "Väljaanne",
+            description: "Värskendada olemasolevat e-kirja projekti",
+          },
+          getDraft: {
+            title: "Vaata esialgne versioon",
+            description: "Taasta konkreetne versioon ID-täringuga",
+          },
+          listDrafts: {
+            title: "Esialgne versioon",
+            description: "Loeda kõik e-kirjade plaani",
+          },
+          deleteDraft: {
+            title: "Hüvata projekti",
+            description: "Hüvata e-kirja, mis on loodud",
+          },
+          sendDraft: {
+            title: "Saada projekti",
+            description: "Saada olemasolev e-kirja esialgne versioon",
+          },
+          sendEmail: {
+            title: "Saatke e-kiri",
+            description: "Saatke e-kiri kohe",
+          },
+          replyToThread: {
+            title: "Vastata teemale",
+            description: "Vasta e-posti teemale kohe",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Märki, et teema on lugemata.",
+          },
+          markUnread: {
+            title: "Märgi kui vaatamata",
+            description: "Märki, et teema on lugemata",
+          },
+          moveToTrash: {
+            title: "Saada jäätmeteks",
+            description: "Liigu teema prügikasti",
+          },
+          moveToArchive: {
+            title: "Arhiiv",
+            description: "Salvatage teema",
+          },
+          moveToInbox: {
+            title: "Liiguta postkasti",
+            description: 'Liiga "Saadud" pildile',
+          },
+          getMailboxStats: {
+            title: "Postkasti statistika",
+            description:
+              "Vaata, mitu ebakirjutatud kirja on, ning postkasti statistikat.",
+          },
+          getInbox: {
+            title: "Ava postkasti",
+            description:
+              "Lihtne viis, kuidas saada Gmailist oma postkasti e-kirjad.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP-serverid",
+      "loading-from-config": "MCP-serverid laaditakse konfiguraadifailist",
+      "learn-more": "Lisateabe saamiseks tutvuge MCP-serveridega.",
+      "no-servers-found": "MCP-servereid ei leitud.",
+      "tool-warning":
+        "Parima tulemuse saavutamiseks, võtke kaalutluseks, et välja lülitada tarbetud vahendid, et säilitada kontekst.",
+      "stop-server": "Lülitage MCP-server välja",
+      "start-server": "Alusta MCP-serverit",
+      "delete-server": "Kasuta MCP-serveri kustutamise funktsiooni",
+      "tool-count-warning":
+        "See MCP server on lubanud <b>_, mis tarbivad konteksti igas vestluses.</b> Selle asemel võid soovimatuid tööriistu välja lülitada, et säästa konteksti.",
+      "startup-command": "Alustamine",
+      command: "Juhendamine",
+      arguments: "Argumentid",
+      "not-running-warning":
+        "See MCP-server ei tööta – see võib olla peatatud või alguses võib tekkida viga.",
+      "tool-call-arguments": '"Tooli käivitamise argumentid"',
+      "tools-enabled": "vahendid on lubatud",
+    },
+    settings: {
+      title: "Agenti oskuste seaded",
+      "max-tool-calls": {
+        title: "Maximaalne töö-kõned vastuse kohta",
+        description:
+          "Максимаalne arv, mis agent võib ühendada, et genereerida ühe vastuse. See takistab liigse töö tegevuse ja lõpmatute ringide tekkimist.",
+      },
+      "intelligent-skill-selection": {
+        title: "Nutikad oskuste valiku meetodid",
+        "beta-badge": "Beeta",
+        description:
+          "Lubage piiramatu hulga tööriistade kasutamist ning vähendage küsimuse kohta kasutatavate tokenide arv kuni 80% – AnythingLLM valib automaatselt iga küsimuse jaoks sobivad oskused.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Maksimaalne arv tööriistu, mida saab valida igale küsimusele. Soovitame seada see väärtus suuremate kontekstmudelite jaoks suuremaks.",
+        },
       },
     },
   },
@@ -454,10 +622,6 @@ const TRANSLATIONS = {
         description:
           "Nimi, mis kuvatakse kõigile kasutajatele sisselogimislehel.",
       },
-      "chat-message-alignment": {
-        title: "Vestlussõnumite joondus",
-        description: "Vali sõnumite joondus vestlusliideses.",
-      },
       "display-language": {
         title: "Kuvakeel",
         description:
@@ -470,18 +634,6 @@ const TRANSLATIONS = {
         recommended: "Soovituslik suurus: 800 × 200",
         remove: "Eemalda",
         replace: "Asenda",
-      },
-      "welcome-messages": {
-        title: "Tervitussõnumid",
-        description:
-          "Kohanda sõnumeid, mida kasutajad näevad sisselogimisel. Ainult mitte-adminid näevad neid.",
-        new: "Uus",
-        system: "süsteem",
-        user: "kasutaja",
-        message: "sõnum",
-        assistant: "AnythingLLM vestlusabi",
-        "double-click": "Topeltklõps muutmiseks…",
-        save: "Salvesta sõnumid",
       },
       "browser-appearance": {
         title: "Brauseri välimus",
@@ -503,8 +655,9 @@ const TRANSLATIONS = {
         link: "Link",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Renderi HTML-koodi veebisaidil",
+        description:
+          "HTML-vastuste kuvamine abivasside vastustes.\nSee võib viia suurema vastuste kvaliteedi, kuid võib ka põhjustada potentsiaalseid turvaohusid.",
       },
     },
   },
@@ -514,7 +667,34 @@ const TRANSLATIONS = {
       "API võtmed võimaldavad programmipõhiselt hallata seda AnythingLLM instantsi.",
     link: "Loe API dokumentatsiooni",
     generate: "Genereeri uus API võti",
+    empty: "API võtmeid ei leitud",
+    actions: "Toimingud",
+    messages: {
+      error: "Viga: {{error}}",
+    },
+    modal: {
+      title: "Loo uus API võti",
+      cancel: "Tühista",
+      close: "Sulge",
+      create: "Loo API võti",
+      helper:
+        "Pärast loomist saab API võtit kasutada sellele AnythingLLM-i instantsile programmiga ligi pääsemiseks ja selle seadistamiseks.",
+      name: {
+        label: "Nimi",
+        placeholder: "Tootmiskeskkonna integratsioon",
+        helper:
+          "Valikuline. Kasuta sõbralikku nime, et saaksid võtme hiljem hõlpsasti ära tunda.",
+      },
+    },
+    row: {
+      copy: "Kopeeri API võti",
+      copied: "Kopeeritud",
+      unnamed: "--",
+      deleteConfirm:
+        "Kas soovite selle API võtme kindlasti deaktiveerida?\nPärast seda ei saa seda enam kasutada.\n\nSeda toimingut ei saa tagasi võtta.",
+    },
     table: {
+      name: "Nimi",
       key: "API võti",
       by: "Loonud",
       created: "Loodud",
@@ -534,6 +714,8 @@ const TRANSLATIONS = {
         model_type: "Mudeli tüüp",
         default: "Vaikimisi",
         reasoning: "Põhjendus",
+        model_type_tooltip:
+          'Kui teie rakendus kasutab loogika mudelit (o1, o1-mini, o3-mini jne), siis määrake see väärtuseks "Loogika". Muu korral võivad teie vestlussõnumid ebaõiglas.',
       },
     },
   },
@@ -620,17 +802,12 @@ const TRANSLATIONS = {
     title: "Privaatsus ja andmetöötlus",
     description:
       "Konfiguratsioon kolmandate osapoolte ja AnythingLLM-i andmekäitluse kohta.",
-    llm: "LLM-i valik",
-    embedding: "Embedding-i eelistus",
-    vector: "Vektoriandmebaas",
     anonymous: "Anonüümne telemeetria lubatud",
   },
   connectors: {
     "search-placeholder": "Otsi andmepistikuid",
     "no-connectors": "Andmepistikuid ei leitud.",
     obsidian: {
-      name: "Obsidian",
-      description: "Impordi Obsidiani vault ühe klõpsuga.",
       vault_location: "Vaulti asukoht",
       vault_description:
         "Vali oma Obsidiani vaulti kaust, et importida kõik märkmed ja nende seosed.",
@@ -676,7 +853,6 @@ const TRANSLATIONS = {
       URL_explained: "Repo URL, mida soovid koguda.",
       token: "GitLabi juurdepääsuvõti",
       optional: "valikuline",
-      token_explained: "Võti API piirangute vältimiseks.",
       token_description: "Vali täiendavad objektid, mida GitLabi API-st tuua.",
       token_explained_start: "Ilma ",
       token_explained_link1: "isikliku juurdepääsuvõtmeta",
@@ -707,9 +883,6 @@ const TRANSLATIONS = {
       URL_explained_end: " saadaval.",
       task_explained:
         "Kui valmis, on transkript dokumentide valijas tööruumidesse põimimiseks saadaval.",
-      language: "Transkripti keel",
-      language_explained: "Vali transkripti keel, mida soovid koguda.",
-      loading_languages: "-- keelte laadimine --",
     },
     "website-depth": {
       name: "Massiline linkide kraapija",
@@ -750,6 +923,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Sinu isiklik juurdepääsuvõti.",
       task_explained:
         "Kui valmis, on lehe sisu dokumentide valijas tööruumidesse põimimiseks saadaval.",
+      bypass_ssl: "SSL-sertifikaadi valideerimise ümber",
+      bypass_ssl_explained:
+        "Selle valiku aktiveerimine võimaldab SSL sertifikaadi valideerimise ületada, kui kasutate enda hallatud Confluence instantsi, millel on enda välja antud sertifikaat.",
     },
     manage: {
       documents: "Dokumendid",
@@ -765,20 +941,18 @@ const TRANSLATIONS = {
       "search-document": "Otsi dokumenti",
       "no-documents": "Dokumendid puuduvad",
       "move-workspace": "Liiguta tööruumi",
-      name: "Nimi",
       "delete-confirmation":
         "Kas oled kindel, et soovid need failid ja kaustad kustutada?\nFailid eemaldatakse süsteemist ning kõigist tööruumidest.\nTegevust ei saa tagasi võtta.",
       "removing-message":
         "Eemaldan {{count}} dokumenti ja {{folderCount}} kausta. Palun oota.",
       "move-success": "Liigutatud edukalt {{count}} dokumenti.",
-      date: "Kuupäev",
-      type: "Tüüp",
       no_docs: "Dokumendid puuduvad",
       select_all: "Vali kõik",
       deselect_all: "Tühista valik",
       remove_selected: "Eemalda valitud",
-      costs: "*Ühekordne embeddingu kulu",
       save_embed: "Salvesta ja põimi",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumendid",
     },
     upload: {
       "processor-offline": "Dokumenditöötleja pole saadaval",
@@ -817,17 +991,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Tere tulemast oma uude tööruumi.",
-    get_started: "Alustamiseks",
-    get_started_default: "Alustamiseks",
-    upload: "laadi dokument üles",
-    or: "või",
     attachments_processing: "Manused töötlevad. Palun oota…",
-    send_chat: "saada vestlus.",
     send_message: "Saada sõnum",
     attach_file: "Lisa fail vestlusele",
-    slash: "Vaata kõiki slash-käske.",
-    agents: "Vaata kõiki agente, keda saad kasutada.",
     text_size: "Muuda teksti suurust.",
     microphone: "Esita päring häälega.",
     send: "Saada päring tööruumi",
@@ -837,19 +1003,11 @@ const TRANSLATIONS = {
     regenerate_response: "Loo vastus uuesti",
     good_response: "Hea vastus",
     more_actions: "Rohkem toiminguid",
-    hide_citations: "Peida viited",
-    show_citations: "Näita viiteid",
-    pause_tts_speech_message: "Pausi TTS kõne",
     fork: "Hargnemine",
     delete: "Kustuta",
-    save_submit: "Salvesta ja saada",
     cancel: "Tühista",
     edit_prompt: "Redigeeri päringut",
     edit_response: "Redigeeri vastust",
-    at_agent: "@agent",
-    default_agent_description: " – selle tööruumi vaikimisi agent.",
-    custom_agents_coming_soon: "kohandatud agendid tulekul!",
-    slash_reset: "/reset",
     preset_reset_description: "Tühjenda vestlusajalugu ja alusta uut vestlust",
     add_new_preset: " Lisa uus preset",
     command: "Käsk",
@@ -871,14 +1029,47 @@ const TRANSLATIONS = {
       missing_credentials: "Sellel pakkujal puuduvad võtmed!",
       missing_credentials_description: "Klõpsa, et määrata võtmed",
     },
+    submit: "Saada",
+    edit_info_user:
+      '"Saada" taastab AI vastuse. "Salvesta" muudab ainult teie sõnumi.',
+    edit_info_assistant: "Teie muutused salvestatakse otse sellele vastusele.",
+    see_less: "Näita vähem",
+    see_more: "Vaata rohkem",
+    tools: "Vahendid",
+    text_size_label: "Teksti suurus",
+    select_model: "Valige mudel",
+    sources: "Allikasid",
+    document: "Dokument",
+    similarity_match: "mäng",
+    source_count_one: "{{count}} viidatud",
+    source_count_other: "Viidatud allikad",
+    preset_exit_description: "Lõpeta hetkeseisuga",
+    add_new: "Lisada uus",
+    edit: "Redigeerimine",
+    publish: "Avaldada",
+    stop_generating: "Lõpeta vastuste genereerimine",
+    slash_commands: "Lihtsasti kasutatavad käsud",
+    agent_skills: "Agentide oskused",
+    manage_agent_skills: "Halda agentide oskusi",
+    agent_skills_disabled_in_session:
+      "Ei ole võimalik muuta oskusi aktiivse agenti seanssi ajal. Enne seanssi lõpetamist kasutage käsku /exit.",
+    start_agent_session: "Alusta agenti sessiooni",
+    use_agent_session_to_use_tools:
+      "Saate kasutada vahendeid vestluses, alustades agenti sessiooni, lisades käskile '@agent' sõna.",
+    agent_invocation: {
+      model_wants_to_call: "Mudel soovib helistada",
+      approve: "Heakskiid",
+      reject: "Hüvasti, keelan",
+      always_allow: "Aeg-ajalt lubage {{skillName}}",
+      tool_call_was_approved: "Vahendite tellimuse kinnitati.",
+      tool_call_was_rejected: "Vahendite taotlus jäeti rahuldamata.",
+    },
   },
   profile_settings: {
     edit_account: "Muuda kontot",
     profile_picture: "Profiilipilt",
     remove_profile_picture: "Eemalda profiilipilt",
     username: "Kasutajanimi",
-    username_description:
-      "Kasutajanimi võib sisaldada ainult väiketähti, numbreid, alakriipse ja sidekriipse, ilma tühikuteta",
     new_password: "Uus parool",
     password_description: "Parool peab olema vähemalt 8 märki",
     cancel: "Tühista",
@@ -931,14 +1122,11 @@ const TRANSLATIONS = {
         private_description: "Privaatseid prompte näed vaid sina.",
         publish_button: "Avalda Community Hubis",
         submitting: "Avaldan…",
-        submit: "Avalda Community Hubis",
         prompt_label: "Prompt",
         prompt_description: "Süsteemprompt, mis juhendab LLM-i.",
         prompt_placeholder: "Sisesta süsteemprompt siia…",
       },
       agent_flow: {
-        public_description: "Avalikud agendi vood on kõigile nähtavad.",
-        private_description: "Privaatseid agendi vooge näed vaid sina.",
         success_title: "Edu!",
         success_description: "Sinu agendi voog avaldati Community Hubis!",
         success_thank_you: "Aitäh jagamast!",
@@ -954,7 +1142,6 @@ const TRANSLATIONS = {
           "Lisa kuni 5 silti (kuni 20 tähemärki) otsingu lihtsustamiseks.",
         tags_placeholder: "Kirjuta ja vajuta Enter, et lisada silte",
         visibility_label: "Nähtavus",
-        publish_button: "Avalda Community Hubis",
         submitting: "Avaldan…",
         submit: "Avalda Community Hubis",
         privacy_note:
@@ -972,10 +1159,6 @@ const TRANSLATIONS = {
         description_label: "Kirjeldus",
         description_description:
           "Kirjeldus, mis selgitab slash-käsku eesmärki.",
-        command_label: "Käsk",
-        command_description:
-          "Käsk, mille kasutajad sisestavad selle preseti käivitamiseks.",
-        command_placeholder: "minu-käsk",
         tags_label: "Sildid",
         tags_description:
           "Lisa kuni 5 silti (kuni 20 tähemärki) otsingu lihtsustamiseks.",
@@ -1027,6 +1210,70 @@ const TRANSLATIONS = {
     notAssigned:
       "Sa ei ole täidetud ühtegi tööruumi.\nPäringu tööruumiks, palun pööra teie administraatorile.",
     goToWorkspace: 'Mine tööruumiks "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegrami bot",
+    description:
+      "Ühendage oma AnythingLLM instants Telegramiga, et saaksite vestleda oma tööruumidega igast seadmist.",
+    setup: {
+      step1: {
+        title: "1. samm: Looge oma Telegrami bot",
+        description:
+          "Ava Telegramis konto @BotFather, saat <code>/newbot</code> aadressile <code>@BotFather</code>, järgige juhiseid ja kopeerige API-token.",
+        "open-botfather": "Ava BotFather",
+        "instruction-1": "1. Avage link või skannige QR-kood",
+        "instruction-2":
+          "2. Saada <code>/newbot</code> aadressile <code>@BotFather</code>",
+        "instruction-3": "3. Valige oma botile nimi ja kasutajanimi.",
+        "instruction-4": "4. Kopeerige API-token, mida teile antakse.",
+      },
+      step2: {
+        title: "2. Samuti ühendage oma bot",
+        description:
+          "Kleepige API-token, mis teil on saanud kasutaja @BotFatherilt, ning valige oma botile vaikimõistmine.",
+        "bot-token": "Bot token",
+        connecting: "Ühendamine...",
+        "connect-bot": "Ühendusrobott",
+      },
+      security: {
+        title: "Soovitavad turvameetmed",
+        description:
+          "Lisaks turvalisusele, konfigureerige need seaded @BotFatheris.",
+        "disable-groups": "— Ennetada, et botid ei lisataks gruppi",
+        "disable-inline": "— Vältida, et bot kasutaks otsingut reaalajas.",
+        "obscure-username":
+          "Kasutage mitteolivaid kasutajanime, et vähendada avastamise võimalust.",
+      },
+      "toast-enter-token": "Palun sisestage bot'i token.",
+      "toast-connect-failed": "Bot ei suutnud ühendust tehes.",
+    },
+    connected: {
+      status: "Ühendatud",
+      "status-disconnected":
+        "Vabandus, toet – toet võib olla kehtimatuna või kehtima lõppenud",
+      "placeholder-token": "Sisestage uus bot'i token...",
+      reconnect: "Taastada ühendus",
+      workspace: "Tööruum",
+      "bot-link": "Bot link",
+      "voice-response": "Häälreaktsioon",
+      disconnecting: "Ühendus katkestatud...",
+      disconnect: "Ühenduse katkestamine",
+      "voice-text-only": "Tekst ainult",
+      "voice-mirror":
+        "Helisüsteem (vastake häältega, kui kasutaja kasutab helifunktsiooni)",
+      "voice-always": "Alati lisage hääl (saada helifail koos iga vastusega)",
+      "toast-disconnect-failed": "Impeer ei õnnestunud seadistada.",
+      "toast-reconnect-failed": "Bot ei suutnud ühendust taastada.",
+      "toast-voice-failed": "Ärkimõõtmeid ei õnnestunud uuendada.",
+      "toast-approve-failed": "Kasutaja kinnitamise ebaõnnestumine.",
+      "toast-deny-failed": "Ei suutnud kasutaja kohta infot väita.",
+      "toast-revoke-failed": "Ebaõnnestuti kasutaja konto kustutamises.",
+    },
+    users: {
+      "pending-description":
+        "Kasutajad, kes ootavad kinnitamist. Võrdige siin näidatud vastuvõtusümboli koos nende Telegrami vestluses näidatud sümboliga.",
+      unknown: "Tuntud pole",
+    },
   },
 };
 

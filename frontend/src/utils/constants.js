@@ -8,6 +8,8 @@ export const COMPLETE_QUESTIONNAIRE = "anythingllm_completed_questionnaire";
 export const SEEN_DOC_PIN_ALERT = "anythingllm_pinned_document_alert";
 export const SEEN_WATCH_ALERT = "anythingllm_watched_document_alert";
 export const LAST_VISITED_WORKSPACE = "anythingllm_last_visited_workspace";
+export const USER_PROMPT_INPUT_MAP = "anythingllm_user_prompt_input_map";
+export const PENDING_HOME_MESSAGE = "anythingllm_pending_home_message";
 
 export const APPEARANCE_SETTINGS = "anythingllm_appearance_settings";
 
@@ -50,6 +52,27 @@ export const NVIDIA_NIM_COMMON_URLS = [
   "http://localhost:8000/v1/version",
   "http://host.docker.internal:8000/v1/version",
   "http://172.17.0.1:8000/v1/version",
+];
+
+export const DOCKER_MODEL_RUNNER_COMMON_URLS = [
+  "http://localhost:12434/engines/llama.cpp/v1",
+  "http://127.0.0.1:12434/engines/llama.cpp/v1",
+  "http://model-runner.docker.internal/engines/llama.cpp/v1",
+  "http://host.docker.internal:12434/engines/llama.cpp/v1",
+  "http://172.17.0.1:12434/engines/llama.cpp/v1",
+];
+
+export const LEMONADE_COMMON_URLS = [
+  "http://localhost:8000/live",
+  "http://127.0.0.1:8000/live",
+  "http://host.docker.internal:8000/live",
+  "http://172.17.0.1:8000/live",
+
+  // In Lemonade 10.1.0 the base port is 13305
+  "http://localhost:13305/live",
+  "http://127.0.0.1:13305/live",
+  "http://host.docker.internal:13305/live",
+  "http://172.17.0.1:13305/live",
 ];
 
 export function fullApiUrl() {

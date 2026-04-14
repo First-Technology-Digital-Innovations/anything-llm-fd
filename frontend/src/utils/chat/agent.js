@@ -1,6 +1,5 @@
 import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
-import { saveAs } from "file-saver";
 import { API_BASE } from "../constants";
 import { useEffect, useState } from "react";
 
@@ -8,10 +7,11 @@ export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
 const handledEvents = [
   "statusResponse",
-  "fileDownload",
+  "fileDownloadCard",
   "awaitingFeedback",
   "wssFailure",
   "rechartVisualize",
+  "toolApprovalRequest",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -41,12 +41,18 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: null,
           animate: false,
           pending: false,
+          metrics: {},
         },
       ];
     });
   }
 
-  if (!handledEvents.includes(data.type) || !data.content) return;
+  // toolApprovalRequest doesn't have content field, so check separately
+  if (data.type === "toolApprovalRequest") {
+    if (!data.requestId || !data.skillName) return;
+  } else if (!handledEvents.includes(data.type) || !data.content) {
+    return;
+  }
 
   if (data.type === "reportStreamEvent") {
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
@@ -74,6 +80,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               error: null,
               animate: false,
               pending: false,
+              metrics: {},
             },
           ];
         }
@@ -83,6 +90,9 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         // Providers like Gemini send large chunks and can complete in a single chunk before the update logic can convert it.
         // Other providers send many small chunks so the second chunk triggers the update logic to fix the type.
         if (data.content.type === "textResponseChunk") {
+          // If this first chunk is just a non-text char (like \n, \t, etc.) then we need to ignore it.
+          // Some providers like LMStudio will do this and it depends on the chat template as well.
+          if (data.content.content.trim() === "") return prev;
           return [
             ...prev.filter((msg) => !!msg.content),
             {
@@ -95,6 +105,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               error: null,
               animate: false,
               pending: false,
+              metrics: {},
             },
           ];
         }
@@ -111,6 +122,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             error: null,
             animate: false,
             pending: false,
+            metrics: {},
           },
         ];
       } else {
@@ -125,6 +137,25 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             ...prev.filter((msg) => msg.uuid !== uuid),
             { ...knownMessage, content },
           ]; // If the message is known, replace it with the new content
+        }
+
+        if (type === "usageMetrics") {
+          if (!data.content.metrics) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid ? { ...msg, metrics: data.content.metrics } : msg
+          );
+        }
+
+        if (type === "citations") {
+          if (!data.content.citations) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid
+              ? {
+                  ...msg,
+                  sources: [...(msg.sources || []), ...data.content.citations],
+                }
+              : msg
+          );
         }
 
         if (type === "textResponseChunk") {
@@ -153,9 +184,24 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     });
   }
 
-  if (data.type === "fileDownload") {
-    saveAs(data.content.b64Content, data.content.filename ?? "unknown.txt");
-    return;
+  if (data.type === "fileDownloadCard") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "fileDownloadCard",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: data.metrics || {},
+        },
+      ];
+    });
   }
 
   if (data.type === "rechartVisualize") {
@@ -172,6 +218,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: null,
           animate: false,
           pending: false,
+          metrics: data.metrics || {},
         },
       ];
     });
@@ -190,6 +237,32 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: data.content,
           animate: false,
           pending: false,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "toolApprovalRequest") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "toolApprovalRequest",
+          requestId: data.requestId,
+          skillName: data.skillName,
+          payload: data.payload,
+          description: data.description,
+          timeoutMs: data.timeoutMs,
+          content: `Approval requested for ${data.skillName}`,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
+          metrics: {},
         },
       ];
     });
@@ -208,13 +281,24 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         error: null,
         animate: data?.animate || false,
         pending: false,
+        metrics: data.metrics || {},
       },
     ];
   });
 }
 
+let _agentSessionActive = false;
+export function setAgentSessionActive(value) {
+  _agentSessionActive = value;
+}
+export function getAgentSessionActive() {
+  return _agentSessionActive;
+}
+
 export function useIsAgentSessionActive() {
-  const [activeSession, setActiveSession] = useState(false);
+  const [activeSession, setActiveSession] = useState(
+    () => !!getAgentSessionActive()
+  );
   useEffect(() => {
     function listenForAgentSession() {
       if (!window) return;

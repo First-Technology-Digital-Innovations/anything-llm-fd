@@ -23,7 +23,6 @@ class OllamaAILLM {
     this.authToken = process.env.OLLAMA_AUTH_TOKEN;
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
-    this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
     this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
       ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
       : 300; // Default 5-minute timeout for Ollama model loading.
@@ -34,7 +33,7 @@ class OllamaAILLM {
     this.client = new Ollama({
       host: this.basePath,
       headers: headers,
-      fetch: this.#applyFetch(),
+      fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -43,9 +42,7 @@ class OllamaAILLM {
     this.limits = null;
 
     OllamaAILLM.cacheContextWindows(true);
-    this.#log(
-      `initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}`
-    );
+    this.#log(`initialized with model: ${this.model}`);
   }
 
   #log(text, ...args) {
@@ -64,6 +61,9 @@ class OllamaAILLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+    this.#log(
+      `model ${this.model} is using a max context window of ${this.promptWindowLimit()}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
+    );
   }
 
   /**
@@ -132,7 +132,7 @@ class OllamaAILLM {
    * for machines which run responses very slowly.
    * @returns {Function} The custom fetch function.
    */
-  #applyFetch() {
+  static applyOllamaFetch() {
     try {
       if (!("OLLAMA_RESPONSE_TIMEOUT" in process.env)) return fetch;
       const { Agent } = require("undici");
@@ -140,7 +140,7 @@ class OllamaAILLM {
       let timeout = process.env.OLLAMA_RESPONSE_TIMEOUT;
 
       if (!timeout || isNaN(Number(timeout)) || Number(timeout) <= 5 * 60_000) {
-        this.#log(
+        OllamaAILLM.#slog(
           "Timeout option was not set, is not a number, or is less than 5 minutes in ms - falling back to default",
           { timeout }
         );
@@ -155,10 +155,13 @@ class OllamaAILLM {
       };
 
       const humanDiff = moment.duration(timeout).humanize();
-      this.#log(`Applying custom fetch w/timeout of ${humanDiff}.`);
+      OllamaAILLM.#slog(`Applying custom fetch w/timeout of ${humanDiff}.`);
       return noTimeoutFetch;
     } catch (error) {
-      this.#log("Error applying custom fetch - using default fetch", error);
+      OllamaAILLM.#slog(
+        "Error applying custom fetch - using default fetch",
+        error
+      );
       return fetch;
     }
   }
@@ -172,12 +175,11 @@ class OllamaAILLM {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
-      return process.env.OLLAMA_MODEL_TOKEN_LIMIT || 4096;
+      return Number(process.env.OLLAMA_MODEL_TOKEN_LIMIT) || 4096;
     }
 
     let userDefinedLimit = null;
-    const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 4096;
+    const systemDefinedLimit = OllamaAILLM.maxContextWindow(modelName);
 
     if (
       process.env.OLLAMA_MODEL_TOKEN_LIMIT &&
@@ -190,11 +192,21 @@ class OllamaAILLM {
     // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
     if (userDefinedLimit !== null)
       return Math.min(userDefinedLimit, systemDefinedLimit);
-    return systemDefinedLimit;
+
+    // Cap the context window limit to 16,384 tokens if the model supports more than that and no value is specified by the user.
+    // This prevents super-large context windows from being used if the user does not specify a value
+    // as well as also having smaller context windows use the full context window limit.
+    return Math.min(systemDefinedLimit, 16384);
   }
 
   promptWindowLimit() {
     return this.constructor.promptWindowLimit(this.model);
+  }
+
+  static maxContextWindow(modelName = null) {
+    if (Object.keys(OllamaAILLM.modelContextWindows).length === 0 || !modelName)
+      return 4096;
+    return Number(OllamaAILLM.modelContextWindows[modelName]) || 16384;
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -265,11 +277,7 @@ class OllamaAILLM {
           keep_alive: this.keepAlive,
           options: {
             temperature,
-            use_mlock: true,
-            // There are currently only two performance settings so if its not "base" - its max context.
-            ...(this.performanceMode === "base"
-              ? {} // TODO: if in base mode, maybe we just use half the context window when below <10K?
-              : { num_ctx: this.promptWindowLimit() }),
+            num_ctx: this.promptWindowLimit(),
           },
         })
         .then((res) => {
@@ -305,29 +313,30 @@ class OllamaAILLM {
         outputTps:
           result.output.usage.completion_tokens / result.output.usage.duration,
         duration: result.output.usage.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.client.chat({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
         keep_alive: this.keepAlive,
         options: {
           temperature,
-          use_mlock: true,
-          // There are currently only two performance settings so if its not "base" - its max context.
-          ...(this.performanceMode === "base"
-            ? {}
-            : { num_ctx: this.promptWindowLimit() }),
+          num_ctx: this.promptWindowLimit(),
         },
       }),
       messages,
-      false
-    ).catch((e) => {
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    }).catch((e) => {
       throw this.#errorHandler(e);
     });
     return measuredStreamRequest;
@@ -458,6 +467,32 @@ class OllamaAILLM {
         resolve(fullText);
       }
     });
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const { capabilities = [] } = await this.client.show({
+        model: this.model,
+      });
+      return {
+        tools: capabilities.includes("tools") ? true : false,
+        reasoning: capabilities.includes("thinking") ? true : false,
+        imageGeneration: false, // we dont have any image generation capabilities for Ollama or anywhere right now.
+        vision: capabilities.includes("vision") ? true : false,
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
