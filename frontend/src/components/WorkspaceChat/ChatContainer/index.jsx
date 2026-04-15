@@ -278,8 +278,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     const { prompt, response, chatId } = event.detail || {};
     if (!prompt || !response) return;
 
-    console.log('[ChatContainer] Voice chat saved, updating history:', chatId);
-    
+    console.log("[ChatContainer] Voice chat saved, updating history:", chatId);
+
     // Add the new messages to the chat history
     setChatHistory((prevHistory) => [
       ...prevHistory,

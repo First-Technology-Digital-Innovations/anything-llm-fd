@@ -1,15 +1,18 @@
 import { Tooltip } from "react-tooltip";
-import { Microphone, MicrophoneSlash, WifiHigh, WifiSlash } from "@phosphor-icons/react";
+import { Microphone } from "@phosphor-icons/react";
 import { useTheme } from "@/hooks/useTheme";
 import { useRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useUser from "@/hooks/useUser";
 import System from "@/models/system";
-import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import VoiceChatMode from "@/components/VoiceChatMode";
 
-export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = () => {}, onChatSaved = () => {} }) {
+export default function VoiceChatToggleAction({
+  workspace,
+  onVoiceChatToggle = () => {},
+  onChatSaved = () => {},
+}) {
   const tooltipRef = useRef(null);
   const { theme } = useTheme();
   const { user } = useUser();
@@ -25,17 +28,18 @@ export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = (
     try {
       const settings = await System.keys();
       const voiceChatEnabled = settings?.VoiceChatEnabled === true;
-      const hasAzureConfig = settings?.AzureRealtimeEndpoint && settings?.AzureRealtimeKey;
-      
+      const hasAzureConfig =
+        settings?.AzureRealtimeEndpoint && settings?.AzureRealtimeKey;
+
       console.log("Voice Chat Debug:", {
         voiceChatEnabled,
         hasAzureConfig,
         azureEndpoint: settings?.AzureRealtimeEndpoint,
-        hasAzureKey: !!settings?.AzureRealtimeKey
+        hasAzureKey: !!settings?.AzureRealtimeKey,
       });
-      
+
       setIsVoiceAvailable(voiceChatEnabled && hasAzureConfig);
-      
+
       if (!voiceChatEnabled) {
         console.log("Voice chat is disabled in system settings");
       } else if (!hasAzureConfig) {
@@ -49,7 +53,10 @@ export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = (
 
   const toggleVoiceChat = () => {
     if (!isVoiceAvailable) {
-      showToast("Voice chat is not available. Please check your configuration.", "error");
+      showToast(
+        "Voice chat is not available. Please check your configuration.",
+        "error"
+      );
       return;
     }
 
@@ -85,7 +92,7 @@ export default function VoiceChatToggleAction({ workspace, onVoiceChatToggle = (
           content="Click to start voice chat"
         />
       </div>
-      
+
       <VoiceChatMode
         workspace={workspace}
         threadSlug={threadSlug}
