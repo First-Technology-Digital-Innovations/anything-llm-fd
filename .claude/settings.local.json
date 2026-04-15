@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn -v)",
+      "Bash(yarn dev:server)"
+    ]
+  }
+}

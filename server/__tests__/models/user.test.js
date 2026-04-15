@@ -6,13 +6,13 @@ describe("username validation restrictions", () => {
   });
 
   const failureMessages = [
-    "Username cannot be longer than 32 characters",
+    "Username cannot be longer than 100 characters",
     "Username must be at least 2 characters",
     "Username must start with a lowercase letter and only contain lowercase letters, numbers, underscores, hyphens, and periods",
   ];
 
-  it("should throw an error if the username is longer than 32 characters", () => {
-    expect(() => User.validations.username("a".repeat(33))).toThrow(failureMessages[0]);
+  it("should throw an error if the username is longer than 100 characters", () => {
+    expect(() => User.validations.username("a".repeat(101))).toThrow(failureMessages[0]);
   });
 
   it("should throw an error if the username is less than 2 characters", () => {

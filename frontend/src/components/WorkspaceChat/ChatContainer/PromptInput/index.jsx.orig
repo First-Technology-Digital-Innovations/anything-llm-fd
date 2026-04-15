@@ -2,7 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import debounce from "lodash.debounce";
 import { ArrowUp, At } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
+<<<<<<< HEAD
+import AvailableAgentsButton, {
+  AvailableAgents,
+  useAvailableAgents,
+} from "./AgentMenu";
+import TextSizeButton from "./TextSizeMenu";
+import LLMSelectorAction from "./LLMSelector/action";
 import VoiceChatToggleAction from "./VoiceChatToggle";
+=======
+>>>>>>> upstream/master
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
@@ -35,7 +44,11 @@ const MAX_EDIT_STACK_SIZE = 100;
  * @param {string} [props.threadSlug] - thread slug for home page context
  */
 export default function PromptInput({
+<<<<<<< HEAD
+  workspace,
+=======
   workspace = {},
+>>>>>>> upstream/master
   submit,
   isStreaming,
   sendCommand,
@@ -364,6 +377,16 @@ export default function PromptInput({
                   className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] pt-[20px] w-full leading-5 text-white light:text-slate-600 bg-transparent placeholder:text-white/60 light:placeholder:text-slate-400 resize-none active:outline-none focus:outline-none flex-grow pwa:!text-[16px] ${textSizeClass}`}
                   placeholder={t("chat_window.send_message")}
                 />
+<<<<<<< HEAD
+                <AvailableAgentsButton
+                  showing={showAgents}
+                  setShowAgents={setShowAgents}
+                />
+                <TextSizeButton />
+                <LLMSelectorAction />
+                <VoiceChatToggleAction workspace={workspace} />
+=======
+>>>>>>> upstream/master
               </div>
               <div className="flex justify-between items-center pt-3.5 pb-3">
                 <div className="flex items-center gap-x-0.25">
@@ -387,7 +410,6 @@ export default function PromptInput({
                   />
                 </div>
                 <div className="flex gap-x-2 items-center">
-                  <VoiceChatToggleAction workspace={workspace} />
                   <SpeechToText sendCommand={sendCommand} />
                   {isStreaming ? (
                     <StopGenerationButton />

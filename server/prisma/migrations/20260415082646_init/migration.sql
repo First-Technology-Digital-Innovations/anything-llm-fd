@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "api_keys" (
     "id" SERIAL NOT NULL,
+    "name" TEXT,
     "secret" TEXT,
     "createdBy" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -63,6 +64,7 @@ CREATE TABLE "users" (
     "lastUpdatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "dailyMessageLimit" INTEGER,
     "bio" TEXT DEFAULT '',
+    "web_push_subscription_config" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -97,17 +99,6 @@ CREATE TABLE "document_vectors" (
     "lastUpdatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "document_vectors_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "welcome_messages" (
-    "id" SERIAL NOT NULL,
-    "user" TEXT NOT NULL,
-    "response" TEXT NOT NULL,
-    "orderIndex" INTEGER,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "welcome_messages_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -376,6 +367,18 @@ CREATE TABLE "workspace_parsed_files" (
     CONSTRAINT "workspace_parsed_files_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "external_communication_connectors" (
+    "id" SERIAL NOT NULL,
+    "type" TEXT NOT NULL,
+    "config" TEXT NOT NULL DEFAULT '{}',
+    "active" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "external_communication_connectors_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "api_keys_secret_key" ON "api_keys"("secret");
 
@@ -471,6 +474,9 @@ CREATE INDEX "workspace_parsed_files_workspaceId_idx" ON "workspace_parsed_files
 
 -- CreateIndex
 CREATE INDEX "workspace_parsed_files_userId_idx" ON "workspace_parsed_files"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "external_communication_connectors_type_key" ON "external_communication_connectors"("type");
 
 -- AddForeignKey
 ALTER TABLE "workspace_documents" ADD CONSTRAINT "workspace_documents_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "workspaces"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,4 +1,8 @@
-import { useState, useEffect, useContext, useRef, useCallback } from "react";
+<<<<<<< HEAD
+import { useState, useEffect, useContext, useCallback } from "react";
+=======
+import { useState, useEffect, useContext, useRef } from "react";
+>>>>>>> upstream/master
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, {
@@ -443,6 +447,35 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }
 
   return (
+<<<<<<< HEAD
+    <div
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll z-[2]"
+    >
+      {isMobile && <SidebarMobileHeader />}
+      <DnDFileUploaderWrapper>
+        <MetricsProvider>
+          <ChatHistory
+            history={chatHistory}
+            workspace={workspace}
+            sendCommand={sendCommand}
+            updateHistory={setChatHistory}
+            regenerateAssistantMessage={regenerateAssistantMessage}
+            hasAttachments={files.length > 0}
+          />
+        </MetricsProvider>
+        <PromptInput
+          workspace={workspace}
+          submit={handleSubmit}
+          onChange={handleMessageChange}
+          isStreaming={loadingResponse}
+          sendCommand={sendCommand}
+          attachments={files}
+        />
+      </DnDFileUploaderWrapper>
+      <ChatTooltips />
+    </div>
+=======
     <SourcesSidebarProvider>
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -482,5 +515,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         <SourcesSidebar />
       </div>
     </SourcesSidebarProvider>
+>>>>>>> upstream/master
   );
 }
