@@ -30,7 +30,6 @@ const {
   isDefaultFilename,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
-const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
@@ -61,6 +60,7 @@ const {
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -78,6 +78,26 @@ function systemEndpoints(app) {
       return response.sendStatus(200).end();
     dumpENV();
     response.sendStatus(200).end();
+  });
+
+  app.get("/onboarding", async (_, response) => {
+    try {
+      const results = await SystemSettings.isOnboardingComplete();
+      response.status(200).json({ onboardingComplete: results });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/onboarding", [validatedRequest], async (_, response) => {
+    try {
+      await SystemSettings.markOnboardingComplete();
+      response.sendStatus(200).end();
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
   });
 
   app.get("/setup-complete", async (_, response) => {
@@ -114,9 +134,55 @@ function systemEndpoints(app) {
     }
   );
 
+  /**
+   * Refreshes the user object from the session from a provided token.
+   * This does not refresh the token itself - if that is expired or invalid, the user will be logged out.
+   * This simply keeps the user object in sync with the database over the course of the session.
+   * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
+   */
+  app.get(
+    "/system/refresh-user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (!multiUserMode(response))
+          return response
+            .status(200)
+            .json({ success: true, user: null, message: null });
+
+        const user = await userFromSession(request, response);
+        if (!user)
+          return response.status(200).json({
+            success: false,
+            user: null,
+            message: "Session expired or invalid.",
+          });
+
+        if (user.suspended)
+          return response.status(200).json({
+            success: false,
+            user: null,
+            message: "User is suspended.",
+          });
+
+        return response.status(200).json({
+          success: true,
+          user: User.filterFields(user),
+          message: null,
+        });
+      } catch (e) {
+        return response.status(500).json({
+          success: false,
+          user: null,
+          message: e.message,
+        });
+      }
+    }
+  );
+
   app.post("/request-token", async (request, response) => {
     try {
-      const bcrypt = require("bcrypt");
+      const bcrypt = require("bcryptjs");
 
       if (await SystemSettings.isMultiUserMode()) {
         if (simpleSSOLoginDisabled()) {
@@ -554,7 +620,7 @@ function systemEndpoints(app) {
           multi_user_mode: true,
         });
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
-
+        await AgentSkillWhitelist.clearSingleUserWhitelist();
         await updateENV(
           {
             JWTSecret: process.env.JWT_SECRET || v4(),
@@ -896,50 +962,6 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get(
-    "/system/welcome-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async function (_, response) {
-      try {
-        const welcomeMessages = await WelcomeMessages.getMessages();
-        response.status(200).json({ success: true, welcomeMessages });
-      } catch (error) {
-        console.error("Error fetching welcome messages:", error);
-        response
-          .status(500)
-          .json({ success: false, message: "Internal server error" });
-      }
-    }
-  );
-
-  app.post(
-    "/system/set-welcome-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const { messages = [] } = reqBody(request);
-        if (!Array.isArray(messages)) {
-          return response.status(400).json({
-            success: false,
-            message: "Invalid message format. Expected an array of messages.",
-          });
-        }
-
-        await WelcomeMessages.saveAll(messages);
-        return response.status(200).json({
-          success: true,
-          message: "Welcome messages saved successfully.",
-        });
-      } catch (error) {
-        console.error("Error processing the welcome messages:", error);
-        response.status(500).json({
-          success: true,
-          message: "Error saving the welcome messages.",
-        });
-      }
-    }
-  );
-
   app.get("/system/api-keys", [validatedRequest], async (_, response) => {
     try {
       if (response.locals.multiUserMode) {
@@ -963,16 +985,17 @@ function systemEndpoints(app) {
   app.post(
     "/system/generate-api-key",
     [validatedRequest],
-    async (_, response) => {
+    async (request, response) => {
       try {
         if (response.locals.multiUserMode) {
           return response.sendStatus(401).end();
         }
 
-        const { apiKey, error } = await ApiKey.create();
+        const { name = null } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(null, name);
         await EventLogs.logEvent(
           "api_key_created",
-          {},
+          { name: apiKey?.name },
           response?.locals?.user?.id
         );
         return response.status(200).json({
@@ -1162,7 +1185,9 @@ function systemEndpoints(app) {
       }
 
       const updates = {};
-      if (username)
+      // If the username is being changed, validate it.
+      // Otherwise, do not attempt to validate it to allow existing users to keep their username if not changing it.
+      if (username !== sessionUser.username)
         updates.username = User.validations.username(String(username));
       if (password) updates.password = String(password);
       if (bio) updates.bio = String(bio);
@@ -1178,7 +1203,9 @@ function systemEndpoints(app) {
       response.status(200).json({ success, error });
     } catch (e) {
       console.error(e);
-      response.sendStatus(500).end();
+      response
+        .status(500)
+        .json({ success: false, error: e.message || "Internal server error" });
     }
   });
 
@@ -1436,8 +1463,8 @@ function systemEndpoints(app) {
     "/system/validate-sql-connection",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
+      const { engine, connectionString } = reqBody(request);
       try {
-        const { engine, connectionString } = reqBody(request);
         if (!engine || !connectionString) {
           return response.status(400).json({
             success: false,

@@ -17,7 +17,12 @@ const { Telemetry } = require("../../models/telemetry");
 const { CollectorApi } = require("../collectorApi");
 const fs = require("fs");
 const path = require("path");
-const { hotdirPath, normalizePath, isWithin } = require("../files");
+const {
+  hotdirPath,
+  normalizePath,
+  isWithin,
+  sanitizeFileName,
+} = require("../files");
 /**
  * @typedef ResponseObject
  * @property {string} id - uuid of response
@@ -72,8 +77,8 @@ async function processDocumentAttachments(attachments = []) {
       if (dataUriMatch) base64Data = dataUriMatch[1];
 
       const buffer = Buffer.from(base64Data, "base64");
-      const filename = normalizePath(
-        attachment.name || `attachment-${uuidv4()}`
+      const filename = sanitizeFileName(
+        normalizePath(attachment.name || `attachment-${uuidv4()}`)
       );
       const filePath = normalizePath(path.join(hotdirPath, filename));
       if (!isWithin(hotdirPath, filePath))
@@ -100,7 +105,7 @@ async function processDocumentAttachments(attachments = []) {
  * @param {{
  *  workspace: import("@prisma/client").workspaces,
  *  message:string,
- *  mode: "chat"|"query",
+ *  mode: "automatic"|"chat"|"query",
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
@@ -112,7 +117,7 @@ async function processDocumentAttachments(attachments = []) {
 async function chatSync({
   workspace,
   message = null,
-  mode = "chat",
+  mode = null,
   user = null,
   thread = null,
   sessionId = null,
@@ -120,7 +125,7 @@ async function chatSync({
   reset = false,
 }) {
   const uuid = uuidv4();
-  const chatMode = mode ?? "chat";
+  const chatMode = mode ?? workspace?.chatMode ?? "automatic";
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
@@ -150,7 +155,13 @@ async function chatSync({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
-  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+  if (
+    await EphemeralAgentHandler.isAgentInvocation({
+      message,
+      workspace,
+      chatMode,
+    })
+  ) {
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
@@ -162,6 +173,7 @@ async function chatSync({
       userId: user?.id || null,
       threadId: thread?.id || null,
       sessionId,
+      attachments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -439,7 +451,7 @@ async function chatSync({
  * response: import("express").Response,
  *  workspace: import("@prisma/client").workspaces,
  *  message:string,
- *  mode: "chat"|"query",
+ *  mode: "automatic"|"chat"|"query",
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
@@ -452,7 +464,7 @@ async function streamChat({
   response,
   workspace,
   message = null,
-  mode = "chat",
+  mode = null,
   user = null,
   thread = null,
   sessionId = null,
@@ -460,7 +472,7 @@ async function streamChat({
   reset = false,
 }) {
   const uuid = uuidv4();
-  const chatMode = mode ?? "chat";
+  const chatMode = mode ?? workspace?.chatMode ?? "automatic";
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
@@ -492,7 +504,13 @@ async function streamChat({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
-  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+  if (
+    await EphemeralAgentHandler.isAgentInvocation({
+      message,
+      workspace,
+      chatMode,
+    })
+  ) {
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
@@ -504,6 +522,7 @@ async function streamChat({
       userId: user?.id || null,
       threadId: thread?.id || null,
       sessionId,
+      attachments,
     });
 
     // Establish event listener that emulates websocket calls

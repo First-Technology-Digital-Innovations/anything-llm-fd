@@ -1,4 +1,5 @@
 import katex from "katex";
+import "katex/dist/katex.min.css";
 
 // Test if potential opening or closing delimieter
 // Assumes that there is a "$" at state.src[pos]
@@ -33,7 +34,7 @@ function isValidDelim(state, pos) {
 }
 
 function math_inline(state, silent) {
-  var start, match, token, res, pos, esc_count;
+  var start, match, token, res, pos;
 
   // Only process $ and \( delimiters for inline math
   if (

@@ -35,8 +35,13 @@ const ENABLED_PROVIDERS = [
   "cometapi",
   "foundry",
   "zai",
+  "giteeai",
+  "cohere",
+  "docker-model-runner",
+  "privatemode",
+  "sambanova",
+  "lemonade",
   // TODO: More agent support.
-  // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
 ];
 const WARN_PERFORMANCE = [
@@ -45,6 +50,7 @@ const WARN_PERFORMANCE = [
   "ollama",
   "localai",
   "textgenwebui",
+  "docker-model-runner",
 ];
 
 const LLM_DEFAULT = {

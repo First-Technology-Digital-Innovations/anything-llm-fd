@@ -1,21 +1,26 @@
-const { AzureOpenAI } = require("openai");
+const { OpenAI } = require("openai");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
+const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the Azure OpenAI API.
+ * Uses the shared native tool calling helper for OpenAI-compatible tool calling.
  */
 class AzureOpenAiProvider extends Provider {
   model;
 
   constructor(config = { model: null }) {
-    const client = new AzureOpenAI({
+    const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-      apiVersion: "2024-12-01-preview",
+      baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);
-    this.model = config.model ?? process.env.OPEN_MODEL_PREF;
+    this.model =
+      config.model ||
+      process.env.AZURE_OPENAI_MODEL_PREF ||
+      process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
 
@@ -24,76 +29,80 @@ class AzureOpenAiProvider extends Provider {
   }
 
   /**
-   * Create a completion based on the received messages.
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Azure OpenAI always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
+   * Stream a chat completion from Azure OpenAI with tool calling.
    *
-   * @param messages A list of messages to send to the OpenAI API.
-   * @param functions
+   * @param {any[]} messages
+   * @param {any[]} functions
+   * @param {function} eventHandler
+   * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
+   */
+  async stream(messages, functions = [], eventHandler = null) {
+    this.providerLog("Provider.stream - will process this chat completion.");
+
+    try {
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Create a completion based on the received messages with tool calling.
+   *
+   * @param {any[]} messages
+   * @param {any[]} functions
    * @returns The completion.
    */
   async complete(messages, functions = []) {
     try {
-      const response = await this.client.chat.completions.create({
-        model: this.model,
-        stream: false,
+      const result = await tooledComplete(
+        this.client,
+        this.model,
         messages,
-        ...(Array.isArray(functions) && functions?.length > 0
-          ? { functions }
-          : {}),
-      });
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
 
-      // Right now, we only support one completion,
-      // so we just take the first one in the list
-      const completion = response.choices[0].message;
-      const cost = this.getCost(response.usage);
-      // treat function calls
-      if (completion.function_call) {
-        let functionArgs = {};
-        try {
-          functionArgs = JSON.parse(completion.function_call.arguments);
-        } catch (error) {
-          // call the complete function again in case it gets a json error
-          return this.complete(
-            [
-              ...messages,
-              {
-                role: "function",
-                name: completion.function_call.name,
-                function_call: completion.function_call,
-                content: error?.message,
-              },
-            ],
-            functions
-          );
-        }
-
-        // console.log(completion, { functionArgs })
-        return {
-          textResponse: null,
-          functionCall: {
-            name: completion.function_call.name,
-            arguments: functionArgs,
-          },
-          cost,
-        };
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
       }
 
-      return {
-        textResponse: completion.content,
-        cost,
-      };
+      return result;
     } catch (error) {
-      // If invalid Auth error we need to abort because no amount of waiting
-      // will make auth better.
-      if (error instanceof AzureOpenAI.AuthenticationError) throw error;
-
+      if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
-        error instanceof AzureOpenAI.RateLimitError ||
-        error instanceof AzureOpenAI.InternalServerError ||
-        error instanceof AzureOpenAI.APIError // Also will catch AuthenticationError!!!
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
       ) {
         throw new RetryError(error.message);
       }
-
       throw error;
     }
   }

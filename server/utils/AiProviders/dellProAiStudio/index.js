@@ -45,7 +45,7 @@ class DellProAiStudioLLM {
       const baseURL = new URL(providedBasePath);
       const basePath = `${baseURL.origin}/v1/openai`;
       return basePath;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -165,6 +165,9 @@ class DellProAiStudioLLM {
         total_tokens: result.output.usage?.total_tokens || 0,
         outputTps: result.output.usage?.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
@@ -175,15 +178,18 @@ class DellProAiStudioLLM {
         `Dell Pro AI Studio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.dpais.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.dpais.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
         temperature,
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+      provider: this.className,
+    });
     return measuredStreamRequest;
   }
 

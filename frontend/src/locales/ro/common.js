@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Bine ai venit la",
       getStarted: "Începe",
+      welcome: "Bine ați venit",
     },
     llm: {
       title: "Preferința LLM",
@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Este important să salvezi această parolă deoarece nu există metodă de recuperare.",
       adminUsername: "Numele contului de administrator",
-      adminUsernameReq:
-        "Numele de utilizator trebuie să aibă cel puțin 6 caractere și să conțină numai litere mici, cifre, underscore și liniuțe fără spații.",
       adminPassword: "Parola contului de administrator",
       adminPasswordReq: "Parolele trebuie să aibă cel puțin 8 caractere.",
       teamHint:
@@ -51,17 +49,9 @@ const TRANSLATIONS = {
       skip: "Sari peste sondaj",
       thankYou: "Îți mulțumim pentru feedback!",
     },
-    workspace: {
-      title: "Creează primul tău spațiu de lucru",
-      description:
-        "Creează primul tău spațiu de lucru și începe să folosești AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Numele spațiilor de lucru",
-    error: "eroare",
-    success: "succes",
-    user: "Utilizator",
     selection: "Selecția modelului",
     saving: "Se salvează...",
     save: "Salvează modificările",
@@ -71,10 +61,16 @@ const TRANSLATIONS = {
     yes: "Da",
     no: "Nu",
     search: "Caută",
+    username_requirements:
+      "Numele de utilizator trebuie să aibă între 2 și 32 de caractere, să înceapă cu o literă mică și să conțină doar litere mici, cifre, liniuțe de subliniere, cratime și puncte.",
+    on: "În",
+    none: "Niciunul",
+    stopped: "Oprit",
+    loading: "Încărcare",
+    refresh: "Reîmprospătează",
   },
   settings: {
     title: "Setările instanței",
-    system: "Setări generale",
     invites: "Invitații",
     users: "Utilizatori",
     workspaces: "Spații de lucru",
@@ -91,7 +87,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voce & Vorbire",
     "vector-database": "Baza de date vectorială",
     embeds: "Chat Embed",
-    "embed-chats": "Istoricul chat embed",
     security: "Securitate",
     "event-logs": "Jurnale de evenimente",
     privacy: "Confidențialitate & Date",
@@ -103,6 +98,17 @@ const TRANSLATIONS = {
     "experimental-features": "Funcții experimentale",
     contact: "Contact suport",
     "browser-extension": "Extensie browser",
+    "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centru comunitar",
+      trending: "Descoperă tendințele",
+      "your-account": "Contul dumneavoastră",
+      "import-item": "Importați articolul",
+    },
+    channels: "Canale",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -114,103 +120,22 @@ const TRANSLATIONS = {
       "forgot-pass": "Ai uitat parola",
       reset: "Resetează",
     },
-    "sign-in": {
-      start: "Autentifică-te în",
-      end: "cont.",
-    },
+    "sign-in": "Autentifică-te în {{appName}} cont.",
     "password-reset": {
       title: "Resetare parolă",
       description:
         "Introdu informațiile necesare mai jos pentru a reseta parola.",
       "recovery-codes": "Coduri de recuperare",
-      "recovery-code": "Cod de recuperare {{index}}",
       "back-to-login": "Înapoi la autentificare",
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Te rugăm să creezi un spațiu de lucru înainte să începi o conversație.",
-    checklist: {
-      title: "Început rapid",
-      tasksLeft: "sarcini rămase",
-      completed: "Ești pe drumul să devii expert AnythingLLM!",
-      dismiss: "închide",
-      tasks: {
-        create_workspace: {
-          title: "Creează un spațiu de lucru",
-          description: "Creează primul tău spațiu de lucru pentru a începe",
-          action: "Creează",
-        },
-        send_chat: {
-          title: "Trimite un chat",
-          description: "Începe o conversație cu asistentul AI",
-          action: "Chat",
-        },
-        embed_document: {
-          title: "Inserați un document",
-          description: "Adaugă primul tău document în spațiul de lucru",
-          action: "Include",
-        },
-        setup_system_prompt: {
-          title: "Configurează un sistem prompt",
-          description: "Configurează comportamentul asistentului AI",
-          action: "Configurează",
-        },
-        define_slash_command: {
-          title: "Definește o comandă slash",
-          description: "Creează comenzi personalizate pentru asistent",
-          action: "Definește",
-        },
-        visit_community: {
-          title: "Vizitează Comunitatea",
-          description: "Explorează resursele și șabloanele comunității",
-          action: "Răsfoiește",
-        },
-      },
+    quickActions: {
+      createAgent: "Creați un agent",
+      editWorkspace: "Modifică spațiul de lucru",
+      uploadDocument: "Încărcați un document",
     },
-    quickLinks: {
-      title: "Link-uri rapide",
-      sendChat: "Trimite Chat",
-      embedDocument: "Include Document",
-      createWorkspace: "Creează Spațiu de lucru",
-    },
-    exploreMore: {
-      title: "Explorează mai multe funcții",
-      features: {
-        customAgents: {
-          title: "Agenți AI personalizați",
-          description:
-            "Construiește agenți AI puternici și automatizări fără cod.",
-          primaryAction: "Chatează cu @agent",
-          secondaryAction: "Construiește un flux agent",
-        },
-        slashCommands: {
-          title: "Comenzi Slash",
-          description:
-            "Economisește timp și folosește prompturi cu comenzi personalizate.",
-          primaryAction: "Creează o comandă slash",
-          secondaryAction: "Explorează pe Hub",
-        },
-        systemPrompts: {
-          title: "System Prompts",
-          description:
-            "Modifică system prompt pentru a personaliza răspunsurile AI ale unui spațiu de lucru.",
-          primaryAction: "Modifică un prompt system",
-          secondaryAction: "Gestionează variabilele promptului",
-        },
-      },
-    },
-    announcements: {
-      title: "Actualizări & Anunțuri",
-    },
-    resources: {
-      title: "Resurse",
-      links: {
-        docs: "Documentație",
-        star: "Stea pe Github",
-      },
-      keyboardShortcuts: "Scurtături de tastatură",
-    },
+    greeting: "Cu ce vă pot ajuta astăzi?",
   },
   "new-workspace": {
     title: "Spațiu de lucru nou",
@@ -241,13 +166,6 @@ const TRANSLATIONS = {
       heading: "Explică-mi",
       body: "beneficiile AnythingLLM",
     },
-    pfp: {
-      title: "Imagine profil asistent",
-      description:
-        "Personalizează imaginea de profil a asistentului pentru acest spațiu de lucru.",
-      image: "Imagine spațiu de lucru",
-      remove: "Șterge imaginea spațiului de lucru",
-    },
     delete: {
       title: "Șterge spațiul de lucru",
       description:
@@ -270,22 +188,23 @@ const TRANSLATIONS = {
       title: "Modelul de chat al spațiului de lucru",
       description:
         "Modelul specific chat folosit de acest spațiu de lucru. Dacă e lăsat gol, folosește preferința LLM a sistemului.",
-      wait: "-- așteptare modele --",
     },
     mode: {
       title: "Mod chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "oferă răspunsuri bazate pe cunoștințele generale ale LLM-ului",
-        and: "și",
-        "desc-end": "context document care este găsit.",
+        description:
+          'va oferi răspunsuri folosind cunoștințele generale ale LLM și contextul documentului, așa cum este disponibil.<br />Va trebui să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
       query: {
         title: "Interogare",
-        "desc-start": "oferă răspunsuri",
-        only: "doar",
-        "desc-end": "dacă contextul documentului este găsit.",
+        description:
+          "vor oferi răspunsuri doar dacă contextul documentului este identificat.<b>Veți avea nevoie să utilizați comanda @agent pentru a utiliza instrumentele.",
+      },
+      automatic: {
+        title: "Mașină",
+        description:
+          'va utiliza automat instrumentele, dacă modelul și furnizorul suportă apelarea nativă a instrumentelor.<br />Dacă apelarea nativă a instrumentelor nu este suportată, veți avea nevoie să utilizați comanda "@agent" pentru a utiliza instrumentele.',
       },
     },
     history: {
@@ -380,17 +299,12 @@ const TRANSLATIONS = {
     title: "Confidențialitate & Gestionarea datelor",
     description:
       "Aceasta este configurația ta pentru modul în care furnizorii terți conectați și AnythingLLM gestionează datele tale.",
-    llm: "Selecția LLM",
-    embedding: "Preferința embedding",
-    vector: "Baza de date vectorială",
     anonymous: "Telemetrie anonimă activată",
   },
   connectors: {
     "search-placeholder": "Caută conectori de date",
     "no-connectors": "Nu au fost găsiți conectori de date.",
     obsidian: {
-      name: "Obsidian",
-      description: "Importă un vault Obsidian cu un singur click.",
       vault_location: "Locația vault-ului",
       vault_description:
         "Selectează folderul vault-ului Obsidian pentru a importa toate notițele și conexiunile lor.",
@@ -440,7 +354,6 @@ const TRANSLATIONS = {
         "URL-ul repository-ului GitLab pe care dorești să îl colectezi.",
       token: "Token de acces GitLab",
       optional: "opțional",
-      token_explained: "Token de acces pentru a preveni limitările de rată.",
       token_description:
         "Selectează entitățile suplimentare de preluat din API-ul GitLab.",
       token_explained_start: "Fără un ",
@@ -473,10 +386,6 @@ const TRANSLATIONS = {
       URL_explained_end: " disponibile.",
       task_explained:
         "Odată complet, transcrierea va fi disponibilă pentru embedding în spații de lucru în selectorul de documente.",
-      language: "Limba transcrierii",
-      language_explained:
-        "Selectează limba transcrierii pe care dorești să o colectezi.",
-      loading_languages: "-- încărcare limbi disponibile --",
     },
     "website-depth": {
       name: "Bulk Link Scraper",
@@ -520,6 +429,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Token-ul tău personal de acces Confluence.",
       task_explained:
         "Odată complet, conținutul paginii va fi disponibil pentru embedding în spații de lucru în selectorul de documente.",
+      bypass_ssl: "Ocolirea validării certificatului SSL",
+      bypass_ssl_explained:
+        "Activați această opțiune pentru a ocoli validarea certificatului SSL pentru instanțele Confluence găzduite de utilizator, cu un certificat semnat de utilizator.",
     },
     manage: {
       documents: "Documente",
@@ -535,20 +447,18 @@ const TRANSLATIONS = {
       "search-document": "Căută document",
       "no-documents": "Niciun document",
       "move-workspace": "Mută în spațiul de lucru",
-      name: "Nume",
       "delete-confirmation":
         "Ești sigur că vrei să ștergi aceste fișiere și foldere?\nAcest lucru va elimina fișierele din sistem și le va elimina automat din orice spațiu de lucru existent.\nAceastă acțiune este ireversibilă.",
       "removing-message":
         "Se elimină {{count}} documente și {{folderCount}} foldere. Te rugăm să aștepți.",
       "move-success": "S-au mutat cu succes {{count}} documente.",
-      date: "Dată",
-      type: "Tip",
       no_docs: "Niciun document",
       select_all: "Selectează tot",
       deselect_all: "Deselectează tot",
       remove_selected: "Elimină selectate",
-      costs: "*Cost unic pentru embeddings",
       save_embed: "Salvează și încorporează",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documente",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
@@ -588,18 +498,10 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Bine ai venit în noul tău spațiu de lucru.",
-    get_started: "Pentru a începe, fie",
-    get_started_default: "Pentru a începe",
-    upload: "încarcă un document",
-    or: "sau",
     attachments_processing:
       "Fișierele atașate se procesează. Te rugăm să aștepți...",
-    send_chat: "trimite un chat.",
     send_message: "Trimite mesaj",
     attach_file: "Atașează un fișier la acest chat",
-    slash: "Vizualizează toate comenzile slash disponibile pentru chat.",
-    agents: "Vezi toți agenții disponibili pentru chat.",
     text_size: "Schimbă dimensiunea textului.",
     microphone: "Vorbește promptul tău.",
     send: "Trimite prompt către spațiul de lucru",
@@ -609,20 +511,11 @@ const TRANSLATIONS = {
     regenerate_response: "Regenerare răspuns",
     good_response: "Răspuns bun",
     more_actions: "Mai multe acțiuni",
-    hide_citations: "Ascunde citările",
-    show_citations: "Arată citările",
-    pause_tts_speech_message: "Pauză rostire mesaj TTS",
     fork: "Fork",
     delete: "Șterge",
-    save_submit: "Salvează & Trimite",
     cancel: "Anulează",
     edit_prompt: "Editează prompt",
     edit_response: "Editează răspuns",
-    at_agent: "@agent",
-    default_agent_description:
-      " - agentul implicit pentru acest spațiu de lucru.",
-    custom_agents_coming_soon: "agenții personalizați vin în curând!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Șterge istoricul chatului și începe o conversație nouă",
     add_new_preset: " Adaugă preset nou",
@@ -647,14 +540,49 @@ const TRANSLATIONS = {
       missing_credentials: "Acest furnizor lipsește credențiale!",
       missing_credentials_description: "Click pentru a configura credențialele",
     },
+    submit: "Trimite",
+    edit_info_user:
+      "„Trimite” recreează răspunsul generat de inteligența artificială. „Salvează” actualizează doar mesajul dumneavoastră.",
+    edit_info_assistant:
+      "Modificările pe care le faceți vor fi salvate direct în acest răspuns.",
+    see_less: "Vezi mai puțin",
+    see_more: "Vezi mai multe",
+    tools: "Unelte",
+    text_size_label: "Dimensiunea textului",
+    select_model: "Selectați modelul",
+    sources: "Surse",
+    document: "Document",
+    similarity_match: "meci",
+    source_count_one: "{{count}} – referință",
+    source_count_other: "Referințe către {{count}}",
+    preset_exit_description: "Întrerupeți sesiunea actuală a agentului",
+    add_new: "Adaugă",
+    edit: "Editează",
+    publish: "Publica",
+    stop_generating: "Opriți generarea răspunsului",
+    slash_commands: "Comenzi scurte",
+    agent_skills: "Abilități ale agentului",
+    manage_agent_skills: "Gestionarea competențelor agenților",
+    agent_skills_disabled_in_session:
+      "Nu este posibil să modificați abilitățile în timpul unei sesiuni cu un agent activ. Pentru a încheia sesiunea, utilizați comanda /exit.",
+    start_agent_session: "Începe sesiunea de agent",
+    use_agent_session_to_use_tools:
+      'Puteți utiliza instrumentele disponibile în chat, inițiind o sesiune cu un agent, începând mesajul cu "@agent".',
+    agent_invocation: {
+      model_wants_to_call: "Persoana respectivă dorește să facă o telefonare.",
+      approve: "Aprobă",
+      reject: "Refuz",
+      always_allow: "Asigurați-vă întotdeauna că {{skillName}}",
+      tool_call_was_approved: "Cererea de achiziție a fost aprobată.",
+      tool_call_was_rejected:
+        "Cererea de utilizare a instrumentului a fost respinsă.",
+    },
   },
   profile_settings: {
     edit_account: "Editează contul",
     profile_picture: "Poză profil",
     remove_profile_picture: "Șterge poza profil",
     username: "Nume utilizator",
-    username_description:
-      "Numele de utilizator trebuie să conțină doar litere mici, cifre, underscore și liniuțe fără spații",
     new_password: "Parolă nouă",
     password_description: "Parola trebuie să aibă cel puțin 8 caractere",
     cancel: "Anulează",
@@ -696,7 +624,7 @@ const TRANSLATIONS = {
         name_label: "Nume",
         name_description:
           "Acesta este numele afișat al System Prompt-ului tău.",
-        name_placeholder: "",
+        name_placeholder: "Asistentul meu",
         description_label: "Descriere",
         description_description: "Descrie scopul System Prompt-ului tău.",
         tags_label: "Etichete",
@@ -708,15 +636,12 @@ const TRANSLATIONS = {
         private_description: "Prompturile private sunt vizibile doar ție.",
         publish_button: "Publică pe Community Hub",
         submitting: "Se publică...",
-        submit: "Publică pe Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Acesta este promptul efectiv folosit pentru a ghida LLM-ul.",
         prompt_placeholder: "Introdu System Prompt-ul aici...",
       },
       agent_flow: {
-        public_description: "Fluxurile agent publice sunt vizibile tuturor.",
-        private_description: "Fluxurile agent private sunt vizibile doar ție.",
         success_title: "Succes!",
         success_description:
           "Fluxul agentului tău a fost publicat în Comunitate!",
@@ -733,7 +658,6 @@ const TRANSLATIONS = {
           "Etichetele ajută la găsirea fluxului agent. Max 5 etichete, max 20 caractere fiecare.",
         tags_placeholder: "Tastează și apasă Enter pentru a adăuga etichete",
         visibility_label: "Vizibilitate",
-        publish_button: "Publică pe Community Hub",
         submitting: "Se publică...",
         submit: "Publică pe Community Hub",
         privacy_note:
@@ -750,10 +674,6 @@ const TRANSLATIONS = {
         name_placeholder: "Comanda mea slash",
         description_label: "Descriere",
         description_description: "Descrie scopul comenzii tale slash.",
-        command_label: "Comandă",
-        command_description:
-          "Aceasta este comanda slash pe care utilizatorii o vor scrie pentru a o activa.",
-        command_placeholder: "comanda-mea",
         tags_label: "Etichete",
         tags_description:
           "Etichetele ajută la găsirea comenzii. Max 5 etichete, max 20 caractere fiecare.",
@@ -825,9 +745,6 @@ const TRANSLATIONS = {
       wait: "-- se așteaptă modele --",
     },
     skill: {
-      title: "Abilități implicite ale agentului",
-      description:
-        "Îmbunătățește abilitățile naturale ale agentului implicit cu aceste abilități predefinite. Această configurație se aplică tuturor spațiilor de lucru.",
       rag: {
         title: "RAG & memorie pe termen lung",
         description:
@@ -848,17 +765,270 @@ const TRANSLATIONS = {
         description:
           "Permite agentului implicit să genereze diverse tipuri de grafice din datele furnizate sau date în chat.",
       },
-      save: {
-        title: "Generează & salvează fișiere în browser",
-        description:
-          "Permite agentului implicit să genereze și să scrie fișiere care se salvează și pot fi descărcate în browserul tău.",
-      },
       web: {
         title: "Căutare și navigare web live",
-        "desc-start":
-          "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
-        "desc-end":
-          "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
+        description:
+          "Permite-i agentului tău să caute pe internet pentru a răspunde la întrebările tale, conectându-l la un furnizor de servicii de căutare web (SERP).",
+      },
+      sql: {
+        title: "Conector SQL",
+        description:
+          "Permite-ți agentului să utilizeze SQL pentru a răspunde la întrebările tale, conectându-se la diverși furnizori de baze de date SQL.",
+      },
+      default_skill:
+        "Implicit, această funcție este activată, dar puteți dezactiva-o dacă nu doriți ca agentul să o utilizeze.",
+      filesystem: {
+        title: "Acces la sistemul de fișiere",
+        description:
+          "Permite reprezentantului dumneavoastră să citească, să scrie, să caute și să gestioneze fișiere într-un director specific. Suportă editarea fișierelor, navigarea în director și căutarea conținutului.",
+        learnMore:
+          "Aflați mai multe despre cum să utilizați această abilitate.",
+        configuration: "Configurare",
+        readActions: "Cite",
+        writeActions: "Acțiuni",
+        warning:
+          "Accesul la sistemul de fișiere poate fi periculos, deoarece poate modifica sau șterge fișiere. Vă rugăm să consultați documentația <link>înainte de a-l activa.",
+        skills: {
+          "read-text-file": {
+            title: "Citește fișierul",
+            description:
+              "Citează conținutul fișierelor (text, cod, PDF, imagini, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Citește mai multe fișiere",
+            description: "Citiți mai multe fișiere simultan",
+          },
+          "list-directory": {
+            title: "Lista de contacte",
+            description: "Enumeră fișierele și directoarele dintr-un folder",
+          },
+          "search-files": {
+            title: "Caută fișiere",
+            description: "Căutați fișiere după nume sau conținut",
+          },
+          "get-file-info": {
+            title: "Obține informații despre fișier",
+            description: "Obțineți metadate detaliate despre fișiere.",
+          },
+          "edit-file": {
+            title: "Modifică fișierul",
+            description: "Realizați modificări pe linii în fișierele de text.",
+          },
+          "create-directory": {
+            title: "Creați o directoare",
+            description: "Creați noi directoare",
+          },
+          "move-file": {
+            title: "Mută/Redenumirea fișierului",
+            description: "Mută sau redenumește fișierele și directoarele.",
+          },
+          "copy-file": {
+            title: "Copiază fișier",
+            description: "Copiați fișiere și directoare",
+          },
+          "write-text-file": {
+            title: "Creați un fișier de text",
+            description:
+              "Creați fișiere de text noi sau suprascrieți fișierele de text existente.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Crearea de documente",
+        description:
+          "Permite-ți agentului să creeze formate de documente binare, cum ar fi prezentări PowerPoint, fișe Excel, documente Word și fișiere PDF. Fișierele pot fi descărcate direct din fereastra de chat.",
+        configuration: "Tipuri de documente disponibile",
+        skills: {
+          "create-text-file": {
+            title: "Fișiere text",
+            description:
+              "Creați fișiere text cu orice conținut și extensie (de exemplu, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Prezentări PowerPoint",
+            description:
+              "Creați prezentări noi în PowerPoint, cu diapozitive, titluri și puncte.",
+          },
+          "create-pdf": {
+            title: "Documente în format PDF",
+            description:
+              "Creați documente PDF din fișiere Markdown sau text simplu, cu un stil de formatare de bază.",
+          },
+          "create-xlsx": {
+            title: "Fișe Excel",
+            description:
+              "Creați fișiere Excel pentru date tabulare, cu foi și stilizare.",
+          },
+          "create-docx": {
+            title: "Fișiere în format Word",
+            description:
+              "Creați documente Word cu un stil și formatare de bază.",
+          },
+        },
+      },
+      gmail: {
+        title: "Conectorul GMail",
+        description:
+          "Permite-i agentului tău să interacționeze cu Gmail: caută e-mailuri, citește conversații, redactează proiecte, trimite e-mailuri și gestionează folderul tău de e-mail. Consultă documentația disponibilă aici.",
+        multiUserWarning:
+          "Integrarea cu Gmail nu este disponibilă în modul multi-utilizator, din motive de securitate. Vă rugăm să dezactivați modul multi-utilizator pentru a utiliza această funcție.",
+        configuration: "Configurarea contului Gmail",
+        deploymentId: "Identificator de implementare",
+        deploymentIdHelp:
+          "ID-ul de implementare al aplicației web Google Apps Script",
+        apiKey: "Cheie API",
+        apiKeyHelp:
+          "Cheia API pe care ați configurat în mediul de implementare Google Apps Script",
+        configurationRequired:
+          "Vă rugăm să configurați ID-ul de implementare și cheia API pentru a activa funcționalitățile Gmail.",
+        configured: "Configurat",
+        searchSkills: "Abilități de căutare...",
+        noSkillsFound:
+          "Nu s-au găsit rezultate care să corespundă criteriilor dumneavoastră de căutare.",
+        categories: {
+          search: {
+            title: "Căutați și citiți e-mailuri",
+            description:
+              "Căutați și citiți e-mailuri din folderul dumneavoastră Gmail",
+          },
+          drafts: {
+            title: "Propuneri de e-mail",
+            description: "Creați, editați și gestionați schițele de e-mail.",
+          },
+          send: {
+            title: "Trimite și răspunde la e-mailuri",
+            description: "Trimite e-mailuri și răspunde imediat la discuții",
+          },
+          threads: {
+            title: "Gestionați conversațiile prin e-mail",
+            description:
+              "Gestionați corespondența prin e-mail: marcați ca fiind citite/nepuse în evidență, arhivați, eliminați",
+          },
+          account: {
+            title: "Statistici privind integrarea",
+            description:
+              "Vizualizați statistici privind cutia poștală și informații despre cont",
+          },
+        },
+        skills: {
+          search: {
+            title: "Căutați în e-mailuri",
+            description:
+              "Căutați în e-mailuri folosind sintaxa de interogare a Gmail",
+          },
+          readThread: {
+            title: "Citește thread-ul",
+            description:
+              "Citește întregul fir de e-mail, folosind un identificator (ID).",
+          },
+          createDraft: {
+            title: "Creează o schiță",
+            description: "Creați un proiect nou de e-mail",
+          },
+          createDraftReply: {
+            title: "Creează un răspuns preliminar",
+            description: "Creați un proiect de răspuns la un thread existent.",
+          },
+          updateDraft: {
+            title: "Actualizare proiect",
+            description: "Actualizați un e-mail existent, draft",
+          },
+          getDraft: {
+            title: "Obține versiunea preliminară",
+            description: "Recuperați un proiect specific folosind ID-ul său",
+          },
+          listDrafts: {
+            title: "Propuneri",
+            description: "Enumerați toate e-mailurile draft",
+          },
+          deleteDraft: {
+            title: "Șterge proiectul",
+            description: "Șterge un proiect de email",
+          },
+          sendDraft: {
+            title: "Trimite versiunea preliminară",
+            description: "Trimiteți o versiune existentă a unui e-mail",
+          },
+          sendEmail: {
+            title: "Trimite e-mail",
+            description: "Trimiteți un e-mail imediat.",
+          },
+          replyToThread: {
+            title: "Răspunde la discuție",
+            description: "Răspundeți imediat la un fir de e-mail",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marcați un fir ca fiind citit",
+          },
+          markUnread: {
+            title: "Marchează ca necitit",
+            description: "Marcați un thread ca fiind necitit",
+          },
+          moveToTrash: {
+            title: "Mută în coșul de gunoi",
+            description: "Mută un fir în coșul de gunoi",
+          },
+          moveToArchive: {
+            title: "Arhivă",
+            description: "Arhivează un thread",
+          },
+          moveToInbox: {
+            title: "Mută în Inbox",
+            description: "Mută un fir în folderul „Intrări”",
+          },
+          getMailboxStats: {
+            title: "Statistici cutie poștală",
+            description:
+              "Obține numărul de e-mailuri necitite și statistici privind cutia poștală.",
+          },
+          getInbox: {
+            title: 'Accesează folderul "Inbox"',
+            description:
+              "O modalitate eficientă de a accesa e-mailurile din inbox-ul Gmail.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Servere MCP",
+      "loading-from-config":
+        "Încărcarea serverelor MCP din fișierul de configurare",
+      "learn-more": "Aflați mai multe despre serverele MCP.",
+      "no-servers-found": "Nu au fost găsite servere MCP.",
+      "tool-warning":
+        "Pentru cele mai bune rezultate, luați în considerare dezactivarea instrumentelor nedorite, pentru a economisi resurse.",
+      "stop-server": "Închideți serverul MCP",
+      "start-server": "Pornește serverul MCP",
+      "delete-server": "Șterge serverul MCP",
+      "tool-count-warning":
+        "Acest server MCP are activate<b> instrumentele menționate</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
+      "startup-command": "Comanda de pornire",
+      command: "Ordine",
+      arguments: "Argumente",
+      "not-running-warning":
+        "Acest server MCP nu este în funcționare – ar putea fi oprit sau ar putea întâmpina o eroare la pornire.",
+      "tool-call-arguments": "Argumente pentru apelarea unei funcții",
+      "tools-enabled": "instrumentele sunt activate",
+    },
+    settings: {
+      title: "Setări pentru abilitățile agenților",
+      "max-tool-calls": {
+        title:
+          "Numărul maxim de solicitări de instrument (Max Tool Calls Per Response)",
+        description:
+          "Numărul maxim de instrumente pe care un agent le poate utiliza în mod consecutiv pentru a genera un singur răspuns. Această funcție previne apelurile inutile ale instrumentelor și buclele infinite.",
+      },
+      "intelligent-skill-selection": {
+        title: "Selecție inteligentă a abilităților",
+        "beta-badge": "Beta",
+        description:
+          "Permite utilizarea nelimitată a instrumentelor și reduce utilizarea token-urilor cu până la 80% pentru fiecare interogare – AnythingLLM selectează automat abilitățile potrivite pentru fiecare solicitare.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
+        },
       },
     },
   },
@@ -924,11 +1094,6 @@ const TRANSLATIONS = {
         description:
           "Setează un nume care este afișat pe pagina de autentificare tuturor utilizatorilor.",
       },
-      "chat-message-alignment": {
-        title: "Alinierea mesajelor de chat",
-        description:
-          "Selectează modul de aliniere a mesajelor când folosești interfața de chat.",
-      },
       "display-language": {
         title: "Limba de afișare",
         description:
@@ -942,18 +1107,6 @@ const TRANSLATIONS = {
         recommended: "Dimensiune recomandată: 800 x 200",
         remove: "Elimină",
         replace: "Înlocuiește",
-      },
-      "welcome-messages": {
-        title: "Mesaje de bun venit",
-        description:
-          "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
-        new: "Nou",
-        system: "sistem",
-        user: "utilizator",
-        message: "mesaj",
-        assistant: "Asistent Chat AnythingLLM",
-        "double-click": "Dublu clic pentru a edita...",
-        save: "Salvează mesajele",
       },
       "browser-appearance": {
         title: "Aspect browser",
@@ -978,8 +1131,9 @@ const TRANSLATIONS = {
         link: "Link",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Redarea HTML în chat",
+        description:
+          "Afișarea răspunsurilor HTML în răspunsurile asistentului.\nAcest lucru poate duce la o calitate a răspunsurilor mult mai bună, dar poate și la riscuri potențiale de securitate.",
       },
     },
   },
@@ -989,7 +1143,34 @@ const TRANSLATIONS = {
       "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
     link: "Citește documentația API",
     generate: "Generează o nouă cheie API",
+    empty: "Nu au fost găsite chei API",
+    actions: "Acțiuni",
+    messages: {
+      error: "Eroare: {{error}}",
+    },
+    modal: {
+      title: "Creează o cheie API nouă",
+      cancel: "Anulează",
+      close: "Închide",
+      create: "Creează cheia API",
+      helper:
+        "După creare, cheia API poate fi folosită pentru a accesa și configura programatic această instanță AnythingLLM.",
+      name: {
+        label: "Nume",
+        placeholder: "Integrare de producție",
+        helper:
+          "Opțional. Folosește un nume clar pentru a putea identifica această cheie mai târziu.",
+      },
+    },
+    row: {
+      copy: "Copiază cheia API",
+      copied: "Copiată",
+      unnamed: "--",
+      deleteConfirm:
+        "Sigur doriți să dezactivați această cheie API?\nDupă aceea nu va mai putea fi folosită.\n\nAceastă acțiune este ireversibilă.",
+    },
     table: {
+      name: "Nume",
       key: "Cheie API",
       by: "Creat de",
       created: "Creat la",
@@ -1009,6 +1190,8 @@ const TRANSLATIONS = {
         model_type: "Tip model",
         default: "Implicit",
         reasoning: "Raționament",
+        model_type_tooltip:
+          "Dacă implementarea dvs. utilizează un model de raționament (o1, o1-mini, o3-mini, etc.), setați această opțiune la „Raționament”. În caz contrar, cererile dvs. de chat pot eșua.",
       },
     },
   },
@@ -1079,6 +1262,74 @@ const TRANSLATIONS = {
     notAssigned:
       "Momentan nu te-ai atribuit la niciun spațiu de lucru.\nContactează-ți administratorul pentru a solicita acces la un spațiu de lucru.",
     goToWorkspace: 'Mai departe la spațiul de lucru "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot pentru Telegram",
+    description:
+      "Conectați instanța dumneavoastră AnythingLLM cu Telegram, astfel încât să puteți interacționa cu spațiile de lucru de pe orice dispozitiv.",
+    setup: {
+      step1: {
+        title: "Pasul 1: Creați botul dumneavoastră Telegram",
+        description:
+          "Deschide chatul cu @BotFather pe Telegram, trimite mesajul `/newbot` către <code>@BotFather</code>, urmează instrucțiunile și copiază token-ul API.",
+        "open-botfather": "Deschide aplicația BotFather",
+        "instruction-1": "1. Deschideți link-ul sau scanați codul QR",
+        "instruction-2":
+          "2. Trimite <code>/newbot</code> către <code>@BotFather</code>",
+        "instruction-3":
+          "3. Alege un nume și un nume de utilizator pentru botul tău.",
+        "instruction-4": "4. Copiați token-ul API pe care îl primiți.",
+      },
+      step2: {
+        title: "Pasul 2: Conectați-vă bot-ul",
+        description:
+          "Lipește token-ul API pe care l-ați primit de la @BotFather și selectați un spațiu de lucru implicit pentru ca botul dumneavoastră să poată interacționa.",
+        "bot-token": "Token Bot",
+        connecting: "Conectare...",
+        "connect-bot": "Conectare automată",
+      },
+      security: {
+        title: "Recomandări privind setările de securitate",
+        description:
+          "Pentru o securitate suplimentară, configurați aceste setări în contul @BotFather.",
+        "disable-groups": "— Preveniți adăugarea de bot-uri în grupuri",
+        "disable-inline":
+          "— Previne utilizarea bot-urilor în căutările directe",
+        "obscure-username":
+          "Utilizați un nume de utilizator pentru bot, care nu este evident, pentru a reduce vizibilitatea acestuia.",
+      },
+      "toast-enter-token": "Vă rugăm să introduceți un token pentru bot.",
+      "toast-connect-failed": "Nu a reușit să se conecteze bot-ul.",
+    },
+    connected: {
+      status: "Conectat",
+      "status-disconnected":
+        "Deconectat – token-ul poate fi expirat sau invalid",
+      "placeholder-token": "Creați un nou token pentru bot...",
+      reconnect: "Restabilește conexiunea",
+      workspace: "Spațiu de lucru",
+      "bot-link": "Link către bot",
+      "voice-response": "Răspuns vocal",
+      disconnecting: "Deconectare...",
+      disconnect: "Dezactivează",
+      "voice-text-only": "Doar text",
+      "voice-mirror":
+        "Reflectare (răspunde cu voce atunci când utilizatorul trimite înregistrare audio)",
+      "voice-always":
+        "Asigurați-vă întotdeauna că includeți un mesaj audio (trimiteți înregistrarea audio împreună cu fiecare răspuns).",
+      "toast-disconnect-failed": "Nu s-a reușit deconectarea bot-ului.",
+      "toast-reconnect-failed": "Nu a reușit să se reconecteze.",
+      "toast-voice-failed": "Nu a reușit să actualizeze modul de voce.",
+      "toast-approve-failed": "Nu a fost posibilă aprobarea utilizatorului.",
+      "toast-deny-failed": "Nu a reușit să respingă cererea utilizatorului.",
+      "toast-revoke-failed":
+        "Nu a fost posibil să se anuleze contul utilizatorului.",
+    },
+    users: {
+      "pending-description":
+        "Utilizatorii care așteaptă să fie verificați. Potrivirea codului de asociere afișat aici cu cel afișat în chat-ul lor de pe Telegram.",
+      unknown: "Necunoscut",
+    },
   },
 };
 

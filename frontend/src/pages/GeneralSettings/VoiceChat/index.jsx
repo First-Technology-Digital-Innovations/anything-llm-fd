@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
@@ -14,7 +14,7 @@ export default function VoiceChatSettings() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     VoiceChatEnabled: false,
@@ -31,7 +31,7 @@ export default function VoiceChatSettings() {
       try {
         const _settings = await System.keys();
         setSettings(_settings);
-        
+
         // Populate form with current settings
         setFormData({
           VoiceChatEnabled: _settings?.VoiceChatEnabled || false,
@@ -40,9 +40,10 @@ export default function VoiceChatSettings() {
           AzureRealtimeModel: _settings?.AzureRealtimeModel || "gpt-realtime",
           VoiceChatDefaultVoice: _settings?.VoiceChatDefaultVoice || "alloy",
           VoiceChatVADThreshold: _settings?.VoiceChatVADThreshold || 0.5,
-          VoiceChatSessionTimeout: _settings?.VoiceChatSessionTimeout || 1500000,
+          VoiceChatSessionTimeout:
+            _settings?.VoiceChatSessionTimeout || 1500000,
         });
-        
+
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch voice chat settings:", error);
@@ -54,9 +55,9 @@ export default function VoiceChatSettings() {
   }, []);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     setHasChanges(true);
   };
@@ -64,15 +65,24 @@ export default function VoiceChatSettings() {
   const validateForm = () => {
     if (formData.VoiceChatEnabled) {
       if (!formData.AzureRealtimeEndpoint) {
-        showToast("Azure Realtime Endpoint is required when voice chat is enabled", "error");
+        showToast(
+          "Azure Realtime Endpoint is required when voice chat is enabled",
+          "error"
+        );
         return false;
       }
       if (!formData.AzureRealtimeKey) {
-        showToast("Azure Realtime API Key is required when voice chat is enabled", "error");
+        showToast(
+          "Azure Realtime API Key is required when voice chat is enabled",
+          "error"
+        );
         return false;
       }
       if (!formData.AzureRealtimeModel) {
-        showToast("Azure Realtime Model is required when voice chat is enabled", "error");
+        showToast(
+          "Azure Realtime Model is required when voice chat is enabled",
+          "error"
+        );
         return false;
       }
     }
@@ -81,7 +91,7 @@ export default function VoiceChatSettings() {
 
   const testConnection = async () => {
     if (!validateForm()) return;
-    
+
     setSaving(true);
     try {
       // Test the connection by making a simple request
@@ -91,13 +101,16 @@ export default function VoiceChatSettings() {
         AZURE_REALTIME_KEY: formData.AzureRealtimeKey,
         AZURE_REALTIME_MODEL: formData.AzureRealtimeModel,
       };
-      
-      const response = await fetch(`${import.meta.env.VITE_API_BASE}/admin/system-preferences`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(testSettings),
-      });
-      
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE}/admin/system-preferences`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(testSettings),
+        }
+      );
+
       if (response.ok) {
         showToast("Connection test successful!", "success");
       } else {
@@ -115,7 +128,7 @@ export default function VoiceChatSettings() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    
+
     setSaving(true);
     try {
       const updateData = {
@@ -128,16 +141,19 @@ export default function VoiceChatSettings() {
         VOICE_CHAT_SESSION_TIMEOUT: formData.VoiceChatSessionTimeout,
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE}/admin/system-preferences`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updateData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE}/admin/system-preferences`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updateData),
+        }
+      );
 
       if (response.ok) {
         showToast("Voice chat settings saved successfully", "success");
         setHasChanges(false);
-        
+
         // Refresh settings
         const _settings = await System.keys();
         setSettings(_settings);
@@ -184,7 +200,8 @@ export default function VoiceChatSettings() {
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              Configure Azure OpenAI Realtime API settings for voice chat functionality.
+              Configure Azure OpenAI Realtime API settings for voice chat
+              functionality.
             </p>
           </div>
 
@@ -199,10 +216,15 @@ export default function VoiceChatSettings() {
                   type="checkbox"
                   id="voice-chat-enabled"
                   checked={formData.VoiceChatEnabled}
-                  onChange={(e) => handleInputChange('VoiceChatEnabled', e.target.checked)}
+                  onChange={(e) =>
+                    handleInputChange("VoiceChatEnabled", e.target.checked)
+                  }
                   className="h-4 w-4 rounded border-theme-border bg-theme-bg-secondary"
                 />
-                <label htmlFor="voice-chat-enabled" className="text-theme-text-secondary text-sm">
+                <label
+                  htmlFor="voice-chat-enabled"
+                  className="text-theme-text-secondary text-sm"
+                >
                   Enable real-time voice chat functionality
                 </label>
               </div>
@@ -217,7 +239,9 @@ export default function VoiceChatSettings() {
                 type="url"
                 placeholder="https://your-resource.cognitiveservices.azure.com"
                 value={formData.AzureRealtimeEndpoint}
-                onChange={(e) => handleInputChange('AzureRealtimeEndpoint', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("AzureRealtimeEndpoint", e.target.value)
+                }
                 className="bg-theme-bg-secondary border-theme-border border rounded-lg px-4 py-2 text-theme-text-primary placeholder:text-theme-text-placeholder focus:border-theme-accent outline-none"
                 required={formData.VoiceChatEnabled}
               />
@@ -236,7 +260,9 @@ export default function VoiceChatSettings() {
                   type={showApiKey ? "text" : "password"}
                   placeholder="Your Azure OpenAI API key"
                   value={formData.AzureRealtimeKey}
-                  onChange={(e) => handleInputChange('AzureRealtimeKey', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("AzureRealtimeKey", e.target.value)
+                  }
                   className="bg-theme-bg-secondary border-theme-border border rounded-lg px-4 py-2 pr-10 text-theme-text-primary placeholder:text-theme-text-placeholder focus:border-theme-accent outline-none w-full"
                   required={formData.VoiceChatEnabled}
                 />
@@ -260,14 +286,20 @@ export default function VoiceChatSettings() {
               </label>
               <select
                 value={formData.AzureRealtimeModel}
-                onChange={(e) => handleInputChange('AzureRealtimeModel', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("AzureRealtimeModel", e.target.value)
+                }
                 className="bg-theme-bg-secondary border-theme-border border rounded-lg px-4 py-2 text-theme-text-primary focus:border-theme-accent outline-none"
                 required={formData.VoiceChatEnabled}
               >
                 <option value="gpt-realtime">gpt-realtime (Recommended)</option>
                 <option value="gpt-realtime-mini">gpt-realtime-mini</option>
-                <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
-                <option value="gpt-4o-mini-realtime-preview">gpt-4o-mini-realtime-preview</option>
+                <option value="gpt-4o-realtime-preview">
+                  gpt-4o-realtime-preview
+                </option>
+                <option value="gpt-4o-mini-realtime-preview">
+                  gpt-4o-mini-realtime-preview
+                </option>
               </select>
               <p className="text-xs text-theme-text-secondary">
                 The deployment name for your Azure Realtime model
@@ -281,7 +313,9 @@ export default function VoiceChatSettings() {
               </label>
               <select
                 value={formData.VoiceChatDefaultVoice}
-                onChange={(e) => handleInputChange('VoiceChatDefaultVoice', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("VoiceChatDefaultVoice", e.target.value)
+                }
                 className="bg-theme-bg-secondary border-theme-border border rounded-lg px-4 py-2 text-theme-text-primary focus:border-theme-accent outline-none"
               >
                 <option value="alloy">Alloy</option>
@@ -308,7 +342,12 @@ export default function VoiceChatSettings() {
                   max="1.0"
                   step="0.1"
                   value={formData.VoiceChatVADThreshold}
-                  onChange={(e) => handleInputChange('VoiceChatVADThreshold', parseFloat(e.target.value))}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "VoiceChatVADThreshold",
+                      parseFloat(e.target.value)
+                    )
+                  }
                   className="flex-1"
                 />
                 <span className="text-theme-text-secondary text-sm min-w-[3rem]">
@@ -316,7 +355,8 @@ export default function VoiceChatSettings() {
                 </span>
               </div>
               <p className="text-xs text-theme-text-secondary">
-                Sensitivity for detecting when user starts/stops speaking (0.1 = very sensitive, 1.0 = less sensitive)
+                Sensitivity for detecting when user starts/stops speaking (0.1 =
+                very sensitive, 1.0 = less sensitive)
               </p>
             </div>
 
@@ -330,7 +370,12 @@ export default function VoiceChatSettings() {
                 min="1"
                 max="60"
                 value={Math.round(formData.VoiceChatSessionTimeout / 60000)}
-                onChange={(e) => handleInputChange('VoiceChatSessionTimeout', parseInt(e.target.value) * 60000)}
+                onChange={(e) =>
+                  handleInputChange(
+                    "VoiceChatSessionTimeout",
+                    parseInt(e.target.value) * 60000
+                  )
+                }
                 className="bg-theme-bg-secondary border-theme-border border rounded-lg px-4 py-2 text-theme-text-primary placeholder:text-theme-text-placeholder focus:border-theme-accent outline-none w-32"
               />
               <p className="text-xs text-theme-text-secondary">
@@ -347,31 +392,45 @@ export default function VoiceChatSettings() {
               >
                 {saving ? "Saving..." : "Save Settings"}
               </button>
-              
-              {formData.VoiceChatEnabled && formData.AzureRealtimeEndpoint && formData.AzureRealtimeKey && (
-                <button
-                  type="button"
-                  onClick={testConnection}
-                  disabled={saving}
-                  className="bg-theme-bg-secondary hover:bg-theme-bg-tertiary border border-theme-border text-theme-text-primary font-medium py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {saving ? "Testing..." : "Test Connection"}
-                </button>
-              )}
+
+              {formData.VoiceChatEnabled &&
+                formData.AzureRealtimeEndpoint &&
+                formData.AzureRealtimeKey && (
+                  <button
+                    type="button"
+                    onClick={testConnection}
+                    disabled={saving}
+                    className="bg-theme-bg-secondary hover:bg-theme-bg-tertiary border border-theme-border text-theme-text-primary font-medium py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {saving ? "Testing..." : "Test Connection"}
+                  </button>
+                )}
             </div>
 
             {/* Help text */}
             <div className="bg-theme-bg-tertiary border border-theme-border rounded-lg p-4 mt-6">
-              <h3 className="text-theme-text-primary font-semibold mb-2">Setup Instructions:</h3>
+              <h3 className="text-theme-text-primary font-semibold mb-2">
+                Setup Instructions:
+              </h3>
               <ol className="text-theme-text-secondary text-sm space-y-1 list-decimal list-inside">
-                <li>Create an Azure OpenAI resource in East US 2 or Sweden Central regions</li>
-                <li>Deploy one of the supported Realtime models (gpt-realtime recommended)</li>
-                <li>Get your resource endpoint and API key from the Azure portal</li>
+                <li>
+                  Create an Azure OpenAI resource in East US 2 or Sweden Central
+                  regions
+                </li>
+                <li>
+                  Deploy one of the supported Realtime models (gpt-realtime
+                  recommended)
+                </li>
+                <li>
+                  Get your resource endpoint and API key from the Azure portal
+                </li>
                 <li>Enter the credentials above and test the connection</li>
                 <li>Enable voice chat and save settings</li>
               </ol>
               <p className="text-xs text-theme-text-secondary mt-2">
-                <strong>Note:</strong> Voice chat requires a compatible browser with AudioWorklet support (Chrome 66+, Firefox 76+, Safari 14.1+)
+                <strong>Note:</strong> Voice chat requires a compatible browser
+                with AudioWorklet support (Chrome 66+, Firefox 76+, Safari
+                14.1+)
               </p>
             </div>
           </form>
