@@ -417,3 +417,153 @@ Worth considering: detect failure from the remote service and fall back to the i
 
 ### Blast-radius note
 Each of the five generators is independent. You can swap only the ones whose output quality is actually insufficient (e.g., DOCX via Azure, keep XLSX and TXT local). The shared persistence/delivery layer doesn't care which tool produced the buffer.
+
+---
+
+## 10. Styling & Templates — Consistent Branding for Generated Files
+
+Out-of-the-box output is functional but visually plain. There are four realistic levels of investment for making generated documents look like they belong to your organisation. Pick based on **who owns the look** (developers vs designers/marketing) and **how much layout control you need** (colors only vs full layout).
+
+### 10.1 What already exists
+
+All four binary formats have a theme layer and a logo-stamping layer, but everything is **code-defined** — no template files are loaded from disk.
+
+| Format | Theme/style seam | Logo/branding seam |
+|---|---|---|
+| DOCX | [docx/utils.js:9-57](server/utils/agents/aibitat/plugins/create-files/docx/utils.js#L9-L57) — `DOCUMENT_STYLES` with `neutral` / `blue` / `warm` themes, `normal` / `narrow` / `wide` margins, Calibri fonts. Picked via `theme` and `margins` params on `create-docx-file`. | `createRunningFooter()` and `createCoverPageSection()` in [docx/utils.js](server/utils/agents/aibitat/plugins/create-files/docx/utils.js) embed a `logoBuffer` loaded via `createFilesLib.getLogo()`. |
+| PDF | `@mintplex-labs/mdpdf` converts markdown → HTML → PDF using **its default CSS**. There is no custom-stylesheet call in [create-pdf-file.js:89-94](server/utils/agents/aibitat/plugins/create-files/pdf/create-pdf-file.js#L89-L94). | `applyBranding()` in [pdf/utils.js:10-66](server/utils/agents/aibitat/plugins/create-files/pdf/utils.js#L10-L66) stamps the logo PNG in the bottom-right corner of every page via `pdf-lib`. |
+| PPTX | Theme dict in [pptx/utils.js](server/utils/agents/aibitat/plugins/create-files/pptx/utils.js) (slide colors, backgrounds). Picked per-invocation. | `addBranding()` in [pptx/utils.js:16](server/utils/agents/aibitat/plugins/create-files/pptx/utils.js#L16) adds the logo to each slide master. |
+| XLSX | Header styling + zebra striping in [xlsx/utils.js](server/utils/agents/aibitat/plugins/create-files/xlsx/utils.js). | `applyBranding()` in [xlsx/utils.js:193](server/utils/agents/aibitat/plugins/create-files/xlsx/utils.js#L193) appends a "Created with AnythingLLM" row after the data. |
+
+**Logo source of truth.** `createFilesLib.getLogo()` at [lib.js:278-295](server/utils/agents/aibitat/plugins/create-files/lib.js#L278-L295):
+
+```js
+const assetsPath = path.join(__dirname, "../../../../../storage/assets");
+const filename = forDarkBackground ? "anything-llm.png" : "anything-llm-invert.png";
+```
+
+So there is a **single pair of files** (`storage/assets/anything-llm.png` for dark backgrounds, `storage/assets/anything-llm-invert.png` for light) that every generator uses. Replacing those two files re-brands every format in one shot.
+
+### 10.2 Level 1 — Extend the theme dicts (≤ 1 hour, zero library changes)
+
+Fastest path, suitable for "use our brand colors and logo":
+
+1. **Swap the logo PNGs.** Drop your dark-bg and light-bg logos into `server/storage/assets/` with the existing filenames, or add a new filename and extend `getLogo()` to pick between `anythingllm` and `corporate` by an argument. Every format picks up the new logo automatically.
+2. **Add a `corporate` theme entry** to `DOCUMENT_STYLES.themes` in [docx/utils.js:15-43](server/utils/agents/aibitat/plugins/create-files/docx/utils.js#L15-L43) with your brand hex codes:
+   ```js
+   corporate: {
+     heading: "0B3D91",
+     accent: "F5A623",
+     tableHeader: "E6EEF9",
+     border: "B9C7DD",
+     coverBg: "0B3D91",
+     coverText: "FFFFFF",
+     footerText: "666666",
+   },
+   ```
+3. **Default it** — change the `theme` param default in [create-docx-file.js](server/utils/agents/aibitat/plugins/create-files/docx/create-docx-file.js) (and equivalents in PDF/PPTX/XLSX) so the LLM doesn't have to pass `theme: "corporate"` for every request.
+4. **Update fonts** — change `DOCUMENT_STYLES.fonts.body` / `.heading` / `.mono` in [docx/utils.js:44-48](server/utils/agents/aibitat/plugins/create-files/docx/utils.js#L44-L48). Be aware: Word uses the font **name only** — if your brand font is not installed on the reader's machine, Word substitutes. For guaranteed rendering, stick to safe fonts (Calibri, Arial, Times New Roman, Georgia) or embed the font into the `.docx` (the `docx` npm library does not do this out of the box).
+
+**Covers:** colors, fonts, margins, logo. **Does not cover:** layout, page structure, multi-column, table of contents, real corporate cover pages.
+
+### 10.3 Level 2 — Inject a stylesheet (medium effort, medium payoff)
+
+For more visual control without replacing libraries:
+
+**DOCX — `externalStyles`.** The `docx` npm library accepts a `styles.xml` string via `new Document({ externalStyles: "..." })`. Workflow:
+
+1. Open a branded `.docx` in Word (your corporate template).
+2. Unzip it (a `.docx` is a ZIP). Extract `word/styles.xml`.
+3. Read that XML into a string at handler startup and pass it to `new Document({ externalStyles: xml, ... })` in [create-docx-file.js:241-247](server/utils/agents/aibitat/plugins/create-files/docx/create-docx-file.js#L241-L247).
+4. In `htmlToDocxElements` ([docx/utils.js](server/utils/agents/aibitat/plugins/create-files/docx/utils.js)), tag paragraphs with style IDs (`new Paragraph({ style: "Heading1", ... })`) instead of hard-coded `HeadingLevel.HEADING_1`. The actual look (font family/size/color/spacing for Heading 1) now comes from the corporate template, not code.
+
+Your developers still build content; the template owns appearance. This is the **most honest "use my Word template" mode** available without swapping the DOCX library.
+
+**PDF — custom CSS via mdpdf.** Check whether `@mintplex-labs/mdpdf` accepts a CSS path/string (it's a thin wrapper; inspect `node_modules/@mintplex-labs/mdpdf`). If yes, one CSS file covers fonts, colors, headings, tables, page size, headers. If the fork does not expose this, either patch the fork or move to Level 3 for PDF.
+
+**PPTX — slide masters.** `pptxgenjs` supports `pres.defineSlideMaster({ ... })` to define a reusable master. Put your master definition in [pptx/utils.js](server/utils/agents/aibitat/plugins/create-files/pptx/utils.js) and call `.defineSlideMaster()` once per presentation before adding slides. Controls backgrounds, placeholder positions, footer elements.
+
+### 10.4 Level 3 — True template-document workflow (bigger change, best fidelity)
+
+This is the "design in Word, fill in at runtime" model you asked about. **The current `docx` library does not do this**; you need to add a second library for the template use case.
+
+**DOCX — `docxtemplater`.** Install [`docxtemplater`](https://docxtemplater.com/) (MIT-licensed). Your designers build `template.docx` in Word with content controls or `{placeholder}` tags. The handler then does:
+
+```js
+const PizZip = require("pizzip");
+const Docxtemplater = require("docxtemplater");
+
+const zip = new PizZip(fs.readFileSync(templatePath));
+const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+doc.render({ title, author, sections: [{ heading, body }, ...] });
+const buffer = doc.getZip().generate({ type: "nodebuffer" });
+```
+
+Feed that `buffer` into the unchanged `createFilesLib.saveGeneratedFile(...)` tail. You keep both options: freeform markdown DOCX for "write me anything" prompts, templated DOCX for structured documents (reports, contracts, meeting minutes) where the shape is known in advance.
+
+**Where to store templates.** `server/storage/document-templates/<templateId>.docx` is a natural fit — same persistent mount as `generated-files/` and `plugins/`. Expose the template list as an admin UI page or just an env-configured directory.
+
+**Picking a template at runtime.** Two reasonable patterns:
+- Add a `template` param to the generator so the LLM picks (`"meeting-minutes"`, `"report"`, `"contract"`). Requires good descriptions so the LLM chooses the right one.
+- Default to a single `default.docx` template for all invocations, add freeform content into a single `{body}` placeholder. Simpler, less flexible.
+
+**PPTX — `pptxtemplater` / `officegen` / direct OOXML.** Similar story. Easier alternative: use `pptxgenjs` slide masters (Level 2) unless you need complex pre-existing slides.
+
+**PDF — HTML + CSS template + Puppeteer/Playwright.** Drop `@mintplex-labs/mdpdf` and render HTML with headless Chrome:
+
+```js
+const puppeteer = require("puppeteer");
+const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+const page = await browser.newPage();
+await page.setContent(renderedHtml, { waitUntil: "networkidle0" });
+const buffer = await page.pdf({ format: "A4", printBackground: true,
+  displayHeaderFooter: true, headerTemplate, footerTemplate, margin: {...} });
+await browser.close();
+```
+
+Designer maintains one HTML + CSS file with your branding (fonts via `@font-face`, gradients, page breaks via CSS `page-break-before`, `@page` rules). This is the industry-standard path for branded PDFs and gives you **full CSS-grade control**. Trade-off: Puppeteer adds ~150 MB to the image and a headless Chrome process per render. In a containerised prod environment that's usually fine; check the Docker base image has the needed libs (`libnss3`, `libatk1.0-0`, etc.).
+
+### 10.5 Level 4 — Offload to an external template service (zero-library, designer-ownable)
+
+Pairs naturally with the swap-out seam in §9. Worth considering because it **moves template editing out of the repo**.
+
+**Azure Logic Apps — "Populate a Microsoft Word template".** Built-in connector (`Word Online (Business)`). Your marketing/ops team uploads `.docx` templates to SharePoint with content controls, Logic App has a "Populate" action, returns the populated file. Your handler just POSTs the data and writes the returned bytes:
+
+```js
+const response = await fetch(process.env.AZURE_DOC_LOGIC_APP_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "x-api-key": process.env.AZURE_DOC_KEY },
+  body: JSON.stringify({ templateId, fields: { title, author, sections } }),
+});
+const buffer = Buffer.from(await response.arrayBuffer());
+const savedFile = await createFilesLib.saveGeneratedFile({ fileType: "docx", extension: "docx", buffer, displayFilename });
+// ...socket.send + registerOutput unchanged
+```
+
+**Trade-offs.**
+- ✅ Non-developers own the look. Re-branding is a Word edit + save.
+- ✅ Same mechanism works for DOCX, PPTX, and (via SharePoint + Power Automate) PDF export.
+- ❌ Adds a network hop (latency + a new failure mode). Use `this.super.introspect(...)` to keep a thinking bubble visible during the call.
+- ❌ Tied to Azure / Microsoft 365 licensing.
+- ❌ You give up programmatic control over complex dynamic layouts (loops over variable-length sections work, but deeply nested/conditional layouts get awkward in Word template syntax).
+
+Other vendors in the same space: [Carbone](https://carbone.io/), [Docassemble](https://docassemble.org/), [Templater](https://www.ntemplater.com/), [DocRaptor](https://docraptor.com/) (PDF-focused). Pick based on licensing, on-prem story, and template language preference.
+
+### 10.6 Decision Matrix
+
+| Need | Recommended level |
+|---|---|
+| Brand colors + corporate logo, tomorrow | **Level 1** |
+| Typography and paragraph styling owned by corporate template, content built in code | **Level 2** (DOCX `externalStyles`, PDF custom CSS) |
+| Pixel-perfect PDF brochures / reports with headers, cover pages, multi-column | **Level 3 — Puppeteer** |
+| Word reports where marketing edits the template without dev involvement | **Level 3 — `docxtemplater`** or **Level 4 — Logic App** |
+| Minimal eng maintenance burden, non-devs own the look, Azure already in stack | **Level 4 — Logic App + SharePoint templates** |
+
+### 10.7 Implementation Checklist (regardless of level chosen)
+
+- [ ] Replace the logo PNGs in `server/storage/assets/` (or add new filenames + extend `getLogo()`).
+- [ ] Default to the corporate theme/template across all generators so the LLM does not have to ask.
+- [ ] Update the examples in each generator's `aibitat.function({ examples: [...] })` block — the LLM uses these as few-shot guidance, so showing branded/templated invocations improves trigger reliability.
+- [ ] Add a visual-regression check: keep a known-good sample of each format in `server/utils/agents/aibitat/plugins/create-files/*/test-themes.js` (one already exists for DOCX at [docx/test-themes.js](server/utils/agents/aibitat/plugins/create-files/docx/test-themes.js)) so you can spot accidental breakage after dependency upgrades.
+- [ ] Document the font licensing. If you add a brand font (Level 2+), confirm the license covers redistribution inside generated files and/or server-side rendering.
+- [ ] If using external templates (Level 3/4), version them and store alongside the code/repo or in a tracked SharePoint location — "who owns the template" should never be a mystery.
