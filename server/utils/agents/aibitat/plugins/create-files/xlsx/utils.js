@@ -264,7 +264,7 @@ function autoFitColumns(worksheet, minWidth = 8, maxWidth = 50) {
  */
 function applyHeaderStyle(
   worksheet,
-  { bold = true, fill = "FF4472C4", fontColor = "FFFFFFFF" } = {}
+  { bold = true, fill = "FF0D5387", fontColor = "FFFFFFFF" } = {}
 ) {
   const headerRow = worksheet.getRow(1);
   if (!headerRow || headerRow.cellCount === 0) return;

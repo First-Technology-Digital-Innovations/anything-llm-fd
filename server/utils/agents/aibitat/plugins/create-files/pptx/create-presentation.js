@@ -161,7 +161,7 @@ module.exports.CreatePptxPresentation = {
             filename = "presentation.pptx",
             title = "Untitled Presentation",
             author = "",
-            theme: themeName = "default",
+            theme: themeName = "corporate",
             sections = [],
           }) {
             try {

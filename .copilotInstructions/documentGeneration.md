@@ -1,3 +1,9 @@
+# Document Generation Customization
+
+A theme named "corporate" has been defined in DOCUMENT_STYLES and enforced whenever documents are generated. This theme is used for driving basic colours and theming for DOCX, PPTX, and XLSX document generation. PDF generation methods currently do not support styling and will need to be reworked if we want the AI generating theme'd PDF files (They're plain at the moment)
+
+Also, built in customization covers the basic theming of a generated document, but not the structure of the content. If we want to enforce a certain template file we will need to make code changes.
+
 # Document Generation — End-to-End Trace
 
 This document maps every file, function, and hop involved when a user asks the agent to generate a document (DOCX, PDF, PPTX, XLSX, or plain text). Use it as an audit map if you ever decide to replace this pipeline with an Azure Logic App, an Azure AI Agent call, or any other external generator.

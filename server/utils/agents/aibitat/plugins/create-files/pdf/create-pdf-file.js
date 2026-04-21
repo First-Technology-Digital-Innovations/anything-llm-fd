@@ -1,6 +1,37 @@
 const createFilesLib = require("../lib.js");
 const { applyBranding } = require("./utils.js");
 
+// Typst preamble that mirrors the DOCX "corporate" theme (FD brand palette).
+// Prepended to the markdown before calling mdpdf.markdownToPdf. If mdpdf
+// passes raw #directives through to the underlying Typst compiler (Path A
+// from the styling options), these rules take effect. If they do not, these
+// lines will render as literal text in the output — that's the signal to
+// switch to Path B (separate Typst binding using markdownToTypstCode).
+const CORPORATE_TYPST_PREAMBLE = `
+#set page(paper: "a4", margin: (x: 2cm, y: 2.5cm))
+#set text(font: "Calibri", size: 11pt, fill: rgb("#2C3E50"))
+#set par(justify: true, leading: 0.7em)
+
+#show heading.where(level: 1): it => {
+  set text(font: "Century Gothic", size: 22pt, fill: rgb("#0D5387"), weight: "bold")
+  it
+  v(0.2em)
+  line(length: 100%, stroke: 0.5pt + rgb("#0D5387"))
+}
+
+#show heading.where(level: 2): it => {
+  set text(font: "Century Gothic", size: 16pt, fill: rgb("#002060"), weight: "bold")
+  it
+}
+
+#show heading.where(level: 3): it => {
+  set text(font: "Century Gothic", size: 13pt, fill: rgb("#002060"), weight: "bold")
+  it
+}
+
+#show link: it => text(fill: rgb("#0D5387"))[#underline[#it]]
+`;
+
 module.exports.CreatePdfFile = {
   name: "create-pdf-file",
   plugin: function () {
@@ -91,7 +122,11 @@ module.exports.CreatePdfFile = {
                 "pdf-lib"
               );
 
-              const rawBuffer = await markdownToPdf(content);
+              const typstInput = `${CORPORATE_TYPST_PREAMBLE}\n\n${content}`;
+              this.super.handlerProps.log(
+                `create-pdf-file: Prepending corporate Typst preamble (${CORPORATE_TYPST_PREAMBLE.length} chars). Total input: ${typstInput.length} chars.`
+              );
+              const rawBuffer = await markdownToPdf(typstInput);
               const pdfDoc = await PDFDocument.load(rawBuffer);
               await applyBranding(pdfDoc, { rgb, StandardFonts });
 

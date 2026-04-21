@@ -115,9 +115,9 @@ module.exports.CreateDocxFile = {
               },
               theme: {
                 type: "string",
-                enum: ["neutral", "blue", "warm"],
+                enum: ["corporate", "neutral", "blue", "warm"],
                 description:
-                  "Color theme for the document. 'neutral' (slate/grey), 'blue' (corporate blue), or 'warm' (earthy tones). Defaults to neutral.",
+                  "Color theme for the document. 'corporate' (FD brand blue/navy — default), 'neutral' (slate/grey), 'blue' (generic corporate blue), or 'warm' (earthy tones).",
               },
               margins: {
                 type: "string",
@@ -140,7 +140,7 @@ module.exports.CreateDocxFile = {
             subtitle = null,
             author = null,
             content = "",
-            theme = "neutral",
+            theme = "corporate",
             margins = "normal",
             includeTitlePage = false,
           }) {
@@ -305,7 +305,7 @@ module.exports.CreateDocxFile = {
               );
 
               const styleInfo = [
-                theme !== "neutral" ? `${theme} theme` : null,
+                theme !== "corporate" ? `${theme} theme` : null,
                 margins !== "normal" ? `${margins} margins` : null,
                 includeTitlePage ? "title page" : null,
               ].filter(Boolean);

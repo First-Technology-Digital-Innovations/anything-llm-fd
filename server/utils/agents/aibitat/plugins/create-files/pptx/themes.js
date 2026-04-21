@@ -38,28 +38,29 @@ const THEMES = {
   },
 
   corporate: {
-    name: "Corporate",
-    description: "Refined and authoritative — ideal for business and finance",
+    name: "Corporate (FD)",
+    description:
+      "FD brand palette — primary blue with navy accents, matches the DOCX corporate theme",
 
-    titleSlideBackground: "0C1929",
+    titleSlideBackground: "0D5387",
     titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "7B96B5",
-    titleSlideAccentColor: "C9943E",
+    titleSlideSubtitleColor: "B3C5D9",
+    titleSlideAccentColor: "002060",
 
     background: "FFFFFF",
-    titleColor: "0C1929",
-    subtitleColor: "5A6D82",
+    titleColor: "0D5387",
+    subtitleColor: "5A5A5A",
     bodyColor: "2C3E50",
-    accentColor: "1A5276",
-    bulletColor: "1A5276",
+    accentColor: "002060",
+    bulletColor: "002060",
 
-    tableHeaderBg: "0C1929",
+    tableHeaderBg: "0D5387",
     tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "F4F7FA",
-    tableBorderColor: "D5DBE2",
+    tableAltRowBg: "E6EEF6",
+    tableBorderColor: "B3C5D9",
 
-    footerColor: "8B9DB3",
-    footerLineColor: "D5DBE2",
+    footerColor: "5A5A5A",
+    footerLineColor: "B3C5D9",
 
     fontTitle: "Calibri",
     fontBody: "Calibri",
