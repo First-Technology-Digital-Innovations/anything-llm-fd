@@ -1,0 +1,201 @@
+using System.Net.Http.Headers;
+using System.Text.Json;
+
+namespace AIChatbot2.API.Infrastructure.OpenAI;
+
+internal sealed class SahpraClient
+{
+    private readonly HttpClient _httpClient;
+
+    public SahpraClient(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
+    public async Task<List<SAHPRAGetDataObj>> GetSAHPRADataAsync(string query, int maxResults, CancellationToken cancellationToken = default)
+    {
+        string Normalize(string input) =>
+    new string(input
+        .ToLowerInvariant()
+        .Where(char.IsLetterOrDigit)
+        .ToArray());
+
+        query = Normalize(query);
+
+        List<SAHPRAGetDataObj> results = new List<SAHPRAGetDataObj>();
+        var url = "https://medapps.sahpra.org.za:6006/Home/getData";
+
+        var formData = new Dictionary<string, string>
+        {
+            ["draw"] = "1",
+
+            ["columns[0][data]"] = "applicantName",
+            ["columns[0][name]"] = "applicantName",
+            ["columns[0][searchable]"] = "true",
+            ["columns[0][orderable]"] = "true",
+            ["columns[0][search][value]"] = "",
+            ["columns[0][search][regex]"] = "false",
+
+            ["columns[1][data]"] = "productName",
+            ["columns[1][name]"] = "productName",
+            ["columns[1][searchable]"] = "true",
+            ["columns[1][orderable]"] = "true",
+            ["columns[1][search][value]"] = "",
+            ["columns[1][search][regex]"] = "false",
+
+            ["columns[2][data]"] = "api",
+            ["columns[2][name]"] = "api",
+            ["columns[2][searchable]"] = "true",
+            ["columns[2][orderable]"] = "true",
+            ["columns[2][search][value]"] = "",
+            ["columns[2][search][regex]"] = "false",
+
+            ["columns[3][data]"] = "licence_no",
+            ["columns[3][name]"] = "licence_no",
+            ["columns[3][searchable]"] = "true",
+            ["columns[3][orderable]"] = "true",
+            ["columns[3][search][value]"] = "",
+            ["columns[3][search][regex]"] = "false",
+
+            ["columns[4][data]"] = "application_no",
+            ["columns[4][name]"] = "application_no",
+            ["columns[4][searchable]"] = "true",
+            ["columns[4][orderable]"] = "true",
+            ["columns[4][search][value]"] = "",
+            ["columns[4][search][regex]"] = "false",
+
+            ["columns[5][data]"] = "reg_date",
+            ["columns[5][name]"] = "reg_date",
+            ["columns[5][searchable]"] = "true",
+            ["columns[5][orderable]"] = "true",
+            ["columns[5][search][value]"] = "",
+            ["columns[5][search][regex]"] = "false",
+
+            ["columns[6][data]"] = "status",
+            ["columns[6][name]"] = "status",
+            ["columns[6][searchable]"] = "true",
+            ["columns[6][orderable]"] = "true",
+            ["columns[6][search][value]"] = "",
+            ["columns[6][search][regex]"] = "false",
+
+            ["columns[7][data]"] = "secureId",
+            ["columns[7][name]"] = "",
+            ["columns[7][searchable]"] = "true",
+            ["columns[7][orderable]"] = "true",
+            ["columns[7][search][value]"] = "",
+            ["columns[7][search][regex]"] = "false",
+
+            ["order[0][column]"] = "0",
+            ["order[0][dir]"] = "asc",
+
+            ["start"] = "0",
+            ["length"] = "22000",
+
+            ["search[value]"] = "",
+            ["search[regex]"] = "false"
+        };
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = new FormUrlEncodedContent(formData)
+        };
+
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        var apiResults = JsonSerializer.Deserialize<SAHPRADataResponse>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        //now we can take the whole list and filter it down
+        foreach(SAHPRAGetDataObj sahpraData in apiResults?.data ?? new List<SAHPRAGetDataObj>())
+        {
+            var productName = Normalize(sahpraData.productName ?? "");
+            var ingredient = Normalize(sahpraData.ingredient ?? "");
+
+            if (productName.Contains(query) || ingredient.Contains(query))
+            {
+                results.Add(sahpraData);
+            }
+        }
+
+        return results;
+    }
+
+    public async Task<List<SimpleSAHPRAToolResult>> SearchAsync(string query, int maxResults, CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"https://medsinfoportal.sahpra.org.za/api/medicine/search.php?s={Uri.EscapeDataString(query)}");
+
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        var root = JsonSerializer.Deserialize<JsonElement>(json);
+
+        IEnumerable<JsonElement> rows = root.ValueKind switch
+        {
+            JsonValueKind.Array => root.EnumerateArray(),
+            JsonValueKind.Object when root.TryGetProperty("data", out var data) && data.ValueKind == JsonValueKind.Array => data.EnumerateArray(),
+            _ => Enumerable.Empty<JsonElement>()
+        };
+
+        var results = new List<SimpleSAHPRAToolResult>();
+        var searchResults = new List<SAHPRASearchResult>();
+        foreach (var row in rows.Take(maxResults))
+        {
+            try
+            {
+                results.Add(await GetDetailsAsync(row.TryGetProperty("id", out var idProp) ? idProp.GetString() : null));
+            }
+            catch
+            {
+                // ignore a bad row
+            }
+        }
+
+        return results;
+    }
+
+    public async Task<SimpleSAHPRAToolResult> GetDetailsAsync(string itemId, CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"https://medsinfoportal.sahpra.org.za/api/medicine/read_single.php?id={Uri.EscapeDataString(itemId)}");
+
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var dto = JsonSerializer.Deserialize<SAHPRAItemDto>(json, options);
+
+        if (dto == null)
+        {
+            throw new InvalidOperationException("Failed to deserialize SAHPRA response.");
+        }
+
+        return new SimpleSAHPRAToolResult
+        {
+            title = dto.title,
+            activeIngredients = dto.activeIngredients,
+            otherIngredients = dto.otherIngredients
+        };
+    }
+}
