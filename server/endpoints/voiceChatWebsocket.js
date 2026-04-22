@@ -271,7 +271,7 @@ class VoiceChatSession {
         });
 
         // Handle connection close during initialization
-        this.realtimeClient.on("close", (code, reason) => {
+        this.realtimeClient.on("close", (code, _reason) => {
           if (!this.isConnected) {
             reject(
               new Error(`Connection closed during initialization: ${code}`)
@@ -323,7 +323,7 @@ class VoiceChatSession {
     });
 
     // Handle connection close
-    this.realtimeClient.on("close", (code, reason) => {
+    this.realtimeClient.on("close", (code, _reason) => {
       console.log(
         `[VoiceChat] Azure connection closed for session ${this.sessionId}: ${code}`
       );
@@ -331,7 +331,7 @@ class VoiceChatSession {
       this.sendToClient({
         type: "azure_disconnected",
         code: code,
-        reason: reason?.toString() || "",
+        reason: _reason?.toString() || "",
       });
     });
   }
@@ -566,7 +566,7 @@ class VoiceChatSession {
               },
             });
           }
-        } catch (e) {
+        } catch {
           // If response is plain text, use it directly
           if (typeof chat.response === "string" && chat.response.trim()) {
             this.sendToAzure({

@@ -1,6 +1,6 @@
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { v4 } from "uuid";
 
@@ -14,7 +14,7 @@ const WorkspaceThread = {
       }
     )
       .then((res) => res.json())
-      .catch((e) => {
+      .catch(() => {
         return { threads: [] };
       });
 
@@ -144,10 +144,8 @@ const WorkspaceThread = {
           }
         },
         async onmessage(msg) {
-          try {
-            const chatResult = JSON.parse(msg.data);
-            handleChat(chatResult);
-          } catch {}
+          const chatResult = safeJsonParse(msg.data, null);
+          if (chatResult) handleChat(chatResult);
         },
         onerror(err) {
           handleChat({
@@ -186,18 +184,19 @@ const WorkspaceThread = {
         return false;
       });
   },
-  _updateChatResponse: async function (
+  _updateChat: async function (
     workspaceSlug = "",
     threadSlug = "",
     chatId,
-    newText
+    newText,
+    role = "assistant"
   ) {
     return await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/update-chat`,
       {
         method: "POST",
         headers: baseHeaders(),
-        body: JSON.stringify({ chatId, newText }),
+        body: JSON.stringify({ chatId, newText, role }),
       }
     )
       .then((res) => {

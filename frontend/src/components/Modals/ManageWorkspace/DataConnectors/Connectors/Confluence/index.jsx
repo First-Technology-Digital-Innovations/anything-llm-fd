@@ -4,11 +4,13 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import Toggle from "@/components/lib/Toggle";
 
 export default function ConfluenceOptions() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [accessType, setAccessType] = useState("username");
+  const [isCloud, setIsCloud] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ export default function ConfluenceOptions() {
         accessToken: form.get("accessToken"),
         cloud: form.get("isCloud") === "true",
         personalAccessToken: form.get("personalAccessToken"),
+        bypassSSL: form.get("bypassSSL") === "true",
       });
 
       if (!!error) {
@@ -77,6 +80,7 @@ export default function ConfluenceOptions() {
                   autoComplete="off"
                   spellCheck={false}
                   defaultValue="true"
+                  onChange={(e) => setIsCloud(e.target.value === "true")}
                 >
                   <option value="true">Atlassian Cloud</option>
                   <option value="false">Self-hosted</option>
@@ -249,6 +253,26 @@ export default function ConfluenceOptions() {
               )}
             </div>
           </div>
+
+          {!isCloud && (
+            <div className="w-full flex flex-col py-2">
+              <div className="w-full flex flex-col gap-4">
+                <div className="flex flex-col pr-10">
+                  <div className="flex flex-col gap-y-1 mb-4">
+                    <label className="text-white text-sm font-bold flex gap-x-2 items-center">
+                      <Toggle size="md" name="bypassSSL" value="true" />
+                      <p className="font-bold text-theme-text-primary">
+                        {t("connectors.confluence.bypass_ssl")}
+                      </p>
+                    </label>
+                    <p className="text-xs font-normal text-theme-text-secondary">
+                      {t("connectors.confluence.bypass_ssl_explained")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-y-2 w-full pr-10">
             <button

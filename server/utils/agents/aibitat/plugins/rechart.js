@@ -16,7 +16,12 @@ const rechart = {
           name: this.name,
           tracker: new Deduplicator(),
           description:
-            "Generates the JSON data required to generate a RechartJS chart to the user based on their prompt and available data.",
+            "Create a chart, graph, or data visualization. Generate bar charts, line graphs, pie charts, area charts, or scatter plots to visualize data, statistics, trends, or results. Use to display numbers and data visually.",
+          examples: [
+            { prompt: "Create a chart from that data" },
+            { prompt: "Make a bar graph of the results" },
+            { prompt: "Visualize these numbers" },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",
@@ -55,9 +60,9 @@ Make sure the format use double quotes and property names are string literals. P
           required: ["type", "title", "dataset"],
           handler: async function ({ type, dataset, title }) {
             try {
-              if (!this.tracker.isUnique(this.name)) {
+              if (this.tracker.isMarkedUnique(this.name)) {
                 this.super.handlerProps.log(
-                  `${this.name} has been run for this chat response already. It can only be called once per chat.`
+                  `${this.name} has been called for this chat response already. It can only be called once per chat.`
                 );
                 return "The chart was generated and returned to the user. This function completed successfully. Do not call this function again.";
               }

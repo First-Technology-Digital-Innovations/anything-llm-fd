@@ -32,7 +32,7 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
   AzureOpenAiModelPref: {
-    envKey: "OPEN_MODEL_PREF",
+    envKey: "AZURE_OPENAI_MODEL_PREF",
     checks: [isNotEmpty],
   },
   AzureOpenAiEmbeddingModelPref: {
@@ -94,6 +94,10 @@ const KEY_MAPPING = {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
     checks: [],
   },
+  LMStudioAuthToken: {
+    envKey: "LMSTUDIO_AUTH_TOKEN",
+    checks: [],
+  },
 
   // LocalAI Settings
   LocalAiBasePath: {
@@ -123,10 +127,6 @@ const KEY_MAPPING = {
   },
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
-    checks: [],
-  },
-  OllamaLLMPerformanceMode: {
-    envKey: "OLLAMA_PERFORMANCE_MODE",
     checks: [],
   },
   OllamaLLMKeepAliveSeconds: {
@@ -305,6 +305,14 @@ const KEY_MAPPING = {
   },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
+    checks: [nonZero],
+  },
+  EmbeddingOutputDimensions: {
+    envKey: "EMBEDDING_OUTPUT_DIMENSIONS",
+    checks: [],
+  },
+  OllamaEmbeddingBatchSize: {
+    envKey: "OLLAMA_EMBEDDING_BATCH_SIZE",
     checks: [nonZero],
   },
 
@@ -554,14 +562,6 @@ const KEY_MAPPING = {
   },
 
   // Agent Integration ENVs
-  AgentGoogleSearchEngineId: {
-    envKey: "AGENT_GSE_CTX",
-    checks: [],
-  },
-  AgentGoogleSearchEngineKey: {
-    envKey: "AGENT_GSE_KEY",
-    checks: [],
-  },
   AgentSerpApiKey: {
     envKey: "AGENT_SERPAPI_API_KEY",
     checks: [],
@@ -600,6 +600,10 @@ const KEY_MAPPING = {
   },
   AgentExaApiKey: {
     envKey: "AGENT_EXA_API_KEY",
+    checks: [],
+  },
+  AgentPerplexityApiKey: {
+    envKey: "AGENT_PERPLEXITY_API_KEY",
     checks: [],
   },
 
@@ -771,6 +775,86 @@ const KEY_MAPPING = {
     envKey: "ZAI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // GiteeAI Options
+  GiteeAIApiKey: {
+    envKey: "GITEE_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GiteeAIModelPref: {
+    envKey: "GITEE_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  GiteeAITokenLimit: {
+    envKey: "GITEE_AI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Docker Model Runner Options
+  DockerModelRunnerBasePath: {
+    envKey: "DOCKER_MODEL_RUNNER_BASE_PATH",
+    checks: [isValidURL],
+  },
+  DockerModelRunnerModelPref: {
+    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  DockerModelRunnerModelTokenLimit: {
+    envKey: "DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Privatemode Options
+  PrivateModeBasePath: {
+    envKey: "PRIVATEMODE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  PrivateModeModelPref: {
+    envKey: "PRIVATEMODE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // SambaNova Options
+  SambaNovaLLMApiKey: {
+    envKey: "SAMBANOVA_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  SambaNovaLLMModelPref: {
+    envKey: "SAMBANOVA_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Lemonade Options
+  LemonadeLLMBasePath: {
+    envKey: "LEMONADE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LemonadeLLMApiKey: {
+    envKey: "LEMONADE_LLM_API_KEY",
+    checks: [],
+  },
+  LemonadeLLMModelPref: {
+    envKey: "LEMONADE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LemonadeLLMModelTokenLimit: {
+    envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Agent Skill Settings
+  AgentSkillMaxToolCalls: {
+    envKey: "AGENT_MAX_TOOL_CALLS",
+    checks: [nonZero],
+  },
+  AgentSkillRerankerEnabled: {
+    envKey: "AGENT_SKILL_RERANKER_ENABLED",
+    checks: [],
+  },
+  AgentSkillRerankerTopN: {
+    envKey: "AGENT_SKILL_RERANKER_TOP_N",
+    checks: [nonZero],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -791,7 +875,7 @@ function isValidURL(input = "") {
   try {
     new URL(input);
     return null;
-  } catch (e) {
+  } catch {
     return "URL is not a valid URL.";
   }
 }
@@ -883,6 +967,11 @@ function supportedLLM(input = "") {
     "cometapi",
     "foundry",
     "zai",
+    "giteeai",
+    "docker-model-runner",
+    "privatemode",
+    "sambanova",
+    "lemonade",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -920,6 +1009,8 @@ function supportedEmbeddingModel(input = "") {
     "litellm",
     "generic-openai",
     "mistral",
+    "openrouter",
+    "lemonade",
   ];
   return supported.includes(input)
     ? null
@@ -1102,6 +1193,7 @@ async function validatePGVectorTableName(key, prevValue, nextValue) {
 // and is simply for debugging when the .env not found issue many come across.
 async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
+  const runAfterAll = [];
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
     (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
@@ -1112,9 +1204,11 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     const {
       envKey,
       checks,
-      preUpdate = [],
-      postUpdate = [],
+      preUpdate = [], // Functions to run before updating a specific ENV variable
+      postUpdate = [], // Functions to run after updating a specific ENV variable
+      postSettled = [], // Functions to run after all ENV variables have been updated
     } = KEY_MAPPING[key];
+    runAfterAll.push(...postSettled);
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
     let errors = await executeValidationChecks(checks, nextValue, force);
@@ -1146,6 +1240,9 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     for (const postUpdateFunc of postUpdate)
       await postUpdateFunc(key, prevValue, nextValue);
   }
+
+  for (const runAfterAllFunc of runAfterAll)
+    await runAfterAllFunc(newValues, userId);
 
   await logChangesToEventLog(newValues, userId);
   if (process.env.NODE_ENV === "production") dumpENV();
@@ -1222,12 +1319,26 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+    // Custom headers for Generic OpenAI
+    "GENERIC_OPEN_AI_CUSTOM_HEADERS",
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",
 
     // Allow setting a custom response timeout for Ollama
     "OLLAMA_RESPONSE_TIMEOUT",
+
+    // Allow disabling of MCP tool cooldown
+    "MCP_NO_COOLDOWN",
+
+    // Allow disabling of streaming for AWS Bedrock
+    "AWS_BEDROCK_STREAMING_DISABLED",
+
+    // Allow native tool calling for specific providers.
+    "PROVIDER_SUPPORTS_NATIVE_TOOL_CALLING",
+
+    // Allow auto-approval of skills
+    "AGENT_AUTO_APPROVED_SKILLS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

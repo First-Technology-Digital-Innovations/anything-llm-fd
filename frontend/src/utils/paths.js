@@ -45,9 +45,6 @@ export default {
     dataHandling: () => {
       return "/onboarding/data-handling";
     },
-    createWorkspace: () => {
-      return "/onboarding/create-workspace";
-    },
   },
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
@@ -55,8 +52,8 @@ export default {
   discord: () => {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
-  docs: () => {
-    return "https://docs.anythingllm.com";
+  docs: (path = "") => {
+    return `https://docs.anythingllm.com${path}`;
   },
   chatModes: () => {
     return "https://docs.anythingllm.com/features/chat-modes";
@@ -167,11 +164,17 @@ export default {
     browserExtension: () => {
       return `/settings/browser-extension`;
     },
+    mobile: () => {
+      return `/settings/mobile-connections`;
+    },
     experimental: () => {
       return `/settings/beta-features`;
     },
     mobileConnections: () => {
       return `/settings/mobile-connections`;
+    },
+    telegram: () => {
+      return `/settings/external-connections/telegram`;
     },
   },
   agents: {

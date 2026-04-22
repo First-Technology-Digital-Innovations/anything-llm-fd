@@ -19,7 +19,9 @@ export default function ExperimentalFeatures() {
   useEffect(() => {
     async function fetchSettings() {
       setLoading(true);
-      const { settings } = await Admin.systemPreferences();
+      const { settings } = await Admin.systemPreferencesByFields([
+        "feature_flags",
+      ]);
       setFeatureFlags(settings?.feature_flags ?? {});
       setLoading(false);
     }
@@ -27,7 +29,9 @@ export default function ExperimentalFeatures() {
   }, []);
 
   const refresh = async () => {
-    const { settings } = await Admin.systemPreferences();
+    const { settings } = await Admin.systemPreferencesByFields([
+      "feature_flags",
+    ]);
     setFeatureFlags(settings?.feature_flags ?? {});
   };
 
@@ -131,7 +135,7 @@ function FeatureItem({
         isSelected ? "bg-white/10 light:bg-theme-bg-sidebar" : ""
       }`}
       onClick={() => {
-        if (feature?.href) window.location.hash = feature.href;
+        if (feature?.href) window.location = feature.href;
         else handleClick?.(feature.key);
       }}
     >

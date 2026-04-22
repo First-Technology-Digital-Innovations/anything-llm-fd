@@ -2,70 +2,74 @@
 const TRANSLATIONS = {
   onboarding: {
     survey: {
-      email: null,
-      useCase: null,
-      useCaseWork: null,
-      useCasePersonal: null,
-      useCaseOther: null,
-      comment: null,
-      commentPlaceholder: null,
-      skip: null,
-      thankYou: null,
-      title: null,
-      description: null,
+      email: "Adresse e-mail",
+      useCase: "Pour quel usage utiliserez-vous AnythingLLM ?",
+      useCaseWork: "Pour le travail",
+      useCasePersonal: "Pour un usage personnel",
+      useCaseOther: "Autre",
+      comment: "Comment avez-vous découvert AnythingLLM ?",
+      commentPlaceholder: "Recherche, recommandation, Twitter, YouTube, etc.",
+      skip: "Ignorer l'enquête",
+      thankYou: "Merci pour votre retour !",
+      title: "Bienvenue",
+      description:
+        "Aidez-nous à améliorer AnythingLLM en répondant à quelques questions.",
     },
     home: {
-      title: null,
-      getStarted: null,
+      getStarted: "Commencer",
+      welcome: "Bienvenue",
     },
     llm: {
-      title: null,
-      description: null,
+      title: "Préférence LLM",
+      description:
+        "AnythingLLM peut fonctionner avec de nombreux fournisseurs LLM. Ce sera le service qui traitera vos discussions.",
     },
     userSetup: {
-      title: null,
-      description: null,
-      howManyUsers: null,
-      justMe: null,
-      myTeam: null,
-      instancePassword: null,
-      setPassword: null,
-      passwordReq: null,
-      passwordWarn: null,
-      adminUsername: null,
-      adminUsernameReq: null,
-      adminPassword: null,
-      adminPasswordReq: null,
-      teamHint: null,
+      title: "Configuration utilisateur",
+      description: "Configurez votre accès utilisateur.",
+      howManyUsers: "Combien de personnes utiliseront cette instance ?",
+      justMe: "Juste moi",
+      myTeam: "Mon équipe",
+      instancePassword: "Mot de passe de l'instance",
+      setPassword: "Définir un mot de passe",
+      passwordReq: "Le mot de passe doit contenir au moins 8 caractères.",
+      passwordWarn:
+        "Conservez ce mot de passe, il n'y a pas de récupération possible.",
+      adminUsername: "Nom d'utilisateur administrateur",
+      adminPassword: "Mot de passe administrateur",
+      adminPasswordReq: "Le mot de passe doit contenir au moins 8 caractères.",
+      teamHint:
+        "Vous pourrez ajouter d'autres utilisateurs après la configuration initiale.",
     },
     data: {
-      title: null,
-      description: null,
-      settingsHint: null,
-    },
-    workspace: {
-      title: null,
-      description: null,
+      title: "Gestion des données",
+      description:
+        "Configurez comment AnythingLLM stocke et traite vos données.",
+      settingsHint:
+        "Ces paramètres peuvent être modifiés ultérieurement dans les paramètres.",
     },
   },
   common: {
     "workspaces-name": "Nom des espaces de travail",
-    error: "erreur",
-    success: "succès",
-    user: "Utilisateur",
     selection: "Sélection du modèle",
     saving: "Enregistrement...",
     save: "Enregistrer les modifications",
     previous: "Page précédente",
     next: "Page suivante",
-    optional: null,
-    yes: null,
-    no: null,
-    search: null,
+    optional: "Optionnel",
+    yes: "Oui",
+    no: "Non",
+    search: "Rechercher",
+    username_requirements:
+      "Le nom d'utilisateur doit comporter entre 2 et 32 caractères, commencer par une lettre minuscule et ne contenir que des lettres minuscules, des chiffres, des tirets bas, des tirets et des points.",
+    on: "Sur",
+    none: "Aucun",
+    stopped: "Arrêté",
+    loading: "Chargement",
+    refresh: "Rafraîchir",
   },
   settings: {
     title: "Paramètres de l'instance",
-    system: "Préférences système",
     invites: "Invitation",
     users: "Utilisateurs",
     workspaces: "Espaces de travail",
@@ -79,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "Voix et Parole",
     "vector-database": "Base de données vectorielle",
     embeds: "Widgets de chat intégrés",
-    "embed-chats": "Historique des chats intégrés",
     security: "Sécurité",
     "event-logs": "Journaux d'événements",
     privacy: "Confidentialité et données",
@@ -90,14 +93,25 @@ const TRANSLATIONS = {
     "experimental-features": "Fonctionnalités Expérimentales",
     contact: "Contacter le Support",
     "browser-extension": "Extension de navigateur",
-    "system-prompt-variables": null,
-    interface: null,
-    branding: null,
-    chat: null,
+    "system-prompt-variables": "Variables de prompt système",
+    interface: "Interface",
+    branding: "Personnalisation",
+    chat: "Chat",
+    "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centre communautaire",
+      trending: "Découvrez les tendances",
+      "your-account": "Votre compte",
+      "import-item": "Importer",
+    },
+    channels: "Canaux",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
-      welcome: "Bienvenue à",
+      welcome: "Bienvenue",
       "placeholder-username": "Nom d'utilisateur",
       "placeholder-password": "Mot de passe",
       login: "Connexion",
@@ -105,16 +119,12 @@ const TRANSLATIONS = {
       "forgot-pass": "Mot de passe oublié",
       reset: "Réinitialiser",
     },
-    "sign-in": {
-      start: "Connectez-vous à votre",
-      end: "compte.",
-    },
+    "sign-in": "Connectez-vous à votre compte {{appName}}.",
     "password-reset": {
       title: "Réinitialisation du mot de passe",
       description:
         "Fournissez les informations nécessaires ci-dessous pour réinitialiser votre mot de passe.",
       "recovery-codes": "Codes de récupération",
-      "recovery-code": "Code de récupération {{index}}",
       "back-to-login": "Retour à la connexion",
     },
   },
@@ -148,13 +158,6 @@ const TRANSLATIONS = {
       heading: "Expliquez-moi",
       body: "les avantages de AnythingLLM",
     },
-    pfp: {
-      title: "Image de profil de l'assistant",
-      description:
-        "Personnalisez l'image de profil de l'assistant pour cet espace de travail.",
-      image: "Image de l'espace de travail",
-      remove: "Supprimer l'image de l'espace de travail",
-    },
     delete: {
       title: "Supprimer l'Espace de Travail",
       description:
@@ -177,22 +180,23 @@ const TRANSLATIONS = {
       title: "Modèle de chat de l'espace de travail",
       description:
         "Le modèle de chat spécifique qui sera utilisé pour cet espace de travail. Si vide, utilisera la préférence LLM du système.",
-      wait: "-- en attente des modèles --",
     },
     mode: {
       title: "Mode de chat",
       chat: {
         title: "Chat",
-        "desc-start":
-          "fournira des réponses avec les connaissances générales du LLM",
-        and: "et",
-        "desc-end": "le contexte du document trouvé.",
+        description:
+          'fournira des réponses en utilisant les connaissances générales de l\'LLM et le contexte du document, <b>et</b>. Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
       },
       query: {
         title: "Requête",
-        "desc-start": "fournira des réponses",
-        only: "uniquement",
-        "desc-end": "si un contexte de document est trouvé.",
+        description:
+          'fournira des réponses <b>uniquement</b> si le contexte du document est trouvé.<br />Vous devrez utiliser la commande "@agent" pour utiliser les outils.',
+      },
+      automatic: {
+        title: "Voiture",
+        description:
+          "utilisera automatiquement les outils si le modèle et le fournisseur prennent en charge l'appel de fonctions natives. <br />Si l'utilisation de fonctions natives n'est pas prise en charge, vous devrez utiliser la commande \"@agent\" pour utiliser les outils.",
       },
     },
     history: {
@@ -208,15 +212,15 @@ const TRANSLATIONS = {
       description:
         "L'invite qui sera utilisée sur cet espace de travail. Définissez le contexte et les instructions pour que l'IA génère une réponse. Vous devez fournir une invite soigneusement conçue pour que l'IA puisse générer une réponse pertinente et précise.",
       history: {
-        title: null,
-        clearAll: null,
-        noHistory: null,
-        restore: null,
-        delete: null,
-        deleteConfirm: null,
-        clearAllConfirm: null,
-        expand: null,
-        publish: null,
+        title: "Historique des prompts",
+        clearAll: "Tout effacer",
+        noHistory: "Aucun historique",
+        restore: "Restaurer",
+        delete: "Supprimer",
+        deleteConfirm: "Êtes-vous sûr de vouloir supprimer ce prompt ?",
+        clearAllConfirm: "Êtes-vous sûr de vouloir effacer tout l'historique ?",
+        expand: "Développer",
+        publish: "Publier",
       },
     },
     refusal: {
@@ -225,8 +229,9 @@ const TRANSLATIONS = {
       query: "requête",
       "desc-end":
         ", vous pouvez souhaiter retourner une réponse de refus personnalisée lorsque aucun contexte n'est trouvé.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Personnaliser la réponse de refus",
+      "tooltip-description":
+        "Personnalisez la réponse qui sera affichée lorsque aucun contexte pertinent n'est trouvé dans vos documents.",
     },
     temperature: {
       title: "Température LLM",
@@ -285,9 +290,6 @@ const TRANSLATIONS = {
       wait: "-- en attente des modèles --",
     },
     skill: {
-      title: "Compétences par défaut de l'agent",
-      description:
-        "Améliorez les capacités naturelles de l'agent par défaut avec ces compétences préconstruites. Cette configuration s'applique à tous les espaces de travail.",
       rag: {
         title: "RAG et mémoire à long terme",
         description:
@@ -308,17 +310,274 @@ const TRANSLATIONS = {
         description:
           "Activez l'agent par défaut pour générer différents types de graphiques à partir des données fournies ou données dans le chat.",
       },
-      save: {
-        title: "Générer et sauvegarder des fichiers dans le navigateur",
-        description:
-          "Activez l'agent par défaut pour générer et écrire des fichiers qui peuvent être sauvegardés et téléchargés dans votre navigateur.",
-      },
       web: {
         title: "Recherche web en direct et navigation",
-        "desc-start":
-          "Permettez à votre agent de rechercher sur le web pour répondre à vos questions en se connectant à un fournisseur de recherche web (SERP).",
-        "desc-end":
-          "La recherche web pendant les sessions d'agent ne fonctionnera pas tant que cela ne sera pas configuré.",
+        description:
+          "Permettez à votre agent de rechercher sur le web pour répondre à vos questions en vous connectant à un fournisseur de recherche web (SERP).",
+      },
+      sql: {
+        title: "Connecteur SQL",
+        description:
+          "Permettez à votre agent d'utiliser SQL pour répondre à vos questions en lui fournissant un accès à divers fournisseurs de bases de données SQL.",
+      },
+      default_skill:
+        "Par défaut, cette fonctionnalité est activée, mais vous pouvez la désactiver si vous ne souhaitez pas qu'elle soit disponible pour l'agent.",
+      filesystem: {
+        title: "Accès au système de fichiers",
+        description:
+          "Permettez à votre agent de lire, écrire, rechercher et gérer des fichiers dans un répertoire spécifié. Prend en charge la modification de fichiers, la navigation dans les répertoires et la recherche de contenu.",
+        learnMore: "En savoir plus sur la manière d'utiliser cette compétence.",
+        configuration: "Configuration",
+        readActions: "Lire les actions",
+        writeActions: "Actions à effectuer",
+        warning:
+          "L'accès au système de fichiers peut être dangereux, car il peut modifier ou supprimer des fichiers. Veuillez consulter la <link>documentation</link> avant de l'activer.",
+        skills: {
+          "read-text-file": {
+            title: "Ouvrir le fichier",
+            description:
+              "Lire le contenu des fichiers (texte, code, PDF, images, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Lire plusieurs fichiers",
+            description: "Lire plusieurs fichiers simultanément.",
+          },
+          "list-directory": {
+            title: "Annuaire",
+            description:
+              "Énumérer les fichiers et les répertoires d'un dossier.",
+          },
+          "search-files": {
+            title: "Rechercher des fichiers",
+            description: "Rechercher des fichiers par nom ou par contenu",
+          },
+          "get-file-info": {
+            title: "Obtenir des informations sur le fichier",
+            description: "Obtenez des métadonnées détaillées sur les fichiers.",
+          },
+          "edit-file": {
+            title: "Modifier le fichier",
+            description:
+              "Effectuez des modifications basées sur des lignes dans les fichiers de texte.",
+          },
+          "create-directory": {
+            title: "Créer un répertoire",
+            description: "Créer de nouveaux répertoires",
+          },
+          "move-file": {
+            title: "Déplacer/Renommer le fichier",
+            description:
+              "Déplacez ou renommez des fichiers et des répertoires.",
+          },
+          "copy-file": {
+            title: "Copier le fichier",
+            description: "Copier des fichiers et des répertoires",
+          },
+          "write-text-file": {
+            title: "Créer un fichier texte",
+            description:
+              "Créer de nouveaux fichiers texte ou remplacer des fichiers texte existants.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Création de documents",
+        description:
+          "Permettez à votre agent de créer des documents au format binaire, tels que des présentations PowerPoint, des feuilles de calcul Excel, des documents Word et des fichiers PDF. Les fichiers peuvent être téléchargés directement depuis la fenêtre de chat.",
+        configuration: "Types de documents disponibles",
+        skills: {
+          "create-text-file": {
+            title: "Fichiers de texte",
+            description:
+              "Créez des fichiers texte avec n'importe quel contenu et extension (par exemple, .txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Présentations PowerPoint",
+            description:
+              "Créez de nouvelles présentations PowerPoint avec des diapositives, des titres et des puces.",
+          },
+          "create-pdf": {
+            title: "Documents au format PDF",
+            description:
+              "Créez des documents PDF à partir de fichiers Markdown ou de texte brut, avec un style de base.",
+          },
+          "create-xlsx": {
+            title: "Feuilles de calcul Excel",
+            description:
+              "Créez des documents Excel pour les données tabulaires, avec des feuilles et un style.",
+          },
+          "create-docx": {
+            title: "Documents au format Word",
+            description:
+              "Créez des documents Word avec un style et une mise en page de base.",
+          },
+        },
+      },
+      gmail: {
+        title: "Connecteur GMail",
+        description:
+          "Permettez à votre agent d'interagir avec Gmail : rechercher des e-mails, lire les conversations, rédiger des brouillons, envoyer des e-mails et gérer votre boîte de réception. <a>Consultez la documentation</a>.",
+        multiUserWarning:
+          "L'intégration avec Gmail n'est pas disponible en mode multi-utilisateurs pour des raisons de sécurité. Veuillez désactiver le mode multi-utilisateurs pour utiliser cette fonctionnalité.",
+        configuration: "Configuration de Gmail",
+        deploymentId: "Identifiant de déploiement",
+        deploymentIdHelp:
+          "L'identifiant de déploiement de votre application web Google Apps Script",
+        apiKey: "Clé API",
+        apiKeyHelp:
+          "La clé API que vous avez configurée lors de votre déploiement de Google Apps Script",
+        configurationRequired:
+          "Veuillez configurer l'ID de déploiement et la clé API pour activer les fonctionnalités de Gmail.",
+        configured: "Configuré",
+        searchSkills: "Compétences de recherche...",
+        noSkillsFound: "Aucune compétence ne correspond à votre recherche.",
+        categories: {
+          search: {
+            title: "Rechercher et lire des e-mails",
+            description:
+              "Recherchez et lisez vos e-mails dans votre boîte de réception Gmail.",
+          },
+          drafts: {
+            title: "Modèles de courriels",
+            description: "Créer, modifier et gérer des brouillons d'e-mails.",
+          },
+          send: {
+            title: "Envoyer et répondre aux e-mails",
+            description:
+              "Envoyez des e-mails et répondez immédiatement aux discussions.",
+          },
+          threads: {
+            title: "Gérer les conversations par e-mail",
+            description:
+              "Gérer les conversations par e-mail : marquer comme lu/non lu, archiver, supprimer",
+          },
+          account: {
+            title: "Statistiques d'intégration",
+            description:
+              "Consultez les statistiques de votre boîte de réception et les informations de votre compte.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Rechercher dans les e-mails",
+            description:
+              "Rechercher des e-mails en utilisant la syntaxe de recherche de Gmail",
+          },
+          readThread: {
+            title: "Lire le fil de discussion",
+            description: "Lire l'intégralité d'une conversation par ID",
+          },
+          createDraft: {
+            title: "Créer une version préliminaire",
+            description: "Créez une nouvelle version de l'e-mail.",
+          },
+          createDraftReply: {
+            title: "Créer une réponse brouillon",
+            description:
+              "Rédiger une réponse préliminaire à un fil de discussion existant.",
+          },
+          updateDraft: {
+            title: "Mise à jour de la version préliminaire",
+            description: "Mettre à jour un brouillon de courriel existant",
+          },
+          getDraft: {
+            title: "Obtenir la version préliminaire",
+            description:
+              "Récupérer une version spécifique par son identifiant.",
+          },
+          listDrafts: {
+            title: "Propositions/Brouillons",
+            description: "Énumérer tous les courriels en brouillon.",
+          },
+          deleteDraft: {
+            title: "Supprimer la version brouillon",
+            description: "Supprimer une brouillon de courriel",
+          },
+          sendDraft: {
+            title: "Envoyer une version préliminaire",
+            description: "Envoyer une version existante d'un courriel",
+          },
+          sendEmail: {
+            title: "Envoyer un e-mail",
+            description: "Envoyez un courriel immédiatement.",
+          },
+          replyToThread: {
+            title: "Répondre à la discussion",
+            description:
+              "Répondre immédiatement à une conversation par e-mail.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Indiquer qu'un fil de discussion a été lu",
+          },
+          markUnread: {
+            title: "Signaler comme non lu",
+            description: "Indiquer qu'un fil de discussion est non lu",
+          },
+          moveToTrash: {
+            title: "Envoyer à la poubelle",
+            description: "Déplacer un fil dans la corbeille d'ordures",
+          },
+          moveToArchive: {
+            title: "Archives",
+            description: "Archiver une discussion",
+          },
+          moveToInbox: {
+            title: "Envoyer vers la boîte de réception",
+            description:
+              "Déplacer un fil de discussion dans la boîte de réception",
+          },
+          getMailboxStats: {
+            title: "Statistiques de la boîte de réception",
+            description:
+              "Obtenez le nombre d'emails non lus et les statistiques de votre boîte de réception.",
+          },
+          getInbox: {
+            title: "Accéder à la boîte de réception",
+            description:
+              "Une méthode simple et efficace pour récupérer les e-mails de votre boîte de réception Gmail.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Serveurs MCP",
+      "loading-from-config":
+        "Chargement des serveurs MCP à partir du fichier de configuration",
+      "learn-more": "En savoir plus sur les serveurs MCP.",
+      "no-servers-found": "Aucun serveur MCP n'a été trouvé.",
+      "tool-warning":
+        "Pour obtenir les meilleures performances, envisagez de désactiver les outils inutiles afin de préserver le contexte.",
+      "stop-server": "Arrêter le serveur MCP",
+      "start-server": "Démarrer le serveur MCP",
+      "delete-server": "Supprimer le serveur MCP",
+      "tool-count-warning":
+        "Ce serveur MCP a <b> des outils {{count}} activés</b> qui consommeront du contexte dans chaque conversation.<br /> Envisagez de désactiver les outils inutiles pour préserver le contexte.",
+      "startup-command": "Commande de démarrage",
+      command: "Ordre",
+      arguments: "Arguments",
+      "not-running-warning":
+        "Ce serveur MCP n'est pas en cours de fonctionnement ; il peut être arrêté ou rencontrer une erreur lors du démarrage.",
+      "tool-call-arguments": "Arguments des appels de fonctions/outils",
+      "tools-enabled": "outils activés",
+    },
+    settings: {
+      title: "Paramètres des compétences des agents",
+      "max-tool-calls": {
+        title: "Nombre maximal de requêtes Max Tool par réponse",
+        description:
+          "Le nombre maximal d'outils qu'un agent peut utiliser en chaîne pour générer une seule réponse. Cela empêche les appels excessifs aux outils et les boucles infinies.",
+      },
+      "intelligent-skill-selection": {
+        title: "Sélection de compétences basée sur l'intelligence",
+        "beta-badge": "Bêta",
+        description:
+          "Permettez l'utilisation illimitée d'outils et réduisez la consommation de jetons jusqu'à 80 % par requête – AnythingLLM sélectionne automatiquement les compétences appropriées pour chaque requête.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Le nombre maximal d'outils à sélectionner pour chaque requête. Nous recommandons de définir cette valeur sur une valeur plus élevée pour les modèles de contexte plus importants.",
+        },
       },
     },
   },
@@ -342,7 +601,34 @@ const TRANSLATIONS = {
       "Les clés API permettent au titulaire d'accéder et de gérer de manière programmatique cette instance AnythingLLM.",
     link: "Lisez la documentation de l'API",
     generate: "Générer une nouvelle clé API",
+    empty: "Aucune clé API trouvée",
+    actions: "Actions",
+    messages: {
+      error: "Erreur : {{error}}",
+    },
+    modal: {
+      title: "Créer une nouvelle clé API",
+      cancel: "Annuler",
+      close: "Fermer",
+      create: "Créer une clé API",
+      helper:
+        "Une fois créée, la clé API peut être utilisée pour accéder à cette instance AnythingLLM et la configurer de manière programmatique.",
+      name: {
+        label: "Nom",
+        placeholder: "Intégration de production",
+        helper:
+          "Facultatif. Utilisez un nom explicite pour pouvoir retrouver facilement cette clé plus tard.",
+      },
+    },
+    row: {
+      copy: "Copier la clé API",
+      copied: "Copiée",
+      unnamed: "--",
+      deleteConfirm:
+        "Voulez-vous vraiment désactiver cette clé API ?\nAprès cela, elle ne pourra plus être utilisée.\n\nCette action est irréversible.",
+    },
     table: {
+      name: "Nom",
       key: "Clé API",
       by: "Créé par",
       created: "Créé",
@@ -355,13 +641,15 @@ const TRANSLATIONS = {
     provider: "Fournisseur LLM",
     providers: {
       azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
+        azure_service_endpoint: "Point de terminaison du service Azure",
+        api_key: "Clé API",
+        chat_deployment_name: "Nom du déploiement de chat",
+        chat_model_token_limit: "Limite de tokens du modèle de chat",
+        model_type: "Type de modèle",
+        default: "Par défaut",
+        reasoning: "Raisonnement",
+        model_type_tooltip:
+          "Si votre déploiement utilise un modèle de raisonnement (o1, o1-mini, o3-mini, etc.), veuillez définir cette option sur « Raisonnement ». Sinon, vos requêtes de conversation pourraient échouer.",
       },
     },
   },
@@ -423,7 +711,7 @@ const TRANSLATIONS = {
       workspace: "Espace de travail",
       chats: "Chats envoyés",
       active: "Domaines actifs",
-      created: null,
+      created: "Créé le",
     },
   },
   "embed-chats": {
@@ -454,516 +742,494 @@ const TRANSLATIONS = {
     title: "Confidentialité et gestion des données",
     description:
       "Voici votre configuration pour la gestion des données et des fournisseurs tiers connectés avec AnythingLLM.",
-    llm: "Sélection LLM",
-    embedding: "Préférence d'intégration",
-    vector: "Base de données vectorielle",
     anonymous: "Télémétrie anonyme activée",
   },
   connectors: {
-    "search-placeholder": null,
-    "no-connectors": null,
+    "search-placeholder": "Rechercher des connecteurs de données",
+    "no-connectors": "Aucun connecteur de données trouvé.",
     github: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+      name: "Dépôt GitHub",
+      description: "Importez un dépôt GitHub entier en un seul clic.",
+      URL: "URL du dépôt GitHub",
+      URL_explained: "URL du dépôt GitHub que vous souhaitez collecter.",
+      token: "Jeton d'accès GitHub",
+      optional: "Optionnel",
+      token_explained: "Jeton d'accès pour les dépôts privés.",
+      token_explained_start:
+        "Sans jeton d'accès, vous ne pourrez collecter que les dépôts publics. Vous pouvez",
+      token_explained_link1: "créer un jeton d'accès temporaire",
+      token_explained_middle: "ou",
+      token_explained_link2: "en créer un ici",
+      token_explained_end: "avec la portée 'repo'.",
+      ignores: "Exclusions de fichiers",
+      git_ignore:
+        "Liste au format .gitignore pour exclure des fichiers de la collecte. Appuyez sur Entrée après chaque entrée.",
+      task_explained:
+        "Une fois terminé, tous les fichiers seront disponibles pour être intégrés dans les espaces de travail dans le menu de documents.",
+      branch: "Branche",
+      branch_loading: "-- chargement des branches disponibles --",
+      branch_explained: "Branche à collecter.",
+      token_information: "Informations sur le jeton",
+      token_personal:
+        "Créez un jeton d'accès personnel sur GitHub pour accéder aux dépôts privés.",
     },
     gitlab: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_description: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      fetch_issues: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+      name: "Dépôt GitLab",
+      description: "Importez un dépôt GitLab entier en un seul clic.",
+      URL: "URL du dépôt GitLab",
+      URL_explained: "URL du dépôt GitLab que vous souhaitez collecter.",
+      token: "Jeton d'accès GitLab",
+      optional: "Optionnel",
+      token_description:
+        "Sélectionnez les portées d'accès au dépôt lors de la création du jeton.",
+      token_explained_start:
+        "Sans jeton d'accès, vous ne pourrez collecter que les dépôts publics. Vous pouvez",
+      token_explained_link1: "créer un jeton d'accès temporaire",
+      token_explained_middle: "ou",
+      token_explained_link2: "en créer un ici",
+      token_explained_end: "avec la portée 'read_repository'.",
+      fetch_issues: "Récupérer les issues GitLab",
+      ignores: "Exclusions de fichiers",
+      git_ignore:
+        "Liste au format .gitignore pour exclure des fichiers de la collecte. Appuyez sur Entrée après chaque entrée.",
+      task_explained:
+        "Une fois terminé, tous les fichiers seront disponibles pour être intégrés dans les espaces de travail dans le menu de documents.",
+      branch: "Branche",
+      branch_loading: "-- chargement des branches disponibles --",
+      branch_explained: "Branche à collecter.",
+      token_information: "Informations sur le jeton",
+      token_personal:
+        "Créez un jeton d'accès personnel sur GitLab pour accéder aux dépôts privés.",
     },
     youtube: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained_start: null,
-      URL_explained_link: null,
-      URL_explained_end: null,
-      task_explained: null,
-      language: null,
-      language_explained: null,
-      loading_languages: null,
+      name: "Transcription YouTube",
+      description:
+        "Importez la transcription d'une vidéo YouTube à partir d'un lien.",
+      URL: "URL de la vidéo YouTube",
+      URL_explained_start:
+        "Entrez l'URL d'une vidéo YouTube pour récupérer sa transcription. La vidéo doit avoir les",
+      URL_explained_link: "sous-titres activés",
+      URL_explained_end: ".",
+      task_explained:
+        "Une fois terminé, la transcription sera disponible pour être intégrée dans les espaces de travail dans le menu de documents.",
     },
     "website-depth": {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      depth: null,
-      depth_explained: null,
-      max_pages: null,
-      max_pages_explained: null,
-      task_explained: null,
+      name: "Récupération de site web en masse",
+      description:
+        "Récupérez un site web et ses sous-liens jusqu'à une certaine profondeur.",
+      URL: "URL du site web",
+      URL_explained: "URL du site web que vous souhaitez récupérer.",
+      depth: "Profondeur de récupération",
+      depth_explained:
+        "Nombre de niveaux de sous-liens à suivre à partir de l'URL de base.",
+      max_pages: "Nombre maximum de pages",
+      max_pages_explained: "Nombre maximum de pages à récupérer.",
+      task_explained:
+        "Une fois terminé, toutes les pages récupérées seront disponibles pour être intégrées dans les espaces de travail dans le menu de documents.",
     },
     confluence: {
-      name: null,
-      description: null,
-      deployment_type: null,
-      deployment_type_explained: null,
-      base_url: null,
-      base_url_explained: null,
-      space_key: null,
-      space_key_explained: null,
-      username: null,
-      username_explained: null,
-      auth_type: null,
-      auth_type_explained: null,
-      auth_type_username: null,
-      auth_type_personal: null,
-      token: null,
-      token_explained_start: null,
-      token_explained_link: null,
-      token_desc: null,
-      pat_token: null,
-      pat_token_explained: null,
-      task_explained: null,
+      name: "Confluence",
+      description: "Importez un espace Confluence entier en un seul clic.",
+      deployment_type: "Type de déploiement Confluence",
+      deployment_type_explained:
+        "Choisissez si votre instance Confluence est hébergée dans le cloud ou sur serveur.",
+      base_url: "URL de base Confluence",
+      base_url_explained: "L'URL de base de votre instance Confluence.",
+      space_key: "Clé de l'espace Confluence",
+      space_key_explained:
+        "La clé de l'espace que vous souhaitez importer. Se trouve généralement dans l'URL de l'espace.",
+      username: "Nom d'utilisateur Confluence",
+      username_explained:
+        "Votre nom d'utilisateur ou adresse e-mail Confluence.",
+      auth_type: "Type d'authentification",
+      auth_type_explained:
+        "Choisissez le type de jeton utilisé pour l'authentification.",
+      auth_type_username: "Jeton API (nom d'utilisateur + jeton)",
+      auth_type_personal: "Jeton d'accès personnel (PAT)",
+      token: "Jeton API Confluence",
+      token_explained_start:
+        "Un jeton API est requis pour l'authentification. Vous pouvez",
+      token_explained_link: "générer un jeton API ici",
+      token_desc: "Jeton API pour l'authentification.",
+      pat_token: "Jeton d'accès personnel",
+      pat_token_explained:
+        "Jeton d'accès personnel pour l'authentification sur les déploiements serveur.",
+      task_explained:
+        "Une fois terminé, toutes les pages de l'espace seront disponibles pour être intégrées dans les espaces de travail dans le menu de documents.",
+      bypass_ssl: "Ignorer la vérification SSL",
+      bypass_ssl_explained:
+        "Ignorez la vérification des certificats SSL pour les instances auto-hébergées avec des certificats auto-signés.",
     },
     manage: {
-      documents: null,
-      "data-connectors": null,
-      "desktop-only": null,
-      dismiss: null,
-      editing: null,
+      documents: "Documents",
+      "data-connectors": "Connecteurs de données",
+      "desktop-only":
+        "Cette fonctionnalité n'est disponible que sur ordinateur de bureau.",
+      dismiss: "Fermer",
+      editing: "Modification",
     },
     directory: {
-      "my-documents": null,
-      "new-folder": null,
-      "search-document": null,
-      "no-documents": null,
-      "move-workspace": null,
-      name: null,
-      "delete-confirmation": null,
-      "removing-message": null,
-      "move-success": null,
-      date: null,
-      type: null,
-      no_docs: null,
-      select_all: null,
-      deselect_all: null,
-      remove_selected: null,
-      costs: null,
-      save_embed: null,
+      "my-documents": "Mes documents",
+      "new-folder": "Nouveau dossier",
+      "search-document": "Rechercher un document",
+      "no-documents": "Aucun document",
+      "move-workspace": "Déplacer vers l'espace de travail",
+      "delete-confirmation":
+        "Êtes-vous sûr de vouloir supprimer ces fichiers et dossiers ?\nCela supprimera les fichiers du système et les retirera automatiquement de tout espace de travail existant.\nCette action est irréversible.",
+      "removing-message":
+        "Suppression de {{count}} documents et dossiers. Veuillez patienter.",
+      "move-success": "{{count}} documents déplacés avec succès.",
+      no_docs: "Aucun document",
+      select_all: "Tout sélectionner",
+      deselect_all: "Tout désélectionner",
+      remove_selected: "Supprimer la sélection",
+      save_embed: "Sauvegarder et intégrer",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}} documents",
     },
     upload: {
-      "processor-offline": null,
-      "processor-offline-desc": null,
-      "click-upload": null,
-      "file-types": null,
-      "or-submit-link": null,
-      "placeholder-link": null,
-      fetching: null,
-      "fetch-website": null,
-      "privacy-notice": null,
+      "processor-offline": "Processeur de documents hors ligne",
+      "processor-offline-desc":
+        "Nous ne pouvons pas télécharger vos fichiers pour le moment. Veuillez réessayer plus tard.",
+      "click-upload": "Cliquez pour télécharger ou glissez-déposez",
+      "file-types":
+        "prend en charge les fichiers texte, CSV, feuilles de calcul, fichiers audio, et plus encore !",
+      "or-submit-link": "ou soumettre un lien",
+      "placeholder-link": "https://exemple.com",
+      fetching: "Récupération...",
+      "fetch-website": "Récupérer le site web",
+      "privacy-notice":
+        "Ces fichiers seront téléchargés sur cette instance AnythingLLM uniquement.",
     },
     pinning: {
-      what_pinning: null,
-      pin_explained_block1: null,
-      pin_explained_block2: null,
-      pin_explained_block3: null,
-      accept: null,
+      what_pinning: "Qu'est-ce que l'épinglage de documents ?",
+      pin_explained_block1:
+        "Lorsque vous épinglez un document, AnythingLLM injectera le contenu intégral du document dans votre fenêtre de prompt comme contexte préalable pour chaque interaction.",
+      pin_explained_block2:
+        "Ceci est idéal pour les documents que vous souhaitez référencer fréquemment ou pour fournir un contexte constant à l'IA.",
+      pin_explained_block3:
+        "L'épinglage fonctionne mieux avec des documents plus petits. Les documents volumineux peuvent affecter les performances.",
+      accept: "J'ai compris",
     },
     watching: {
-      what_watching: null,
-      watch_explained_block1: null,
-      watch_explained_block2: null,
-      watch_explained_block3_start: null,
-      watch_explained_block3_link: null,
-      watch_explained_block3_end: null,
-      accept: null,
+      what_watching: "Qu'est-ce que la surveillance de documents ?",
+      watch_explained_block1:
+        "Lorsque vous surveillez un document, AnythingLLM re-synchronisera automatiquement le contenu du document depuis sa source de manière périodique.",
+      watch_explained_block2:
+        "Cela gardera le contenu à jour si le fichier source change.",
+      watch_explained_block3_start:
+        "Cette fonctionnalité est actuellement limitée à",
+      watch_explained_block3_link: "certains types de fichiers",
+      watch_explained_block3_end: ".",
+      accept: "J'ai compris",
     },
     obsidian: {
-      name: null,
-      description: null,
-      vault_location: null,
-      vault_description: null,
-      selected_files: null,
-      importing: null,
-      import_vault: null,
-      processing_time: null,
-      vault_warning: null,
+      vault_location: "Emplacement du coffre",
+      vault_description:
+        "Sélectionnez le dossier racine de votre coffre Obsidian.",
+      selected_files: "fichiers sélectionnés",
+      importing: "Importation...",
+      import_vault: "Importer le coffre",
+      processing_time:
+        "Le traitement peut prendre quelques minutes selon la taille du coffre.",
+      vault_warning:
+        "Assurez-vous de sélectionner le dossier racine contenant le dossier .obsidian.",
     },
   },
   chat_window: {
-    welcome: null,
-    get_started: null,
-    get_started_default: null,
-    upload: null,
-    or: null,
-    send_chat: null,
-    send_message: null,
-    attach_file: null,
-    slash: null,
-    agents: null,
-    text_size: null,
-    microphone: null,
-    send: null,
-    attachments_processing: null,
-    tts_speak_message: null,
-    copy: null,
-    regenerate: null,
-    regenerate_response: null,
-    good_response: null,
-    more_actions: null,
-    hide_citations: null,
-    show_citations: null,
-    pause_tts_speech_message: null,
-    fork: null,
-    delete: null,
-    save_submit: null,
-    cancel: null,
-    edit_prompt: null,
-    edit_response: null,
-    at_agent: null,
-    default_agent_description: null,
-    custom_agents_coming_soon: null,
-    slash_reset: null,
-    preset_reset_description: null,
-    add_new_preset: null,
-    command: null,
-    your_command: null,
-    placeholder_prompt: null,
-    description: null,
-    placeholder_description: null,
-    save: null,
-    small: null,
-    normal: null,
-    large: null,
+    send_message: "Envoyer un message",
+    attach_file: "Joindre un fichier",
+    text_size: "Modifier la taille du texte",
+    microphone: "Enregistrer un message vocal",
+    send: "Envoyer le message au chatbot",
+    attachments_processing:
+      "Les pièces jointes sont en cours de traitement. Veuillez attendre avant d'envoyer un autre message.",
+    tts_speak_message: "Écouter le message",
+    copy: "Copier",
+    regenerate: "Régénérer",
+    regenerate_response: "Régénérer la réponse",
+    good_response: "Bonne réponse",
+    more_actions: "Plus d'actions",
+    fork: "Dupliquer",
+    delete: "Supprimer",
+    cancel: "Annuler",
+    edit_prompt: "Modifier le prompt",
+    edit_response: "Modifier la réponse",
+    preset_reset_description:
+      "Efface l'historique du chat actuel et commence une nouvelle conversation.",
+    add_new_preset: "Ajouter une nouvelle commande preset",
+    command: "Commande",
+    your_command: "Votre commande",
+    placeholder_prompt: "Quel est le prompt pour cette commande ?",
+    description: "Description",
+    placeholder_description: "Décrivez ce que fait cette commande",
+    save: "Sauvegarder",
+    small: "Petit",
+    normal: "Normal",
+    large: "Grand",
     workspace_llm_manager: {
-      search: null,
-      loading_workspace_settings: null,
-      available_models: null,
-      available_models_description: null,
-      save: null,
-      saving: null,
-      missing_credentials: null,
-      missing_credentials_description: null,
+      search: "Rechercher des modèles",
+      loading_workspace_settings:
+        "Chargement des paramètres de l'espace de travail...",
+      available_models: "Modèles disponibles",
+      available_models_description:
+        "Sélectionnez un modèle à utiliser pour cet espace de travail.",
+      save: "Sauvegarder",
+      saving: "Sauvegarde...",
+      missing_credentials: "Identifiants manquants",
+      missing_credentials_description:
+        "Vous devez configurer vos identifiants de fournisseur LLM avant de pouvoir sélectionner un modèle.",
+    },
+    submit: "Soumettre",
+    edit_info_user:
+      '"Soumettre" permet de régénérer la réponse de l\'IA. "Enregistrer" met uniquement à jour votre message.',
+    edit_info_assistant:
+      "Vos modifications seront enregistrées directement dans cette réponse.",
+    see_less: "Voir moins",
+    see_more: "Voir plus",
+    tools: "Outils",
+    text_size_label: "Taille du texte",
+    select_model: "Sélectionner le modèle",
+    sources: "Sources",
+    document: "Document",
+    similarity_match: "match",
+    source_count_one: "{{count}} référence",
+    source_count_other: "Références à {{count}}",
+    preset_exit_description: "Arrêter la session actuelle de l'agent",
+    add_new: "Ajouter",
+    edit: "Modifier",
+    publish: "Publier",
+    stop_generating: "Arrêtez de générer des réponses",
+    slash_commands: "Commandes abrégées",
+    agent_skills: "Compétences des agents",
+    manage_agent_skills: "Gérer les compétences des agents",
+    agent_skills_disabled_in_session:
+      "Il n'est pas possible de modifier les compétences pendant une session avec un agent actif. Utilisez la commande `/exit` pour terminer la session en premier.",
+    start_agent_session: "Démarrer la session de l'agent",
+    use_agent_session_to_use_tools:
+      'Vous pouvez utiliser des outils via le chat en lançant une session avec un agent en utilisant le préfixe "@agent" au début de votre requête.',
+    agent_invocation: {
+      model_wants_to_call: "Le modèle souhaite passer un appel.",
+      approve: "Approuver",
+      reject: "Refuser",
+      always_allow: "Il est toujours important de {{skillName}}",
+      tool_call_was_approved: "La demande d'outils a été approuvée.",
+      tool_call_was_rejected:
+        "La demande d'utilisation de l'outil a été rejetée.",
     },
   },
   profile_settings: {
-    edit_account: null,
-    profile_picture: null,
-    remove_profile_picture: null,
-    username: null,
-    username_description: null,
-    new_password: null,
-    password_description: null,
-    cancel: null,
-    update_account: null,
-    theme: null,
-    language: null,
-    failed_upload: null,
-    upload_success: null,
-    failed_remove: null,
-    profile_updated: null,
-    failed_update_user: null,
-    account: null,
-    support: null,
-    signout: null,
+    edit_account: "Modifier le compte",
+    profile_picture: "Photo de profil",
+    remove_profile_picture: "Supprimer la photo de profil",
+    username: "Nom d'utilisateur",
+    new_password: "Nouveau mot de passe",
+    password_description:
+      "Le mot de passe doit contenir au moins 8 caractères.",
+    cancel: "Annuler",
+    update_account: "Mettre à jour le compte",
+    theme: "Thème",
+    language: "Langue",
+    failed_upload: "Échec du téléchargement de l'image.",
+    upload_success: "Image téléchargée avec succès.",
+    failed_remove: "Échec de la suppression de l'image.",
+    profile_updated: "Profil mis à jour avec succès.",
+    failed_update_user: "Échec de la mise à jour de l'utilisateur.",
+    account: "Compte",
+    support: "Support",
+    signout: "Déconnexion",
   },
   customization: {
     interface: {
-      title: null,
-      description: null,
+      title: "Interface",
+      description: "Personnalisez l'apparence de l'interface utilisateur.",
     },
     branding: {
-      title: null,
-      description: null,
+      title: "Personnalisation de la marque",
+      description: "Personnalisez les éléments de marque de votre instance.",
     },
     chat: {
-      title: null,
-      description: null,
+      title: "Chat",
+      description: "Personnalisez le comportement du chat.",
       auto_submit: {
-        title: null,
-        description: null,
+        title: "Soumission automatique",
+        description:
+          "Soumet automatiquement le message lorsque vous utilisez la reconnaissance vocale.",
       },
       auto_speak: {
-        title: null,
-        description: null,
+        title: "Lecture automatique",
+        description: "Lit automatiquement les réponses de l'IA à haute voix.",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "Correction orthographique",
+        description:
+          "Active la correction orthographique dans la zone de saisie du chat.",
       },
     },
     items: {
       theme: {
-        title: null,
-        description: null,
+        title: "Thème",
+        description: "Sélectionnez votre thème d'interface préféré.",
       },
       "show-scrollbar": {
-        title: null,
-        description: null,
+        title: "Afficher la barre de défilement",
+        description: "Affiche la barre de défilement dans l'interface de chat.",
       },
       "support-email": {
-        title: null,
-        description: null,
+        title: "E-mail de support",
+        description:
+          "Définissez l'adresse e-mail de support affichée aux utilisateurs.",
       },
       "app-name": {
-        title: null,
-        description: null,
-      },
-      "chat-message-alignment": {
-        title: null,
-        description: null,
+        title: "Nom de l'application",
+        description: "Définissez le nom affiché dans l'interface.",
       },
       "display-language": {
-        title: null,
-        description: null,
+        title: "Langue d'affichage",
+        description: "Sélectionnez la langue de l'interface utilisateur.",
       },
       logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
-      },
-      "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
-        "double-click": null,
-        save: null,
+        title: "Logo",
+        description: "Téléchargez votre logo personnalisé.",
+        add: "Ajouter un logo personnalisé",
+        recommended: "Taille recommandée : 800 x 200",
+        remove: "Supprimer",
+        replace: "Remplacer",
       },
       "browser-appearance": {
-        title: null,
-        description: null,
+        title: "Apparence du navigateur",
+        description: "Personnalisez l'apparence de l'onglet du navigateur.",
         tab: {
-          title: null,
-          description: null,
+          title: "Titre de l'onglet",
+          description:
+            "Définissez le titre affiché dans l'onglet du navigateur.",
         },
         favicon: {
-          title: null,
-          description: null,
+          title: "Favicon",
+          description:
+            "Définissez l'icône affichée dans l'onglet du navigateur.",
         },
       },
       "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
+        title: "Pied de page de la barre latérale",
+        description:
+          "Ajoutez des icônes et des liens personnalisés au pied de page de la barre latérale.",
+        icon: "URL de l'icône",
+        link: "URL de destination",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Rendu HTML",
+        description:
+          "Autorise le rendu du contenu HTML dans les réponses du chat.",
       },
     },
   },
   "main-page": {
-    noWorkspaceError: null,
-    checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
-      tasks: {
-        create_workspace: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        send_chat: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        embed_document: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        visit_community: {
-          title: null,
-          description: null,
-          action: null,
-        },
-      },
+    quickActions: {
+      createAgent: "Créer un agent",
+      editWorkspace: "Modifier l'espace de travail",
+      uploadDocument: "Télécharger un document",
     },
-    quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
-    },
-    exploreMore: {
-      title: null,
-      features: {
-        customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-      },
-    },
-    announcements: {
-      title: null,
-    },
-    resources: {
-      title: null,
-      links: {
-        docs: null,
-        star: null,
-      },
-      keyboardShortcuts: null,
-    },
+    greeting: "Comment puis-je vous aider aujourd'hui ?",
   },
   "keyboard-shortcuts": {
-    title: null,
+    title: "Raccourcis clavier",
     shortcuts: {
-      settings: null,
-      workspaceSettings: null,
-      home: null,
-      workspaces: null,
-      apiKeys: null,
-      llmPreferences: null,
-      chatSettings: null,
-      help: null,
-      showLLMSelector: null,
+      settings: "Ouvrir les paramètres",
+      workspaceSettings: "Paramètres de l'espace de travail",
+      home: "Retour à l'accueil",
+      workspaces: "Afficher les espaces de travail",
+      apiKeys: "Gérer les clés API",
+      llmPreferences: "Préférences LLM",
+      chatSettings: "Paramètres du chat",
+      help: "Afficher l'aide",
+      showLLMSelector: "Afficher le sélecteur de LLM",
     },
   },
   community_hub: {
     publish: {
       system_prompt: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Prompt publié avec succès !",
+        success_description:
+          "Votre prompt système a été publié sur le Community Hub.",
+        success_thank_you: "Merci pour votre contribution !",
+        view_on_hub: "Voir sur le Hub",
+        modal_title: "Publier le prompt système",
+        name_label: "Nom",
+        name_description: "Un nom descriptif pour votre prompt.",
+        name_placeholder: "Mon super prompt",
+        description_label: "Description",
+        description_description:
+          "Décrivez ce que fait votre prompt et comment l'utiliser.",
+        tags_label: "Tags",
+        tags_description:
+          "Ajoutez des tags pour aider les autres à trouver votre prompt.",
+        tags_placeholder: "productivité, rédaction, code...",
+        visibility_label: "Visibilité",
+        public_description: "Visible par tous sur le Community Hub.",
+        private_description: "Visible uniquement par vous.",
+        publish_button: "Publier",
+        submitting: "Publication...",
+        prompt_label: "Prompt",
+        prompt_description: "Le contenu de votre prompt système.",
+        prompt_placeholder: "Vous êtes un assistant IA utile...",
       },
       agent_flow: {
-        public_description: null,
-        private_description: null,
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        privacy_note: null,
+        success_title: "Flux d'agent publié avec succès !",
+        success_description:
+          "Votre flux d'agent a été publié sur le Community Hub.",
+        success_thank_you: "Merci pour votre contribution !",
+        view_on_hub: "Voir sur le Hub",
+        modal_title: "Publier le flux d'agent",
+        name_label: "Nom",
+        name_description: "Un nom descriptif pour votre flux d'agent.",
+        name_placeholder: "Mon flux d'agent",
+        description_label: "Description",
+        description_description:
+          "Décrivez ce que fait votre flux d'agent et comment l'utiliser.",
+        tags_label: "Tags",
+        tags_description:
+          "Ajoutez des tags pour aider les autres à trouver votre flux.",
+        tags_placeholder: "automatisation, productivité...",
+        visibility_label: "Visibilité",
+        submitting: "Publication...",
+        submit: "Soumettre",
+        privacy_note:
+          "Les flux d'agents peuvent contenir des informations sensibles. Vérifiez le contenu avant de le rendre public.",
       },
       generic: {
         unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
+          title: "Connexion requise",
+          description:
+            "Vous devez vous connecter à votre compte AnythingLLM pour publier sur le Community Hub.",
+          button: "Se connecter",
         },
       },
       slash_command: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        command_label: null,
-        command_description: null,
-        command_placeholder: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Commande publiée avec succès !",
+        success_description:
+          "Votre commande slash a été publiée sur le Community Hub.",
+        success_thank_you: "Merci pour votre contribution !",
+        view_on_hub: "Voir sur le Hub",
+        modal_title: "Publier la commande slash",
+        name_label: "Nom",
+        name_description: "Un nom descriptif pour votre commande.",
+        name_placeholder: "Ma commande",
+        description_label: "Description",
+        description_description:
+          "Décrivez ce que fait votre commande et comment l'utiliser.",
+        tags_label: "Tags",
+        tags_description:
+          "Ajoutez des tags pour aider les autres à trouver votre commande.",
+        tags_placeholder: "productivité, résumé...",
+        visibility_label: "Visibilité",
+        public_description: "Visible par tous sur le Community Hub.",
+        private_description: "Visible uniquement par vous.",
+        publish_button: "Publier",
+        submitting: "Publication...",
+        prompt_label: "Prompt",
+        prompt_description: "Le prompt exécuté par cette commande.",
+        prompt_placeholder: "Résumez le texte suivant : {{input}}",
       },
     },
   },
@@ -996,6 +1262,73 @@ const TRANSLATIONS = {
     notAssigned:
       "Vous n'êtes actuellement pas affecté à aucun espace de travail.\nPour accéder à un espace de travail, veuillez contacter votre administrateur.",
     goToWorkspace: 'Aller à "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot Telegram",
+    description:
+      "Connectez votre instance de AnythingLLM à Telegram afin de pouvoir communiquer avec vos espaces de travail depuis n'importe quel appareil.",
+    setup: {
+      step1: {
+        title: "Étape 1 : Créez votre bot Telegram",
+        description:
+          "Ouvrez @BotFather sur Telegram, envoyez `/newbot` à <code>@BotFather</code>, suivez les instructions, et copiez le jeton API.",
+        "open-botfather": "Ouvrir BotFather",
+        "instruction-1": "1. Ouvrez le lien ou numérisez le code QR.",
+        "instruction-2":
+          "2. Envoyer <code>/newbot</code> à <code>@BotFather</code>",
+        "instruction-3":
+          "3. Choisissez un nom et un nom d'utilisateur pour votre bot.",
+        "instruction-4": "4. Copiez le jeton API que vous recevez.",
+      },
+      step2: {
+        title: "Étape 2 : Connectez votre bot",
+        description:
+          "Collez le jeton API que vous avez reçu de @BotFather et sélectionnez un espace de travail par défaut pour que votre bot puisse communiquer.",
+        "bot-token": "Token Bot",
+        connecting: "Connexion...",
+        "connect-bot": "Bot de connexion",
+      },
+      security: {
+        title: "Paramètres de sécurité recommandés",
+        description:
+          "Pour une sécurité supplémentaire, configurez ces paramètres via @BotFather.",
+        "disable-groups": "— Empêcher l'ajout de bots aux groupes",
+        "disable-inline":
+          "— Empêcher l'utilisation de bots dans les recherches en ligne.",
+        "obscure-username":
+          "Utilisez un nom d'utilisateur de bot non évident pour réduire sa visibilité.",
+      },
+      "toast-enter-token": "Veuillez saisir un jeton de bot.",
+      "toast-connect-failed": "Échec de la connexion du bot.",
+    },
+    connected: {
+      status: "Connecté",
+      "status-disconnected":
+        "Non connecté – le jeton pourrait être expiré ou invalide.",
+      "placeholder-token": "Coller le nouveau jeton de bot...",
+      reconnect: "Reconnexion",
+      workspace: "Espace de travail",
+      "bot-link": "Lien vers le bot",
+      "voice-response": "Réponse vocale",
+      disconnecting: "Déconnexion...",
+      disconnect: "Déconnecter",
+      "voice-text-only": "Texte uniquement",
+      "voice-mirror":
+        "Écho (répondre par la voix lorsque l'utilisateur envoie une voix)",
+      "voice-always":
+        "Toujours inclure une voix (envoyer un enregistrement audio avec chaque réponse)",
+      "toast-disconnect-failed": "Échec de la déconnexion du robot.",
+      "toast-reconnect-failed": "Échec de la reconnexion du bot.",
+      "toast-voice-failed": "Impossible de mettre à jour le mode vocal.",
+      "toast-approve-failed": "Échec de la validation de l'utilisateur.",
+      "toast-deny-failed": "Impossible de refuser l'accès à l'utilisateur.",
+      "toast-revoke-failed": "Impossible de supprimer l'utilisateur.",
+    },
+    users: {
+      "pending-description":
+        "Utilisateurs en attente de vérification. Correspondez le code de correspondance affiché ici avec celui qui apparaît dans leur conversation Telegram.",
+      unknown: "Inconnu",
+    },
   },
 };
 

@@ -23,14 +23,19 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
-const { voiceChatWebSocket } = require("./endpoints/voiceChatWebsocket");
+const {
+  agentSkillWhitelistEndpoints,
+} = require("./endpoints/agentSkillWhitelist");
+const { agentFileServerEndpoints } = require("./endpoints/agentFileServer");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
+const { webPushEndpoints } = require("./endpoints/webPush");
 const { oauthEndpoints } = require("./endpoints/oauth");
+const { telegramEndpoints } = require("./endpoints/telegram");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
@@ -75,15 +80,17 @@ embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
-voiceChatWebSocket(apiRouter);
+agentSkillWhitelistEndpoints(apiRouter);
+agentFileServerEndpoints(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
 agentFlowEndpoints(apiRouter);
 mcpServersEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
+webPushEndpoints(apiRouter);
 oauthEndpoints(app, apiRouter);
-
+telegramEndpoints(apiRouter);
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 

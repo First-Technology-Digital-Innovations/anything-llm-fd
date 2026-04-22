@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Добро пожаловать в",
       getStarted: "Начать",
+      welcome: "Добро пожаловать",
     },
     llm: {
       title: "Предпочитаемые LLM",
@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Важно сохранить этот пароль, так как способа его восстановления не существует.",
       adminUsername: "Имя пользователя для учётной записи администратора",
-      adminUsernameReq:
-        "Имя пользователя должно состоять не менее чем из 6 символов и содержать только строчные буквы, цифры, символы подчеркивания и дефисы без пробелов.",
       adminPassword: "Пароль для учётной записи администратора",
       adminPasswordReq: "Пароль должен содержать не менее 8 символов.",
       teamHint:
@@ -50,17 +48,9 @@ const TRANSLATIONS = {
       skip: "Пропустить опрос",
       thankYou: "Спасибо за ваш отзыв!",
     },
-    workspace: {
-      title: "Создайте ваше первое рабочее пространство",
-      description:
-        "Создайте ваше первое рабочее пространство и начните работу с AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Имя рабочих пространств",
-    error: "ошибка",
-    success: "успех",
-    user: "Пользователь",
     selection: "Выбор модели",
     saving: "Сохранение...",
     save: "Сохранить изменения",
@@ -69,11 +59,17 @@ const TRANSLATIONS = {
     optional: "Необязательный",
     yes: "Да",
     no: "Нет",
-    search: null,
+    search: "Поиск",
+    username_requirements:
+      "Имя пользователя должно содержать от 2 до 32 символов, начинаться со строчной буквы и содержать только строчные буквы, цифры, символы подчёркивания, дефисы и точки.",
+    on: "О",
+    none: "Нет",
+    stopped: "Остановлен",
+    loading: "Загрузка",
+    refresh: "Обновить",
   },
   settings: {
     title: "Настройки экземпляра",
-    system: "Системные настройки",
     invites: "Приглашение",
     users: "Пользователи",
     workspaces: "Рабочие пространства",
@@ -87,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "Голос и Речь",
     "vector-database": "Векторная база данных",
     embeds: "Виджеты встраивания чата",
-    "embed-chats": "История встраивания чатов",
     security: "Безопасность",
     "event-logs": "Журналы событий",
     privacy: "Конфиденциальность и данные",
@@ -99,9 +94,20 @@ const TRANSLATIONS = {
     contact: "Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
     "system-prompt-variables": "Переменные системного запроса",
-    interface: null,
-    branding: null,
-    chat: null,
+    interface: "Предпочтения в пользовательском интерфейсе",
+    branding: "Брендинг и создание продуктов с собственной меткой.",
+    chat: "Чат",
+    "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Центр сообщества",
+      trending: "Изучите популярные темы",
+      "your-account": "Ваш аккаунт",
+      "import-item": "Импорт товара",
+    },
+    channels: "Каналы",
+    "available-channels": {
+      telegram: "Телеграм",
+    },
   },
   login: {
     "multi-user": {
@@ -113,16 +119,12 @@ const TRANSLATIONS = {
       "forgot-pass": "Забыли пароль",
       reset: "Сбросить",
     },
-    "sign-in": {
-      start: "Войти в ваш",
-      end: "аккаунт.",
-    },
+    "sign-in": "Войти в ваш {{appName}} аккаунт.",
     "password-reset": {
       title: "Сброс пароля",
       description:
         "Предоставьте необходимую информацию ниже, чтобы сбросить ваш пароль.",
       "recovery-codes": "Коды восстановления",
-      "recovery-code": "Код восстановления {{index}}",
       "back-to-login": "Вернуться к входу",
     },
   },
@@ -155,13 +157,6 @@ const TRANSLATIONS = {
       heading: "Объясните мне",
       body: "преимущества AnythingLLM",
     },
-    pfp: {
-      title: "Изображение профиля помощника",
-      description:
-        "Настройте изображение профиля помощника для этого рабочего пространства.",
-      image: "Изображение рабочего пространства",
-      remove: "Удалить изображение рабочего пространства",
-    },
     delete: {
       title: "Удалить Рабочее Пространство",
       description:
@@ -184,21 +179,23 @@ const TRANSLATIONS = {
       title: "Модель чата рабочего пространства",
       description:
         "Конкретная модель чата, которая будет использоваться для этого рабочего пространства. Если пусто, будет использоваться системное предпочтение LLM.",
-      wait: "-- ожидание моделей --",
     },
     mode: {
       title: "Режим чата",
       chat: {
         title: "Чат",
-        "desc-start": "будет предоставлять ответы с общей информацией LLM",
-        and: "и",
-        "desc-end": "найденный контекст документов.",
+        description:
+          "предоставит ответы, используя общие знания LLM и контекст документа, который был предоставлен. Для использования инструментов необходимо использовать команду @agent.",
       },
       query: {
         title: "Запрос",
-        "desc-start": "будет предоставлять ответы",
-        only: "только",
-        "desc-end": "если найден контекст документов.",
+        description:
+          "будет предоставлять ответы <b>только</b>, если будет найден контекст документа.<br />Для использования инструментов вам потребуется использовать команду @agent.",
+      },
+      automatic: {
+        title: "Авто",
+        description:
+          "автоматически будет использовать инструменты, если модель и поставщик поддерживают вызов инструментов напрямую. <br />Если прямой вызов инструментов не поддерживается, вам потребуется использовать команду `@agent` для использования инструментов.",
       },
     },
     history: {
@@ -214,15 +211,16 @@ const TRANSLATIONS = {
       description:
         "Подсказка, которая будет использоваться в этом рабочем пространстве. Определите контекст и инструкции для AI для создания ответа. Вы должны предоставить тщательно разработанную подсказку, чтобы AI мог генерировать релевантный и точный ответ.",
       history: {
-        title: null,
-        clearAll: null,
-        noHistory: null,
-        restore: null,
-        delete: null,
-        deleteConfirm: null,
-        clearAllConfirm: null,
-        expand: null,
-        publish: null,
+        title: "История запросов системы",
+        clearAll: "Очистить всё",
+        noHistory: "Информация о предыдущих запросах недоступна.",
+        restore: "Восстановить",
+        delete: "Удалить",
+        deleteConfirm: "Вы уверены, что хотите удалить этот элемент истории?",
+        clearAllConfirm:
+          "Вы уверены, что хотите очистить всю историю? Это действие нельзя отменить.",
+        expand: "Расширять",
+        publish: "Опубликовать в Центре сообщества",
       },
     },
     refusal: {
@@ -231,8 +229,9 @@ const TRANSLATIONS = {
       query: "запроса",
       "desc-end":
         "вы можете вернуть пользовательский ответ об отказе, если контекст не найден.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Почему я это вижу?",
+      "tooltip-description":
+        "Вы находитесь в режиме запроса, который использует только информацию из ваших документов. Переключитесь в режим чата для более гибких бесед, или нажмите здесь, чтобы посетить нашу документацию и узнать больше о режимах чата.",
     },
     temperature: {
       title: "Температура LLM",
@@ -289,9 +288,6 @@ const TRANSLATIONS = {
       wait: "-- ожидание моделей --",
     },
     skill: {
-      title: "Навыки агента по умолчанию",
-      description:
-        "Улучшите естественные способности агента по умолчанию с помощью этих предустановленных навыков. Эта настройка применяется ко всем рабочим пространствам.",
       rag: {
         title: "RAG и долговременная память",
         description:
@@ -312,17 +308,269 @@ const TRANSLATIONS = {
         description:
           "Включите возможность создания различных типов диаграмм из предоставленных данных или данных, указанных в чате.",
       },
-      save: {
-        title: "Создание и сохранение файлов в браузер",
-        description:
-          "Включите возможность создания и записи файлов, которые можно сохранить и загрузить в вашем браузере.",
-      },
       web: {
         title: "Поиск в Интернете и просмотр в реальном времени",
-        "desc-start":
-          "Позвольте вашему агенту искать в Интернете для ответа на ваши вопросы, подключаясь к поставщику поиска (SERP).",
-        "desc-end":
-          "Поиск в Интернете во время сессий агента не будет работать, пока это не настроено.",
+        description:
+          "Предоставьте вашему агенту возможность искать информацию в интернете, чтобы отвечать на ваши вопросы, подключившись к провайдеру поисковой системы (SERP).",
+      },
+      sql: {
+        title: "Драйвер для работы с базой данных SQL",
+        description:
+          "Позвольте вашему агенту использовать SQL для ответа на ваши вопросы, подключившись к различным провайдерам баз данных.",
+      },
+      default_skill:
+        "По умолчанию, эта функция включена, но вы можете отключить ее, если не хотите, чтобы она была доступна для агента.",
+      filesystem: {
+        title: "Доступ к файловой системе",
+        description:
+          "Предоставьте вашему агенту возможность читать, создавать, искать и управлять файлами в определенной директории. Поддерживает редактирование файлов, навигацию по директориям и поиск содержимого.",
+        learnMore: "Узнайте больше о том, как использовать этот навык.",
+        configuration: "Настройка",
+        readActions: "Прочитать действия",
+        writeActions: "Определить действия",
+        warning:
+          "Доступ к файловой системе может быть опасным, так как он может изменять или удалять файлы. Пожалуйста, ознакомьтесь с <link>документацией</link> перед включением.",
+        skills: {
+          "read-text-file": {
+            title: "Открыть файл",
+            description:
+              "Прочитать содержимое файлов (текст, код, PDF, изображения и т.д.)",
+          },
+          "read-multiple-files": {
+            title: "Открыть несколько файлов",
+            description: "Одновременно читать несколько файлов.",
+          },
+          "list-directory": {
+            title: "Список каталогов",
+            description: "Перечислите файлы и каталоги в папке.",
+          },
+          "search-files": {
+            title: "Поиск файлов",
+            description: "Поиск файлов по имени или содержимому",
+          },
+          "get-file-info": {
+            title: "Получить информацию о файле",
+            description: "Получите подробную информацию о метаданных файлов.",
+          },
+          "edit-file": {
+            title: "Редактировать файл",
+            description:
+              "Внесите изменения в текстовые файлы, работая построчно.",
+          },
+          "create-directory": {
+            title: "Создать папку",
+            description: "Создать новые каталоги",
+          },
+          "move-file": {
+            title: "Переместить/Переименовать файл",
+            description: "Переместите или переименуйте файлы и каталоги.",
+          },
+          "copy-file": {
+            title: "Скопировать файл",
+            description: "Копировать файлы и каталоги",
+          },
+          "write-text-file": {
+            title: "Создать текстовый файл",
+            description:
+              "Создайте новые текстовые файлы или перезапишите существующие текстовые файлы.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Создание документа",
+        description:
+          "Предоставьте своему агенту возможность создавать файлы в двоичном формате, такие как презентации PowerPoint, электронные таблицы Excel, документы Word и PDF. Файлы можно загружать непосредственно из окна чата.",
+        configuration: "Доступные типы документов",
+        skills: {
+          "create-text-file": {
+            title: "Текстовые файлы",
+            description:
+              "Создавайте текстовые файлы с любым содержимым и расширением (.txt, .md, .json, .csv и т. д.)",
+          },
+          "create-pptx": {
+            title: "Презентации в формате PowerPoint",
+            description:
+              "Создайте новые презентации в формате PowerPoint, включая слайды, заголовки и списки с маркерами.",
+          },
+          "create-pdf": {
+            title: "Документы в формате PDF",
+            description:
+              "Создавайте документы в формате PDF из Markdown или простого текста с использованием базового оформления.",
+          },
+          "create-xlsx": {
+            title: "Электронные таблицы в программе Excel",
+            description:
+              "Создайте документы Excel для табличных данных, включающие листы и оформление.",
+          },
+          "create-docx": {
+            title: "Документы в формате Word",
+            description:
+              "Создавайте документы в формате Word с использованием базовых стилей и форматирования.",
+          },
+        },
+      },
+      gmail: {
+        title: "Подключение к GMail",
+        description:
+          "Предоставьте своему агенту возможность взаимодействовать с Gmail: искать письма, читать цепочки сообщений, составлять черновики, отправлять письма и управлять своей почтой. <a>Ознакомьтесь с документацией</a>.",
+        multiUserWarning:
+          "Интеграция с Gmail недоступна в многопользовательском режиме по соображениям безопасности. Пожалуйста, отключите многопользовательский режим, чтобы использовать эту функцию.",
+        configuration: "Настройка Gmail",
+        deploymentId: "Идентификатор развертывания",
+        deploymentIdHelp:
+          "Идентификатор развертывания вашего веб-приложения Google Apps Script",
+        apiKey: "Ключ API",
+        apiKeyHelp:
+          "Ключ API, который вы настроили в своем проекте Google Apps Script",
+        configurationRequired:
+          "Пожалуйста, настройте идентификатор развертывания и API-ключ, чтобы активировать функции Gmail.",
+        configured: "Настроен",
+        searchSkills: "Навыки поиска...",
+        noSkillsFound: "Не найдено ни одного совпадения с вашим запросом.",
+        categories: {
+          search: {
+            title: "Поиск и чтение электронных писем",
+            description:
+              "Найдите и прочитайте электронные письма из вашей почты Gmail.",
+          },
+          drafts: {
+            title: "Черновики электронных писем",
+            description:
+              "Создавайте, редактируйте и управляйте черновиками электронных писем.",
+          },
+          send: {
+            title: "Отправка и ответы на электронные письма",
+            description:
+              "Отправляйте электронные письма и оперативно отвечайте на сообщения в обсуждениях.",
+          },
+          threads: {
+            title: "Управление цепочками писем",
+            description:
+              "Управление цепочками электронных писем: пометка как прочитанные/непрочитанные, архивирование, удаление",
+          },
+          account: {
+            title: "Статистика интеграции",
+            description:
+              "Просмотрите статистику использования почтового ящика и информацию об учетной записи.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Поиск в электронных письмах",
+            description: "Искать письма, используя синтаксис запросов Gmail",
+          },
+          readThread: {
+            title: "Прочитать тему",
+            description:
+              "Просмотрите всю цепочку электронных писем, отсортированную по идентификатору.",
+          },
+          createDraft: {
+            title: "Создать черновик",
+            description: "Создайте новый черновик электронного письма",
+          },
+          createDraftReply: {
+            title: "Создать черновик ответа",
+            description:
+              "Составьте черновик ответа к существующему обсуждению.",
+          },
+          updateDraft: {
+            title: "Обновленная версия проекта",
+            description: "Обновить существующий черновик электронного письма",
+          },
+          getDraft: {
+            title: "Получить черновик",
+            description: "Получить конкретный черновик по его идентификатору",
+          },
+          listDrafts: {
+            title: "Черновики",
+            description: "Перечислите все черновики электронных писем.",
+          },
+          deleteDraft: {
+            title: "Удалить черновик",
+            description: "Удалить черновик письма",
+          },
+          sendDraft: {
+            title: "Отправить черновик",
+            description: "Отправить существующий черновик электронного письма",
+          },
+          sendEmail: {
+            title: "Отправить электронное письмо",
+            description: "Немедленно отправьте электронное письмо.",
+          },
+          replyToThread: {
+            title: "Ответить на тему",
+            description: "Ответить на цепочку писем немедленно",
+          },
+          markRead: {
+            title: "Марк Рид",
+            description: "Отметьте тему как прочитанную.",
+          },
+          markUnread: {
+            title: "Отмечено как непрочитанное",
+            description: "Отметьте тему как непрочитанную.",
+          },
+          moveToTrash: {
+            title: "Переместить в корзину",
+            description: "Переместить тему в корзину",
+          },
+          moveToArchive: {
+            title: "Архив",
+            description: "Архивировать тему",
+          },
+          moveToInbox: {
+            title: 'Переместить в папку "Входящие"',
+            description: "Переместить тему в папку «Входящие»",
+          },
+          getMailboxStats: {
+            title: "Статистика почтового ящика",
+            description:
+              "Получите информацию о количестве непрочитанных писем и статистику почтового ящика.",
+          },
+          getInbox: {
+            title: "Открыть входящие",
+            description:
+              "Удобный способ получения писем из почтового ящика Gmail.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Серверы MCP",
+      "loading-from-config": "Загрузка серверов MCP из конфигурационного файла",
+      "learn-more": "Узнайте больше о серверах MCP.",
+      "no-servers-found": "Не найдено серверов MCP.",
+      "tool-warning":
+        "Для достижения наилучших результатов, рассмотрите возможность отключения неиспользуемых инструментов, чтобы сохранить контекст.",
+      "stop-server": "Остановить сервер MCP",
+      "start-server": "Запустить сервер MCP",
+      "delete-server": "Удалить сервер MCP",
+      "tool-count-warning":
+        "Этот сервер MCP имеет включенные <b> инструменты, которые потребляют контекст в каждом чате.</b> Рассмотрите возможность отключения нежелательных инструментов для экономии контекста.",
+      "startup-command": "Команда для запуска",
+      command: "Приказ",
+      arguments: "Аргументы",
+      "not-running-warning":
+        "Этот сервер MCP не работает – он может быть остановлен или возникла ошибка при запуске.",
+      "tool-call-arguments": "Аргументы для вызова функции",
+      "tools-enabled": "инструменты включены/активированы",
+    },
+    settings: {
+      title: "Настройки навыков агента",
+      "max-tool-calls": {
+        title: "Максимальное количество запросов к инструменту в одном ответе",
+        description:
+          "Максимальное количество инструментов, которые агент может использовать последовательно для генерации одного ответа. Это предотвращает чрезмерное использование инструментов и бесконечные циклы.",
+      },
+      "intelligent-skill-selection": {
+        title: "Интеллектуальный выбор навыков",
+        "beta-badge": "Бета-версия",
+        description:
+          "Позволяет использовать неограниченное количество инструментов и сократить использование токенов до 80% на запрос – AnythingLLM автоматически выбирает наиболее подходящие навыки для каждого запроса.",
+        "max-tools": {
+          title: "Инструменты Max",
+          description:
+            "Максимальное количество инструментов, которые можно выбрать для каждого запроса. Мы рекомендуем устанавливать это значение на более высокие значения для моделей с большим контекстом.",
+        },
       },
     },
   },
@@ -346,7 +594,34 @@ const TRANSLATIONS = {
       "API ключи позволяют владельцу программно получать доступ к этому экземпляру AnythingLLM и управлять им.",
     link: "Прочитать документацию по API",
     generate: "Создать новый API ключ",
+    empty: "API-ключи не найдены",
+    actions: "Действия",
+    messages: {
+      error: "Ошибка: {{error}}",
+    },
+    modal: {
+      title: "Создать новый API-ключ",
+      cancel: "Отмена",
+      close: "Закрыть",
+      create: "Создать API-ключ",
+      helper:
+        "После создания API-ключ можно использовать для программного доступа к этому экземпляру AnythingLLM и его настройки.",
+      name: {
+        label: "Название",
+        placeholder: "Продакшн-интеграция",
+        helper:
+          "Необязательно. Используйте понятное имя, чтобы потом легко узнать этот ключ.",
+      },
+    },
+    row: {
+      copy: "Копировать API-ключ",
+      copied: "Скопировано",
+      unnamed: "--",
+      deleteConfirm:
+        "Вы уверены, что хотите деактивировать этот API-ключ?\nПосле этого его больше нельзя будет использовать.\n\nЭто действие необратимо.",
+    },
     table: {
+      name: "Название",
       key: "API ключ",
       by: "Создано",
       created: "Создано",
@@ -359,13 +634,15 @@ const TRANSLATIONS = {
     provider: "Поставщик LLM",
     providers: {
       azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
+        azure_service_endpoint: "Endpoint для сервиса Azure",
+        api_key: "Ключ API",
+        chat_deployment_name: "Название развертывания чата",
+        chat_model_token_limit: "Предел токенов для чата",
+        model_type: "Тип модели",
+        default: "Стандартные настройки.",
+        reasoning: "Обоснование",
+        model_type_tooltip:
+          'Если ваш проект использует модель рассуждения (например, o1, o1-mini, o3-mini и т.д.), установите этот параметр в значение "Reasoning". В противном случае, ваши запросы в чат могут не выполняться.',
       },
     },
   },
@@ -427,7 +704,7 @@ const TRANSLATIONS = {
       workspace: "Рабочее пространство",
       chats: "Отправленные чаты",
       active: "Активные домены",
-      created: null,
+      created: "Создано",
     },
   },
   "embed-chats": {
@@ -458,9 +735,6 @@ const TRANSLATIONS = {
     title: "Конфиденциальность и обработка данных",
     description:
       "Это ваша конфигурация для того, как подключенные сторонние поставщики и AnythingLLM обрабатывают ваши данные.",
-    llm: "Выбор LLM",
-    embedding: "Предпочтение встраивания",
-    vector: "Векторная база данных",
     anonymous: "Анонимная телеметрия включена",
   },
   connectors: {
@@ -502,7 +776,6 @@ const TRANSLATIONS = {
       URL_explained: "URL репозитория GitLab, который вы хотите собрать.",
       token: "Токен доступа GitLab",
       optional: "необязательно",
-      token_explained: "Токен доступа для предотвращения ограничения запросов.",
       token_description:
         "Выберите дополнительные сущности для получения через API GitLab.",
       token_explained_start: "Без ",
@@ -536,9 +809,6 @@ const TRANSLATIONS = {
       URL_explained_end: " (закрытые титры).",
       task_explained:
         "После завершения транскрипция будет доступна для внедрения в рабочие пространства через выбор документов.",
-      language: "Язык транскрипции",
-      language_explained: "Выберите язык транскрипции, которую хотите собрать.",
-      loading_languages: "-- загрузка доступных языков --",
     },
     "website-depth": {
       name: "Сбор ссылок с сайта",
@@ -580,6 +850,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Ваш личный токен доступа для Confluence.",
       task_explained:
         "После завершения содержимое страницы будет доступно для внедрения в рабочие пространства через выбор документов.",
+      bypass_ssl: "Обход проверки сертификата SSL",
+      bypass_ssl_explained:
+        "Включите эту опцию, чтобы обойти проверку сертификата SSL для экземпляров Confluence, размещенных на собственном сервере, с использованием самоподписанного сертификата.",
     },
     manage: {
       documents: "Документы",
@@ -595,20 +868,18 @@ const TRANSLATIONS = {
       "search-document": "Поиск документа",
       "no-documents": "Нет документов",
       "move-workspace": "Переместить в рабочее пространство",
-      name: "Название",
       "delete-confirmation":
         "Вы уверены, что хотите удалить эти файлы и папки?\nЭто действие удалит файлы из системы и автоматически уберёт их из всех рабочих пространств.\nЭто действие необратимо.",
       "removing-message":
         "Удаляется {{count}} документов и {{folderCount}} папок. Пожалуйста, подождите.",
       "move-success": "Успешно перемещено {{count}} документов.",
-      date: "Дата",
-      type: "Тип",
       no_docs: "Нет документов",
       select_all: "Выбрать всё",
       deselect_all: "Снять выбор со всех",
       remove_selected: "Удалить выбранные",
-      costs: "*Единоразовая стоимость за внедрение",
       save_embed: "Сохранить и внедрить",
+      "total-documents_one": "{{count}} документ",
+      "total-documents_other": "{{count}} документы",
     },
     upload: {
       "processor-offline": "Процессор документов недоступен",
@@ -647,71 +918,101 @@ const TRANSLATIONS = {
       accept: "Хорошо, понял",
     },
     obsidian: {
-      name: null,
-      description: null,
-      vault_location: null,
-      vault_description: null,
-      selected_files: null,
-      importing: null,
-      import_vault: null,
-      processing_time: null,
-      vault_warning: null,
+      vault_location: "Местоположение хранилища",
+      vault_description:
+        "Выберите папку вашего хранилища Obsidian, чтобы импортировать все заметки и их связи.",
+      selected_files: "Найдено {{count}} файлов в формате Markdown",
+      importing: "Импорт хранилища...",
+      import_vault: "Import Vault",
+      processing_time:
+        "Это может занять некоторое время, в зависимости от размера вашего хранилища.",
+      vault_warning:
+        "Чтобы избежать любых конфликтов, убедитесь, что ваша папка Obsidian не открыта в данный момент.",
     },
   },
   chat_window: {
-    welcome: "Добро пожаловать в ваше новое рабочее пространство.",
-    get_started: "Чтобы начать, либо",
-    get_started_default: "Чтобы начать",
-    upload: "загрузите документ",
-    or: "или",
-    send_chat: "отправьте сообщение в чате.",
     send_message: "Отправить сообщение",
     attach_file: "Прикрепить файл к чату",
-    slash: "Просмотреть все доступные слэш-команды для чата.",
-    agents: "Просмотреть всех доступных агентов для чата.",
     text_size: "Изменить размер текста.",
     microphone: "Произнесите ваш запрос.",
     send: "Отправить запрос в рабочее пространство",
-    attachments_processing: null,
-    tts_speak_message: null,
-    copy: null,
-    regenerate: null,
-    regenerate_response: null,
-    good_response: null,
-    more_actions: null,
-    hide_citations: null,
-    show_citations: null,
-    pause_tts_speech_message: null,
-    fork: null,
-    delete: null,
-    save_submit: null,
-    cancel: null,
-    edit_prompt: null,
-    edit_response: null,
-    at_agent: null,
-    default_agent_description: null,
-    custom_agents_coming_soon: null,
-    slash_reset: null,
-    preset_reset_description: null,
-    add_new_preset: null,
-    command: null,
-    your_command: null,
-    placeholder_prompt: null,
-    description: null,
-    placeholder_description: null,
-    save: null,
-    small: null,
-    normal: null,
-    large: null,
+    attachments_processing: "Обработка вложений. Пожалуйста, подождите...",
+    tts_speak_message: "Сообщение TTS Speak",
+    copy: "Копировать",
+    regenerate: "Восстановить",
+    regenerate_response: "Перефразировать ответ",
+    good_response: "Хороший ответ",
+    more_actions: "Больше действий",
+    fork: "Вилка",
+    delete: "Удалить",
+    cancel: "Отменить",
+    edit_prompt:
+      "Пожалуйста, предоставьте текст, который необходимо отредактировать.",
+    edit_response: "Отредактируйте ответ",
+    preset_reset_description: "Очистите историю чата и начните новый чат",
+    add_new_preset: "Добавить новый шаблон",
+    command: "Команда",
+    your_command: "Ваш приказ",
+    placeholder_prompt:
+      "Это контент, который будет отображаться перед вашим запросом.",
+    description: "Описание",
+    placeholder_description:
+      "Отвечает стихотворением о больших языковых моделях.",
+    save: "Сохранить",
+    small: "Маленький",
+    normal: "Нормальный",
+    large: "Большой",
     workspace_llm_manager: {
-      search: null,
-      loading_workspace_settings: null,
-      available_models: null,
-      available_models_description: null,
-      save: null,
-      saving: null,
-      missing_credentials: null,
-      missing_credentials_description: null,
+      search: "Поиск поставщиков больших языковых моделей",
+      loading_workspace_settings: "Загрузка настроек рабочего пространства...",
+      available_models: "Доступные модели для {{provider}}",
+      available_models_description:
+        "Выберите модель, которую вы хотите использовать для этой рабочей среды.",
+      save: "Используйте эту модель.",
+      saving:
+        "Установка модели в качестве значения по умолчанию для рабочего пространства...",
+      missing_credentials:
+        "Этот поставщик не предоставляет никаких подтверждающих документов.",
+      missing_credentials_description:
+        "Нажмите, чтобы настроить учетные данные",
+    },
+    submit: "Отправить",
+    edit_info_user:
+      '"Отправить" генерирует новый ответ от ИИ. "Сохранить" обновляет только ваше сообщение.',
+    edit_info_assistant:
+      "Ваши изменения будут сохранены непосредственно в этом ответе.",
+    see_less: "Показать меньше",
+    see_more: "Узнать больше",
+    tools: "Инструменты",
+    text_size_label: "Размер текста",
+    select_model: "Выберите модель",
+    sources: "Источники",
+    document: "Документ",
+    similarity_match: "соревнование; игра",
+    source_count_one: "{{count}} – ссылка",
+    source_count_other: "Ссылки на {{count}}",
+    preset_exit_description: "Прекратить текущую сессию работы с агентом",
+    add_new: "Добавить новое",
+    edit: "Редактировать",
+    publish: "Опубликовать",
+    stop_generating: "Прекратите генерацию ответа",
+    slash_commands: "Команды, введенные сокращенной формой",
+    agent_skills: "Навыки агента",
+    manage_agent_skills: "Управление навыками агентов",
+    agent_skills_disabled_in_session:
+      "Невозможно изменять навыки во время активной сессии. Для завершения сессии сначала используйте команду /exit.",
+    start_agent_session: "Начать сеанс для агента",
+    use_agent_session_to_use_tools:
+      "Вы можете использовать инструменты в чате, начав сеанс с агентом, добавив '@agent' в начало вашего сообщения.",
+    agent_invocation: {
+      model_wants_to_call: "Модель хочет позвонить",
+      approve: "Одобрить",
+      reject: "Отказ",
+      always_allow: "Всегда оставляйте {{skillName}}",
+      tool_call_was_approved:
+        "Запрос на предоставление инструмента был одобрен.",
+      tool_call_was_rejected:
+        "Запрос на предоставление инструмента был отклонен.",
     },
   },
   profile_settings: {
@@ -719,291 +1020,225 @@ const TRANSLATIONS = {
     profile_picture: "Изображение профиля",
     remove_profile_picture: "Удалить изображение профиля",
     username: "Имя пользователя",
-    username_description:
-      "Имя пользователя должно состоять только из строчных букв, цифр, символов подчеркивания и дефисов без пробелов",
     new_password: "Новый пароль",
     password_description: "Пароль должен содержать не менее 8 символов",
     cancel: "Отмена",
     update_account: "Обновить учётную запись",
     theme: "Предпочтения темы",
     language: "Предпочитаемый язык",
-    failed_upload: null,
-    upload_success: null,
-    failed_remove: null,
-    profile_updated: null,
-    failed_update_user: null,
-    account: null,
-    support: null,
-    signout: null,
+    failed_upload: "Не удалось загрузить фотографию профиля: {{ошибка}}",
+    upload_success: "Фотография профиля загружена.",
+    failed_remove: "Не удалось удалить фотографию профиля: {{error}}",
+    profile_updated: "Профиль обновлен.",
+    failed_update_user: "Не удалось обновить данные пользователя: {{error}}",
+    account: "Счёт",
+    support: "Поддержка",
+    signout: "Выйти",
   },
   customization: {
     interface: {
-      title: null,
-      description: null,
+      title: "Предпочтения в пользовательском интерфейсе",
+      description:
+        "Настройте свои предпочтения пользовательского интерфейса для AnythingLLM.",
     },
     branding: {
-      title: null,
-      description: null,
+      title: "Брендинг и создание продуктов с собственной меткой.",
+      description:
+        "Настройте свою версию AnythingLLM с использованием собственных брендинговых элементов.",
     },
     chat: {
-      title: null,
-      description: null,
+      title: "Чат",
+      description: "Настройте свои предпочтения для чата с AnythingLLM.",
       auto_submit: {
-        title: null,
-        description: null,
+        title: "Автоматическая передача голосового ввода",
+        description:
+          "Автоматически отправлять голосовой ввод после периода тишины",
       },
       auto_speak: {
-        title: null,
-        description: null,
+        title: "Автоматические ответы",
+        description:
+          "Автоматическое воспроизведение ответов, сгенерированных ИИ.",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "Включить проверку правописания",
+        description:
+          "Включить или отключить проверку правописания в поле ввода сообщений",
       },
     },
     items: {
       theme: {
-        title: null,
-        description: null,
+        title: "Тема",
+        description: "Выберите предпочитаемую цветовую схему для приложения.",
       },
       "show-scrollbar": {
-        title: null,
-        description: null,
+        title: "Показать полосу прокрутки",
+        description: "Включить или отключить полосу прокрутки в окне чата.",
       },
       "support-email": {
-        title: null,
-        description: null,
+        title: "Поддержка по электронной почте",
+        description:
+          "Укажите адрес электронной почты службы поддержки, к которому пользователи смогут обращаться за помощью.",
       },
       "app-name": {
-        title: null,
-        description: null,
-      },
-      "chat-message-alignment": {
-        title: null,
-        description: null,
+        title: "Имя:\n\nИмя:",
+        description:
+          "Укажите имя, которое будет отображаться на странице входа для всех пользователей.",
       },
       "display-language": {
-        title: null,
-        description: null,
+        title: "Язык отображения",
+        description:
+          "Выберите предпочитаемый язык для отображения пользовательского интерфейса AnythingLLM – когда доступны переводы.",
       },
       logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
-      },
-      "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
-        "double-click": null,
-        save: null,
+        title: "Логотип бренда",
+        description:
+          "Загрузите свой собственный логотип, чтобы он отображался на всех страницах.",
+        add: "Добавьте свой логотип",
+        recommended: "Рекомендуемый размер: 800 x 200",
+        remove: "Удалить",
+        replace: "Замените",
       },
       "browser-appearance": {
-        title: null,
-        description: null,
+        title: "Внешний вид браузера",
+        description:
+          "Настройте внешний вид вкладки и заголовка браузера при открытии приложения.",
         tab: {
-          title: null,
-          description: null,
+          title: "Заголовок",
+          description:
+            "Установите пользовательское название вкладки при открытии приложения в браузере.",
         },
         favicon: {
-          title: null,
-          description: null,
+          title: "Favicon",
+          description:
+            "Используйте пользовательский значок для вкладки браузера.",
         },
       },
       "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
+        title: "Элементы нижней части боковой панели",
+        description:
+          "Настройте элементы, отображаемые в нижней части боковой панели.",
+        icon: "Иконка",
+        link: "Ссылка",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Отображение HTML в чате",
+        description:
+          "Отображение HTML-ответов в ответах помощника.\nЭто может привести к значительно более высокой степени соответствия ответа качеству, но также может привести к потенциальным проблемам с безопасностью.",
       },
     },
   },
   "main-page": {
-    noWorkspaceError: null,
-    checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
-      tasks: {
-        create_workspace: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        send_chat: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        embed_document: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        visit_community: {
-          title: null,
-          description: null,
-          action: null,
-        },
-      },
+    quickActions: {
+      createAgent: "Создать агента",
+      editWorkspace: "Редактировать рабочее пространство",
+      uploadDocument: "Загрузить документ",
     },
-    quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
-    },
-    exploreMore: {
-      title: null,
-      features: {
-        customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-      },
-    },
-    announcements: {
-      title: null,
-    },
-    resources: {
-      title: null,
-      links: {
-        docs: null,
-        star: null,
-      },
-      keyboardShortcuts: null,
-    },
+    greeting: "Чем я могу вам помочь сегодня?",
   },
   "keyboard-shortcuts": {
-    title: null,
+    title: "Сочетания клавиш",
     shortcuts: {
-      settings: null,
-      workspaceSettings: null,
-      home: null,
-      workspaces: null,
-      apiKeys: null,
-      llmPreferences: null,
-      chatSettings: null,
-      help: null,
-      showLLMSelector: null,
+      settings: "Открыть настройки",
+      workspaceSettings: "Открыть текущие настройки рабочего пространства",
+      home: "Вернуться на главную",
+      workspaces: "Управление рабочими пространствами",
+      apiKeys: "Настройки API-ключей",
+      llmPreferences: "Предпочтения LLM",
+      chatSettings: "Настройки чата",
+      help: "Показать справку о сочетаниях клавиш",
+      showLLMSelector: "Выбор рабочей среды для LLM",
     },
   },
   community_hub: {
     publish: {
       system_prompt: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Успех!",
+        success_description:
+          "Ваш системный запрос был опубликован в Центре сообщества!",
+        success_thank_you: "Спасибо за то, что поделились с сообществом!",
+        view_on_hub: "Просмотр в Центре сообщества",
+        modal_title: "Система оповещения",
+        name_label: "Имя:\n\nИмя:",
+        name_description:
+          "Это имя, которое отображается для вашего системного запроса.",
+        name_placeholder: "Моя системная подсказка",
+        description_label: "Описание",
+        description_description:
+          "Это описание вашего системного запроса. Используйте его для описания цели вашего системного запроса.",
+        tags_label: "Теги",
+        tags_description:
+          "Теги используются для обозначения вашего запроса в системе, чтобы облегчить поиск. Вы можете добавить несколько тегов. Максимум 5 тегов. Максимальная длина каждого тега – 20 символов.",
+        tags_placeholder: "Введите текст и нажмите Enter, чтобы добавить теги.",
+        visibility_label: "Видимость",
+        public_description:
+          "Эти подсказки доступны для просмотра всем пользователям.",
+        private_description: "Личные сообщения отображаются только вам.",
+        publish_button: "Опубликовать в Центре сообщества",
+        submitting: "Публикация...",
+        prompt_label: "Запрос",
+        prompt_description:
+          "Это фактический запрос, который будет использоваться для управления языковой моделью.",
+        prompt_placeholder: "Введите здесь запрос для вашей системы...",
       },
       agent_flow: {
-        public_description: null,
-        private_description: null,
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        privacy_note: null,
+        success_title: "Успех!",
+        success_description:
+          'Ваш профиль "Agent Flow" опубликован в Центре сообщества!',
+        success_thank_you: "Спасибо за то, что поделились с сообществом!",
+        view_on_hub: "Просмотр в Центре сообщества",
+        modal_title: "Офис агента",
+        name_label: "Имя:\n\nИмя:",
+        name_description:
+          "Это имя, которое отображается для вашего сценария автоматизации.",
+        name_placeholder: "Мой агент – это...",
+        description_label: "Описание",
+        description_description:
+          "Это описание вашего процесса взаимодействия с агентом. Используйте его для описания цели вашего процесса взаимодействия с агентом.",
+        tags_label: "Теги",
+        tags_description:
+          "Теги используются для обозначения вашего процесса работы с агентами, чтобы упростить поиск. Вы можете добавить несколько тегов. Максимум 5 тегов. Максимальная длина каждого тега – 20 символов.",
+        tags_placeholder: "Введите текст и нажмите Enter, чтобы добавить теги.",
+        visibility_label: "Видимость",
+        submitting: "Публикация...",
+        submit: "Опубликовать в Центре сообщества",
+        privacy_note:
+          "Потоки данных всегда загружаются в режиме конфиденциальности, чтобы защитить любую конфиденциальную информацию. Вы можете изменить видимость потока в Центре сообщества после публикации. Пожалуйста, убедитесь, что ваш поток не содержит никакой конфиденциальной или личной информации перед публикацией.",
       },
       generic: {
         unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
+          title: "Требуется аутентификация",
+          description:
+            "Для публикации материалов необходимо сначала пройти аутентификацию в сообществе AnythingLLM.",
+          button: "Подключитесь к центру сообщества",
         },
       },
       slash_command: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        command_label: null,
-        command_description: null,
-        command_placeholder: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Успех!",
+        success_description:
+          "Ваш Slash-команда был опубликован в Центре сообщества!",
+        success_thank_you: "Спасибо за то, что поделились с сообществом!",
+        view_on_hub: "Просмотр в Центре сообщества",
+        modal_title: "Опубликуйте команду Slash",
+        name_label: "Имя:\n\nИмя:",
+        name_description:
+          "Это имя, которое будет отображаться для вашего команды.",
+        name_placeholder: "Мой Slash-команда",
+        description_label: "Описание",
+        description_description:
+          "Это описание вашего командного оператора. Используйте его для описания цели вашего командного оператора.",
+        tags_label: "Теги",
+        tags_description:
+          "Теги используются для обозначения вашего командного оператора, чтобы облегчить поиск. Вы можете добавить несколько тегов. Максимум 5 тегов. Максимальная длина каждого тега – 20 символов.",
+        tags_placeholder: "Введите текст и нажмите Enter, чтобы добавить теги.",
+        visibility_label: "Видимость",
+        public_description: "Общие команды, доступные для всех пользователей.",
+        private_description: "Приватные команды, доступные только вам.",
+        publish_button: "Опубликовать в Центре сообщества",
+        submitting: "Публикация...",
+        prompt_label: "Запрос",
+        prompt_description:
+          'Это запрос, который будет использован при активации команды, содержащей символ "/".',
+        prompt_placeholder: "Введите свой запрос здесь...",
       },
     },
   },
@@ -1035,6 +1270,73 @@ const TRANSLATIONS = {
     notAssigned:
       "Вы не назначены ни к одной рабочей области.\nСвяжитесь с администратором, чтобы запросить доступ к рабочей области.",
     goToWorkspace: 'Перейти к рабочей области "{{workspace}}"',
+  },
+  telegram: {
+    title: "Бот для Telegram",
+    description:
+      "Подключите свою инстанцию AnythingLLM к Telegram, чтобы вы могли общаться со своими рабочими пространствами с любого устройства.",
+    setup: {
+      step1: {
+        title: "Шаг 1: Создайте своего Telegram-бота.",
+        description:
+          "Откройте чат с @BotFather в Telegram, отправьте команду `/newbot` в чат с <code>@BotFather</code>, следуйте инструкциям и скопируйте API-токен.",
+        "open-botfather": "Запустить BotFather",
+        "instruction-1": "1. Откройте ссылку или отсканируйте QR-код",
+        "instruction-2":
+          "2. Отправьте <code>/newbot</code> на адрес <code>@BotFather</code>",
+        "instruction-3": "3. Выберите имя и имя пользователя для вашего бота.",
+        "instruction-4": "4. Скопируйте API-токен, который вы получили.",
+      },
+      step2: {
+        title: "Шаг 2: Подключите своего бота",
+        description:
+          "Вставьте API-токен, который вы получили от @BotFather, и выберите основной рабочий стол для вашего бота, чтобы он мог общаться.",
+        "bot-token": "Токен бота",
+        connecting: "Устанавливается соединение...",
+        "connect-bot": "Bot Connect",
+      },
+      security: {
+        title: "Рекомендуемые настройки безопасности",
+        description:
+          "Для дополнительной безопасности, настройте эти параметры в @BotFather.",
+        "disable-groups": "— Предотвратить добавление ботов в группы",
+        "disable-inline":
+          "— Предотвратить использование бота в поиске по запросу",
+        "obscure-username":
+          "Используйте не очевидное имя пользователя для бота, чтобы уменьшить его видимость.",
+      },
+      "toast-enter-token": "Пожалуйста, введите токен для бота.",
+      "toast-connect-failed": "Не удалось установить соединение с ботом.",
+    },
+    connected: {
+      status: "Соединенный",
+      "status-disconnected":
+        "Отключено – токен может быть просроченным или недействительным",
+      "placeholder-token": "Вставьте новый токен для бота...",
+      reconnect: "Возобновить",
+      workspace: "Рабочее пространство",
+      "bot-link": "Ссылка на бота",
+      "voice-response": "Ответ голосом",
+      disconnecting: "Отключение...",
+      disconnect: "Отключить",
+      "voice-text-only": "Текст только",
+      "voice-mirror":
+        "Зеркало (отвечать голосом, когда пользователь отправляет голосовое сообщение)",
+      "voice-always":
+        "Всегда добавляйте голосовое сообщение (отправляйте аудио вместе с каждым ответом).",
+      "toast-disconnect-failed": "Не удалось отключить бота.",
+      "toast-reconnect-failed": "Не удалось восстановить соединение с ботом.",
+      "toast-voice-failed": "Не удалось обновить режим голосового управления.",
+      "toast-approve-failed":
+        "Не удалось подтвердить учетную запись пользователя.",
+      "toast-deny-failed": "Не удалось отклонить запрос пользователя.",
+      "toast-revoke-failed": "Не удалось отменить действия пользователя.",
+    },
+    users: {
+      "pending-description":
+        "Пользователи, ожидающие подтверждения. Сравните код, указанный здесь, с кодом, отображаемым в их чате в Telegram.",
+      unknown: "Неизвестно",
+    },
   },
 };
 

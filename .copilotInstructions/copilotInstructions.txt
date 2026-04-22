@@ -1,0 +1,16 @@
+Using the following instructions we can run this solution locally:
+
+Change to root directory:
+```
+  cd "C:\Users\MichaelRobbertze\source\repos\Brain LLM\anything-llm-fd"
+```
+then run the following 3 from the root directory to boot the server, frontend, and documentCollector locally:
+```
+yarn dev:server
+yarn dev:frontend
+yarn dev:collector
+```
+
+Once those are running we can access it in the browser at "http://localhost:3000/"
+
+Currently this solution is stable. I can log in using entraID authentication, assign users to workspaces, and sending basic messages in chat works and gives responses.

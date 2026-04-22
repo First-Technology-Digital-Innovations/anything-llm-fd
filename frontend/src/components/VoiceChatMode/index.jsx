@@ -9,11 +9,21 @@ import useUser from '@/hooks/useUser';
 import { VOICE_CHAT_SAVED_EVENT } from '@/components/WorkspaceChat/ChatContainer';
 import './VoiceChatMode.css';
 
-export default function VoiceChatMode({ workspace, threadSlug = null, onClose, isVisible = false, onChatSaved = () => {} }) {
+export default function VoiceChatMode({
+  workspace,
+  threadSlug = null,
+  onClose,
+  isVisible = false,
+  onChatSaved = () => {},
+}) {
   const { user } = useUser();
-  const [sessionId] = useState(() => `voice-${Date.now()}-${Math.random().toString(36).substring(2)}`);
+  const [sessionId] = useState(
+    () => `voice-${Date.now()}-${Math.random().toString(36).substring(2)}`
+  );
   const [currentState, setCurrentState] = useState('idle'); // 'idle', 'listening', 'processing', 'speaking', 'error'
-  const [statusMessage, setStatusMessage] = useState('Click the microphone to start');
+  const [statusMessage, setStatusMessage] = useState(
+    'Click the microphone to start'
+  );
   const [audioLevel, setAudioLevel] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [userTranscript, setUserTranscript] = useState('');
@@ -30,7 +40,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     addUserAudio,
     inputAudioBufferClear,
     onMessage,
-    disconnect
+    disconnect,
   } = useRealtime(sessionId, workspace?.slug, userId, threadSlug);
 
   const {
@@ -39,7 +49,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     error: recorderError,
     requestPermission,
     startRecording,
-    stopRecording
+    stopRecording,
   } = useAudioRecorder();
 
   const {
@@ -47,7 +57,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     error: playerError,
     playAudioChunk,
     stopPlayback,
-    clearQueue
+    clearQueue,
   } = useAudioPlayer();
 
   // Keep refs in sync for use inside message handler closures
@@ -67,7 +77,10 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     if (!isReady) return;
 
     const unsubscribe = onMessage((message) => {
+      console.log('[VoiceChatMode] Received message:', message.type);
+
       switch (message.type) {
+        case 'session.created':
         case 'session_configured':
           setCurrentState('idle');
           setStatusMessage('Ready — click microphone to start');
@@ -94,6 +107,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           if (message.text) setUserTranscript(message.text);
           break;
 
+        case 'response.audio_transcript.delta':
         case 'audio_transcript_chunk':
           setCurrentState('speaking');
           setStatusMessage('');
@@ -106,6 +120,13 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           if (message.transcript) setAiTranscript(message.transcript);
           break;
 
+        case 'response.audio.delta':
+          // Play audio chunk (direct Azure format)
+          if (message.delta) {
+            playAudioChunk(message.delta);
+          }
+          break;
+
         case 'audio_response_chunk':
           // Play audio chunk — skip if user is speaking (barge-in)
           if (message.audio && !isListeningRef.current) {
@@ -115,6 +136,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           }
           break;
 
+        case 'response.done':
         case 'audio_response_done':
           // Audio stream finished — all chunks sent
           break;
@@ -123,7 +145,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           if (message.cancelled) break;
           if (isRecordingRef.current) {
             setCurrentState('listening');
-            setStatusMessage('Go ahead, I\'m listening...');
+            setStatusMessage("Go ahead, I'm listening...");
           } else {
             setCurrentState('idle');
             setStatusMessage('Click microphone to start speaking');
@@ -131,6 +153,8 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           break;
 
         case 'chat_saved':
+          // Voice chat exchange was saved to database - trigger refresh
+          console.log('[VoiceChatMode] Chat saved:', message.chatId);
           window.dispatchEvent(
             new CustomEvent(VOICE_CHAT_SAVED_EVENT, {
               detail: {
@@ -161,17 +185,16 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     try {
       setCurrentState('processing');
       setStatusMessage('Connecting...');
-      
+
       // Request microphone permission first
       await requestPermission();
-      
+
       // Start the WebSocket session
       await startSession();
-      
+
       setIsInitialized(true);
       setCurrentState('idle');
       setStatusMessage('Ready - click microphone to start');
-      
     } catch (error) {
       console.error('[VoiceChatMode] Failed to initialize session:', error);
       setCurrentState('error');
@@ -202,12 +225,11 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
       // Start recording
       try {
         setCurrentState('listening');
-        setStatusMessage('Go ahead, I\'m listening...');
-        
+        setStatusMessage("Go ahead, I'm listening...");
+
         await startRecording((audioData) => {
           addUserAudio(audioData);
         });
-        
       } catch (error) {
         console.error('[VoiceChatMode] Failed to start recording:', error);
         setCurrentState('error');
@@ -235,12 +257,18 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
 
   const getStateColor = () => {
     switch (currentState) {
-      case 'idle': return '#10b981'; // green
-      case 'listening': return '#ef4444'; // red
-      case 'processing': return '#f59e0b'; // amber
-      case 'speaking': return '#3b82f6'; // blue
-      case 'error': return '#ef4444'; // red
-      default: return '#6b7280'; // gray
+      case 'idle':
+        return '#10b981'; // green
+      case 'listening':
+        return '#ef4444'; // red
+      case 'processing':
+        return '#f59e0b'; // amber
+      case 'speaking':
+        return '#3b82f6'; // blue
+      case 'error':
+        return '#ef4444'; // red
+      default:
+        return '#6b7280'; // gray
     }
   };
 
@@ -263,7 +291,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
     <div className="voice-chat-overlay">
       {/* Background overlay */}
       <div className="voice-chat-backdrop" onClick={handleClose} />
-      
+
       {/* Main voice chat interface */}
       <div className="voice-chat-container">
         {/* Close button */}
@@ -302,7 +330,10 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
               onClick={handleMicrophoneToggle}
               className={`voice-chat-mic-button ${currentState}`}
               style={{ '--state-color': getStateColor() }}
-              disabled={connectionStatus === 'connecting'}
+              disabled={
+                currentState === 'processing' ||
+                connectionStatus === 'connecting'
+              }
               aria-label={isRecording ? 'Stop recording' : 'Start recording'}
             >
               {renderMicrophoneIcon()}
@@ -313,13 +344,13 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           {currentState === 'speaking' && (
             <div className="voice-chat-audio-viz">
               {Array.from({ length: 5 }, (_, i) => (
-                <div 
-                  key={i} 
-                  className="audio-bar" 
-                  style={{ 
+                <div
+                  key={i}
+                  className="audio-bar"
+                  style={{
                     animationDelay: `${i * 0.1}s`,
-                    height: `${20 + Math.random() * 60}%`
-                  }} 
+                    height: `${20 + Math.random() * 60}%`,
+                  }}
                 />
               ))}
             </div>
@@ -365,10 +396,7 @@ export default function VoiceChatMode({ workspace, threadSlug = null, onClose, i
           {(recorderError || playerError) && (
             <div className="voice-chat-error">
               <p>Error: {recorderError || playerError}</p>
-              <button 
-                onClick={initializeSession}
-                className="retry-button"
-              >
+              <button onClick={initializeSession} className="retry-button">
                 Retry
               </button>
             </div>

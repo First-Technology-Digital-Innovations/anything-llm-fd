@@ -175,6 +175,9 @@ class OpenAiLLM {
           ? usage.output_tokens / result.duration
           : 0,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
@@ -185,8 +188,8 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.responses.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.responses.create({
         model: this.model,
         stream: true,
         input: messages,
@@ -194,8 +197,10 @@ class OpenAiLLM {
         temperature: this.#temperature(this.model, temperature),
       }),
       messages,
-      false
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    });
 
     return measuredStreamRequest;
   }

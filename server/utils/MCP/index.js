@@ -29,8 +29,31 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
-    const tools = (await mcp.listTools()).tools;
-    if (!tools.length) return null;
+    let tools;
+    try {
+      const response = await mcp.listTools();
+      tools = response.tools;
+    } catch (error) {
+      this.log(`Failed to list tools for MCP server ${name}:`, error);
+      return null;
+    }
+    if (!tools || !tools.length) return null;
+
+    const suppressedTools = this.getSuppressedTools(name);
+    const totalTools = tools.length;
+    tools = tools.filter((tool) => !suppressedTools.includes(tool.name));
+    const suppressedCount = totalTools - tools.length;
+
+    if (suppressedCount > 0) {
+      this.log(
+        `MCP server ${name}: ${suppressedCount} tool(s) suppressed, ${tools.length} tool(s) enabled`
+      );
+    }
+
+    if (!tools.length) {
+      this.log(`MCP server ${name}: All tools are suppressed, skipping`);
+      return null;
+    }
 
     const plugins = [];
     for (const tool of tools) {
@@ -46,6 +69,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                 name: `${name}-${tool.name}`,
                 controller: new AbortController(),
                 description: tool.description,
+                isMCPTool: true,
                 examples: [],
                 parameters: {
                   $schema: "http://json-schema.org/draft-07/schema#",
@@ -53,6 +77,13 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                 },
                 handler: async function (args = {}) {
                   try {
+                    const mcpLayer = new MCPCompatibilityLayer();
+                    const currentMcp = mcpLayer.mcps[name];
+                    if (!currentMcp)
+                      throw new Error(
+                        `MCP server ${name} is not currently running`
+                      );
+
                     aibitat.handlerProps.log(
                       `Executing MCP server: ${name}:${tool.name} with args:`,
                       args
@@ -60,7 +91,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `Executing MCP server: ${name} with ${JSON.stringify(args, null, 2)}`
                     );
-                    const result = await mcp.callTool({
+                    const result = await currentMcp.callTool({
                       name: tool.name,
                       arguments: args,
                     });
@@ -71,9 +102,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `MCP server: ${name}:${tool.name} completed successfully`
                     );
-                    return typeof result === "object"
-                      ? JSON.stringify(result)
-                      : String(result);
+                    return MCPCompatibilityLayer.returnMCPResult(result);
                   } catch (error) {
                     aibitat.handlerProps.log(
                       `MCP server: ${name}:${tool.name} failed with error:`,
@@ -134,7 +163,9 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       }
 
       const online = !!(await mcp.ping());
-      const tools = online ? (await mcp.listTools()).tools : [];
+      const tools = (online ? (await mcp.listTools()).tools : []).filter(
+        (tool) => !tool.name.startsWith("handle_mcp_connection_mcp_")
+      );
       servers.push({
         name,
         config: config?.server || null,
@@ -198,6 +229,41 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     delete this.mcpLoadingResults[name];
     this.log(`MCP server was killed and removed from config file: ${name}`);
     return { success: true, error: null };
+  }
+
+  /**
+   * Return the result of an MCP server call as a string
+   * This will handle circular references and bigints since an MCP server can return any type of data.
+   * @param {Object} result - The result to return
+   * @returns {string} The result as a string
+   */
+  static returnMCPResult(result) {
+    if (typeof result !== "object" || result === null) return String(result);
+
+    const seen = new WeakSet();
+    try {
+      return JSON.stringify(result, (key, value) => {
+        if (typeof value === "bigint") return value.toString();
+        if (typeof value === "object" && value !== null) {
+          if (seen.has(value)) return "[Circular]";
+          seen.add(value);
+        }
+        return value;
+      });
+    } catch (e) {
+      return `[Unserializable: ${e.message}]`;
+    }
+  }
+
+  /**
+   * Toggle tool suppression for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @param {string} toolName - The name of the tool to toggle
+   * @param {boolean} enabled - Whether the tool should be enabled (true) or suppressed (false)
+   * @returns {Promise<{success: boolean, error: string | null, suppressedTools: string[]}>}
+   */
+  async toggleToolSuppression(serverName, toolName, enabled) {
+    return this.updateSuppressedTools(serverName, toolName, enabled);
   }
 }
 module.exports = MCPCompatibilityLayer;

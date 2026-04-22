@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Velkommen til",
       getStarted: "Kom godt i gang",
+      welcome: "Velkommen",
     },
     llm: {
       title: "LLM-præference",
@@ -22,8 +22,6 @@ const TRANSLATIONS = {
       passwordWarn:
         "Det er vigtigt at gemme denne adgangskode, da der ikke findes nogen metode til genoprettelse.",
       adminUsername: "Brugernavn til admin-konto",
-      adminUsernameReq:
-        "Brugernavnet skal være mindst 6 tegn langt og må kun indeholde små bogstaver, tal, understregninger og bindestreger uden mellemrum.",
       adminPassword: "Adgangskode til admin-konto",
       adminPasswordReq: "Adgangskoder skal være på mindst 8 tegn.",
       teamHint:
@@ -51,17 +49,9 @@ const TRANSLATIONS = {
       skip: "Spring undersøgelsen over",
       thankYou: "Tak for din feedback!",
     },
-    workspace: {
-      title: "Opret dit første arbejdsområde",
-      description:
-        "Opret dit første arbejdsområde og kom i gang med AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Navn på arbejdsområder",
-    error: "fejl",
-    success: "succes",
-    user: "Bruger",
     selection: "Modelvalg",
     saving: "Gemmer...",
     save: "Gem ændringer",
@@ -70,11 +60,17 @@ const TRANSLATIONS = {
     optional: "Valgfrit",
     yes: "Ja",
     no: "Nej",
-    search: null,
+    search: "Søg",
+    username_requirements:
+      "Brugernavnet skal bestå af 2-32 tegn, starte med et lille bogstav, og kun indeholde små bogstaver, tal, understregninger, bindestreger og punktummer.",
+    on: "Om",
+    none: "Ingen",
+    stopped: "Stoppet",
+    loading: "Indlæsning",
+    refresh: "Opfrisk",
   },
   settings: {
     title: "Instansindstillinger",
-    system: "Generelle indstillinger",
     invites: "Invitationer",
     users: "Brugere",
     workspaces: "Arbejdsområder",
@@ -88,7 +84,6 @@ const TRANSLATIONS = {
     "voice-speech": "Stemme & Tale",
     "vector-database": "Vektordatabase",
     embeds: "Chat-indlejring",
-    "embed-chats": "Historik for chat-indlejringer",
     security: "Sikkerhed",
     "event-logs": "Hændelseslog",
     privacy: "Privatliv & Data",
@@ -99,10 +94,22 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentelle funktioner",
     contact: "Kontakt support",
     "browser-extension": "Browserudvidelse",
-    "system-prompt-variables": null,
-    interface: null,
-    branding: null,
-    chat: null,
+    "system-prompt-variables":
+      "System Prompt Variables\n\nSystem Prompt Variabler",
+    interface: "Brugerpræferencer",
+    branding: "Brandstrategi og white-labeling",
+    chat: "Chat",
+    "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Fælleshus",
+      trending: "Udforsk populære emner",
+      "your-account": "Dit konti",
+      "import-item": "Importeret vare",
+    },
+    channels: "Kanaler",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -114,16 +121,12 @@ const TRANSLATIONS = {
       "forgot-pass": "Glemt adgangskode",
       reset: "Nulstil",
     },
-    "sign-in": {
-      start: "Log ind på din",
-      end: "konto.",
-    },
+    "sign-in": "Log ind på din {{appName}} konto.",
     "password-reset": {
       title: "Nulstilling af adgangskode",
       description:
         "Angiv de nødvendige oplysninger nedenfor for at nulstille din adgangskode.",
       "recovery-codes": "Gendannelseskoder",
-      "recovery-code": "Gendannelseskode {{index}}",
       "back-to-login": "Tilbage til log ind",
     },
   },
@@ -155,12 +158,6 @@ const TRANSLATIONS = {
       heading: "Forklar mig",
       body: "fordelene ved AnythingLLM",
     },
-    pfp: {
-      title: "Assistentens profilbillede",
-      description: "Tilpas assistentens profilbillede for dette arbejdsområde.",
-      image: "Arbejdsområdebillede",
-      remove: "Fjern arbejdsområdebillede",
-    },
     delete: {
       title: "Slet arbejdsområde",
       description:
@@ -183,21 +180,23 @@ const TRANSLATIONS = {
       title: "Arbejdsområdets chatmodel",
       description:
         "Den specifikke chatmodel, der vil blive brugt for dette arbejdsområde. Hvis tom, anvendes systemets LLM-præference.",
-      wait: "-- venter på modeller --",
     },
     mode: {
       title: "Chat-tilstand",
       chat: {
         title: "Chat",
-        "desc-start": "vil give svar baseret på LLM'ens generelle viden",
-        and: "og",
-        "desc-end": "dokumentkontekst der findes.",
+        description:
+          'vil levere svar baseret på LLM\'s generelle viden og den relevante dokumentkontekst.<br />Du skal bruge kommandoen "@agent" for at bruge værktøjerne.',
       },
       query: {
         title: "Forespørgsel",
-        "desc-start": "vil give svar",
-        only: "kun",
-        "desc-end": "hvis dokumentkontekst findes.",
+        description:
+          "vil kun give svar <b>hvis konteksten i dokumentet er fundet.</b>Du skal bruge kommandoen @agent for at bruge værktøjerne.",
+      },
+      automatic: {
+        title: "Bil",
+        description:
+          'vil automatisk bruge værktøjer, hvis modellen og udbyderen understøtter native værktøjsanrop. <br />Hvis native værktøjsanrop ikke understøttes, skal du bruge kommandoen "@agent" for at bruge værktøjer.',
       },
     },
     history: {
@@ -213,15 +212,18 @@ const TRANSLATIONS = {
       description:
         "Prompten, der vil blive brugt i dette arbejdsområde. Definér konteksten og instruktionerne til, at AI'en kan generere et svar. Du bør levere en omhyggeligt udformet prompt, så AI'en kan generere et relevant og præcist svar.",
       history: {
-        title: null,
-        clearAll: null,
-        noHistory: null,
-        restore: null,
-        delete: null,
-        deleteConfirm: null,
-        clearAllConfirm: null,
-        expand: null,
-        publish: null,
+        title:
+          "System Prompt History\n\nHistorikken over system prompts er gemt i en fil, der er placeret i din lokale mappe.\nDu kan få adgang til historikken ved at åbne filen og læse indholdet.\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt\n<|file_name|>system_prompt_history.txt",
+        clearAll: "Ryd alt",
+        noHistory: "Ingen historik over systemprompt er tilgængelig.",
+        restore: "Genopret",
+        delete: "Slet",
+        deleteConfirm:
+          "Er du sikker på, at du vil slette dette historikelement?",
+        clearAllConfirm:
+          "Er du sikker på, at du vil slette al historik? Denne handling kan ikke fortrydes.",
+        expand: "Udvid",
+        publish: "Publicer på Community Hub",
       },
     },
     refusal: {
@@ -230,8 +232,9 @@ const TRANSLATIONS = {
       query: "forespørgsels-tilstand",
       "desc-end":
         "tilstand, kan du vælge at returnere et brugerdefineret afvisningssvar, når der ikke findes nogen kontekst.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Hvorfor ser jeg dette?",
+      "tooltip-description":
+        "Du er i forespørgselsmodus, hvilket kun bruger information fra dine dokumenter. Skift til chat-modus for mere fleksible samtaler, eller klik her for at besøge vores dokumentation og lære mere om chat-moduser.",
     },
     temperature: {
       title: "LLM-temperatur",
@@ -288,9 +291,6 @@ const TRANSLATIONS = {
       wait: "-- venter på modeller --",
     },
     skill: {
-      title: "Standard agentfærdigheder",
-      description:
-        "Forbedr standardagentens naturlige evner med disse forudbyggede færdigheder. Denne opsætning gælder for alle arbejdsområder.",
       rag: {
         title: "RAG & langtidshukommelse",
         description:
@@ -311,17 +311,263 @@ const TRANSLATIONS = {
         description:
           "Gør det muligt for standardagenten at generere forskellige typer diagrammer fra data, der leveres eller gives i chat.",
       },
-      save: {
-        title: "Generer og gem filer i browseren",
-        description:
-          "Gør det muligt for standardagenten at generere og skrive til filer, der gemmes og kan downloades i din browser.",
-      },
       web: {
         title: "Live web-søgning og browsing",
-        "desc-start":
-          "Gør det muligt for din agent at søge på internettet for at besvare dine spørgsmål ved at forbinde til en web-søgeudbyder (SERP).",
-        "desc-end":
-          "Web-søgning under agent-sessioner vil ikke fungere, før dette er opsat.",
+        description:
+          "Giv din agent mulighed for at søge på internettet for at besvare dine spørgsmål ved at forbinde den til en web-søgetjeneste (SERP).",
+      },
+      sql: {
+        title: "SQL-forbindelse",
+        description:
+          "Giv din agent mulighed for at bruge SQL til at besvare dine spørgsmål ved at oprette forbindelse til forskellige SQL-databaseleverandører.",
+      },
+      default_skill:
+        "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
+      filesystem: {
+        title: "Adgang til filsystem",
+        description:
+          "Giv din agent mulighed for at læse, skrive, søge og administrere filer inden for en bestemt mappe. Understøtter filredigering, mappe navigation og indholds søgning.",
+        learnMore: "Lær mere om, hvordan du kan bruge denne færdighed",
+        configuration: "Konfiguration",
+        readActions: "Læs handlinger",
+        writeActions: "Skriv handlinger",
+        warning:
+          "Adgang til filsystemet kan være farligt, da det kan ændre eller slette filer. Se venligst <link>dokumentationen</link> før du aktiverer denne funktion.",
+        skills: {
+          "read-text-file": {
+            title: "Åbn fil",
+            description:
+              "Læs indholdet af filer (tekst, kode, PDF-filer, billeder osv.)",
+          },
+          "read-multiple-files": {
+            title: "Læs flere filer",
+            description: "Læs flere filer samtidigt",
+          },
+          "list-directory": {
+            title: "Telefonkatalog",
+            description: "Vis filer og mapper i en mappe",
+          },
+          "search-files": {
+            title: "Søg efter filer",
+            description: "Søg efter filer efter navn eller indhold",
+          },
+          "get-file-info": {
+            title: "Få filinformation",
+            description: "Få detaljerede metadata om filer",
+          },
+          "edit-file": {
+            title: "Rediger fil",
+            description: "Rediger tekstfiler baseret på linjer",
+          },
+          "create-directory": {
+            title: "Opret mappe",
+            description: "Opret nye mapper",
+          },
+          "move-file": {
+            title: "Flyt/Omdøb fil",
+            description: "Flyt eller omdøb filer og mapper",
+          },
+          "copy-file": {
+            title: "Kopier fil",
+            description: "Kopier filer og mapper",
+          },
+          "write-text-file": {
+            title: "Opret tekstfil",
+            description:
+              "Opret nye tekstfiler eller overskriv eksisterende tekstfiler.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Dokumentoprettelse",
+        description:
+          "Giv din agent mulighed for at oprette binære dokumentformater som PowerPoint-præsentationer, Excel-regneark, Word-dokumenter og PDF-filer. Filerne kan downloades direkte fra chatvinduet.",
+        configuration: "Tilgængelige dokumenttyper",
+        skills: {
+          "create-text-file": {
+            title: "Tekstfiler",
+            description:
+              "Opret tekstfiler med enhver indhold og filtype (.txt, .md, .json, .csv osv.)",
+          },
+          "create-pptx": {
+            title: "PowerPoint-præsentationer",
+            description:
+              "Opret nye PowerPoint-præsentationer med slides, overskrifter og punktlister.",
+          },
+          "create-pdf": {
+            title: "PDF-dokumenter",
+            description:
+              "Opret PDF-dokumenter fra Markdown eller almindelig tekst med grundlæggende formatering.",
+          },
+          "create-xlsx": {
+            title: "Excel-regneark",
+            description:
+              "Opret Excel-dokumenter med tabellerede data, inklusive ark og formatering.",
+          },
+          "create-docx": {
+            title: "Ord-dokumenter",
+            description:
+              "Opret Word-dokumenter med grundlæggende formatering og stil.",
+          },
+        },
+      },
+      gmail: {
+        title: "Gmail-forbindelse",
+        description:
+          "Giv din agent mulighed for at interagere med Gmail – søg efter e-mails, læs samtaler, oprette udkast, sende e-mails og administrere din indbakke. <a>Læs dokumentationen</a>.",
+        multiUserWarning:
+          "Integration med Gmail er ikke tilgængelig i multi-bruger-tilstand af sikkerhedsmæssige årsager. For at bruge denne funktion, bedes du deaktivere multi-bruger-tilstanden.",
+        configuration: "Konfiguration af Gmail",
+        deploymentId: "Implementerings-ID",
+        deploymentIdHelp: "Deployment-ID'en fra din Google Apps Script webapp",
+        apiKey: "API-nøgle",
+        apiKeyHelp:
+          "API-nøglen, du har konfigureret i din Google Apps Script-implementering.",
+        configurationRequired:
+          "Venligst konfigurer Deployment ID og API-nøglen for at aktivere Gmail-funktionaliteten.",
+        configured: "Konfigureret",
+        searchSkills: "Søgeteknikker...",
+        noSkillsFound: "Ingen resultater fundet, der matcher din søgning.",
+        categories: {
+          search: {
+            title: "Søg og læs e-mails",
+            description: "Søg og læs e-mails fra din Gmail-indbakke",
+          },
+          drafts: {
+            title: "Udkast til e-mails",
+            description: "Opret, rediger og administrer udkast til e-mails",
+          },
+          send: {
+            title: "Send og svar på e-mails",
+            description: "Send e-mails og svar på tråde øjeblikkeligt",
+          },
+          threads: {
+            title: "Administrer e-mailtråde",
+            description:
+              "Administrer e-mailtråde – marker som læst/ulæst, arkiver, slet",
+          },
+          account: {
+            title: "Statistik for integration",
+            description:
+              "Se statistik for din e-postindbakke og kontoinformation.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Søg i e-mails",
+            description:
+              "Søg efter e-mails ved hjælp af Gmail's forespørgselssprog",
+          },
+          readThread: {
+            title: "Læs tråd",
+            description: "Læs hele e-mailtråden sorteret efter ID",
+          },
+          createDraft: {
+            title: "Opret udkast",
+            description: "Opret et nyt udkast til en e-mail",
+          },
+          createDraftReply: {
+            title: "Opret udkast",
+            description: "Opret et udkast til et svar på en eksisterende tråd.",
+          },
+          updateDraft: {
+            title: "Opdateret udkast",
+            description: "Opdater en eksisterende udkast til en e-mail",
+          },
+          getDraft: {
+            title: "Få udkast",
+            description: "Hent en bestemt udkast baseret på ID",
+          },
+          listDrafts: {
+            title: "Udkast til lister",
+            description: "Vis alle udkastede e-mails",
+          },
+          deleteDraft: {
+            title: "Slet udkast",
+            description: "Slet et udkast til e-mail",
+          },
+          sendDraft: {
+            title: "Send udkast",
+            description: "Send en eksisterende udkast til en e-mail",
+          },
+          sendEmail: {
+            title: "Send e-mail",
+            description: "Send en e-mail med det samme",
+          },
+          replyToThread: {
+            title: "Svar på tråd",
+            description: "Svar på en e-mailtråd med det samme",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Marker en tråd som læst",
+          },
+          markUnread: {
+            title: "Marker som ikke læst",
+            description: "Marker en tråd som ikke læst",
+          },
+          moveToTrash: {
+            title: "Flyt til papirkurven",
+            description: "Flyt en tråd til papirkurven",
+          },
+          moveToArchive: {
+            title: "Arkiv",
+            description: "Arkiver tråden",
+          },
+          moveToInbox: {
+            title: "Flyt til indbakken",
+            description: "Flyt en tråd til indbakken",
+          },
+          getMailboxStats: {
+            title: "Statistik for postkasse",
+            description:
+              "Få oplysninger om antallet af ulæste beskeder og statistik for din e-mailindbakke.",
+          },
+          getInbox: {
+            title: "Åbn indbakken",
+            description:
+              "En effektiv måde at hente e-mails fra din Gmail-indbakke",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP-servere",
+      "loading-from-config": "Indlæsning af MCP-servere fra konfigurationsfil",
+      "learn-more": "Lær mere om MCP-servere.",
+      "no-servers-found": "Ingen MCP-servere fundet",
+      "tool-warning":
+        "For den bedste ydeevne, overvej at deaktivere unødvendige værktøjer for at bevare konteksten.",
+      "stop-server": "Afbryd MCP-serveren",
+      "start-server": "Start MCP-serveren",
+      "delete-server": "Slet MCP-serveren",
+      "tool-count-warning":
+        "Denne MCP-server har <b>aktiverede</b>værktøjer, som vil forbruge kontekst i hvert chat-session.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
+      "startup-command": "Startkommando",
+      command: "Instruktion",
+      arguments: "Argumenter",
+      "not-running-warning":
+        "Denne MCP-server kører ikke – den kan være stoppet, eller den kan opleve fejl ved opstart.",
+      "tool-call-arguments": "Argumenter til værktøjsopkald",
+      "tools-enabled": "værktøjer er aktiveret",
+    },
+    settings: {
+      title: "Indstillinger for agenters færdigheder",
+      "max-tool-calls": {
+        title: "Maksimalt antal anmodninger pr. svar",
+        description:
+          "Det maksimale antal værktøjer, en agent kan kæde sammen for at generere et enkelt svar. Dette forhindrer, at værktøjer kaldes unødvendigt, og undgår uendelige løkker.",
+      },
+      "intelligent-skill-selection": {
+        title: "Intelligent valg af færdigheder",
+        "beta-badge": "Beta",
+        description:
+          "Aktiver ubegrænsede værktøjer og reducer brugen af cut-tokens med op til 80 % pr. forespørgsel – AnythingLLM vælger automatisk de relevante færdigheder til hver forespørgsel.",
+        "max-tools": {
+          title: "Max Tools",
+          description:
+            "Det maksimale antal værktøjer, der kan vælges for hver forespørgsel. Vi anbefaler at indstille dette til højere værdier for større modeller med mere kontekst.",
+        },
       },
     },
   },
@@ -345,7 +591,34 @@ const TRANSLATIONS = {
       "API-nøgler giver indehaveren mulighed for programmatisk at få adgang til og administrere denne AnythingLLM-instans.",
     link: "Læs API-dokumentationen",
     generate: "Generér ny API-nøgle",
+    empty: "Ingen API-nøgler fundet",
+    actions: "Handlinger",
+    messages: {
+      error: "Fejl: {{error}}",
+    },
+    modal: {
+      title: "Opret ny API-nøgle",
+      cancel: "Annuller",
+      close: "Luk",
+      create: "Opret API-nøgle",
+      helper:
+        "Når API-nøglen er oprettet, kan den bruges til programmatisk at få adgang til og konfigurere denne AnythingLLM-instans.",
+      name: {
+        label: "Navn",
+        placeholder: "Produktionsintegration",
+        helper:
+          "Valgfrit. Brug et sigende navn, så du nemt kan kende nøglen senere.",
+      },
+    },
+    row: {
+      copy: "Kopiér API-nøgle",
+      copied: "Kopieret",
+      unnamed: "--",
+      deleteConfirm:
+        "Er du sikker på, at du vil deaktivere denne API-nøgle?\nNår du gør det, kan den ikke længere bruges.\n\nDenne handling kan ikke fortrydes.",
+    },
     table: {
+      name: "Navn",
       key: "API-nøgle",
       by: "Oprettet af",
       created: "Oprettet",
@@ -358,13 +631,16 @@ const TRANSLATIONS = {
     provider: "LLM-udbyder",
     providers: {
       azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
+        azure_service_endpoint: "Azure Service Endpoint",
+        api_key: "API-nøgle",
+        chat_deployment_name: "Chat Deployment Name",
+        chat_model_token_limit:
+          "Chat Model Token Limit\n\nBegrænsning af antallet af tokens i en chatmodel.",
+        model_type: "Modeltype",
+        default: "Standard",
+        reasoning: "Begrundelse",
+        model_type_tooltip:
+          'Hvis din implementering bruger en ræsonnementsmodel (o1, o1-mini, o3-mini osv.), skal du indstille dette til "Ræsonnement". Ellers kan dine chat-anmodninger mislykkes.',
       },
     },
   },
@@ -425,7 +701,7 @@ const TRANSLATIONS = {
       workspace: "Arbejdsområde",
       chats: "Sendte chats",
       active: "Aktive domæner",
-      created: null,
+      created: "Oprettet",
     },
   },
   "embed-chats": {
@@ -456,9 +732,6 @@ const TRANSLATIONS = {
     title: "Privatliv & datahåndtering",
     description:
       "Dette er din konfiguration for, hvordan tilsluttede tredjepartsudbydere og AnythingLLM håndterer dine data.",
-    llm: "Valg af LLM",
-    embedding: "Foretrukken indlejring",
-    vector: "Vektordatabase",
     anonymous: "Anonym telemetri aktiveret",
   },
   connectors: {
@@ -500,7 +773,6 @@ const TRANSLATIONS = {
       URL_explained: "URL til det GitLab-repository, du ønsker at indsamle.",
       token: "GitLab-adgangstoken",
       optional: "valgfrit",
-      token_explained: "Adgangstoken for at undgå ratebegrænsning.",
       token_description: "Vælg yderligere enheder at hente fra GitLab API'en.",
       token_explained_start: "Uden en ",
       token_explained_link1: "personlig adgangstoken",
@@ -533,10 +805,6 @@ const TRANSLATIONS = {
       URL_explained_end: " tilgængelige.",
       task_explained:
         "Når færdig, vil transskriptionen være tilgængelig for indlejring i arbejdsområder i dokumentvælgeren.",
-      language: "Transskript-sprog",
-      language_explained:
-        "Vælg det sprog, for transskriptionen, du ønsker at indsamle.",
-      loading_languages: "-- indlæser tilgængelige sprog --",
     },
     "website-depth": {
       name: "Bulk link-scraper",
@@ -579,6 +847,9 @@ const TRANSLATIONS = {
       pat_token_explained: "Din personlige Confluence-adgangstoken.",
       task_explained:
         "Når færdig, vil sideindholdet være tilgængeligt for indlejring i arbejdsområder i dokumentvælgeren.",
+      bypass_ssl: "Omgå SSL-certifikatvalidering",
+      bypass_ssl_explained:
+        "Aktiver denne mulighed for at omgå valideringen af SSL-certifikatet for selv-hostede Confluence-instanser med et selv-underskrevet certifikat.",
     },
     manage: {
       documents: "Dokumenter",
@@ -594,20 +865,18 @@ const TRANSLATIONS = {
       "search-document": "Søg efter dokument",
       "no-documents": "Ingen dokumenter",
       "move-workspace": "Flyt til arbejdsområde",
-      name: "Navn",
       "delete-confirmation":
         "Er du sikker på, at du vil slette disse filer og mapper?\nDette vil fjerne filerne fra systemet og automatisk fjerne dem fra alle eksisterende arbejdsområder.\nDenne handling kan ikke fortrydes.",
       "removing-message":
         "Fjerner {{count}} dokumenter og {{folderCount}} mapper. Vent venligst.",
       "move-success": "Flyttede {{count}} dokumenter med succes.",
-      date: "Dato",
-      type: "Type",
       no_docs: "Ingen dokumenter",
       select_all: "Vælg alle",
       deselect_all: "Fravælg alle",
       remove_selected: "Fjern valgte",
-      costs: "*Engangsomkostning for indlejringer",
       save_embed: "Gem og indlejr",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenter",
     },
     upload: {
       "processor-offline": "Dokumentbehandler utilgængelig",
@@ -646,71 +915,98 @@ const TRANSLATIONS = {
       accept: "Okay, jeg har forstået",
     },
     obsidian: {
-      name: null,
-      description: null,
-      vault_location: null,
-      vault_description: null,
-      selected_files: null,
-      importing: null,
-      import_vault: null,
-      processing_time: null,
-      vault_warning: null,
+      vault_location: "Opbevaringssted",
+      vault_description:
+        "Vælg din Obsidian-mappe, som du vil importere alle noter og deres forbindelser til.",
+      selected_files: "Fundet {{count}} markdown-filer",
+      importing: "Importering af skattekammer...",
+      import_vault: "Import Vault",
+      processing_time:
+        "Dette kan tage noget tid, afhængigt af størrelsen på din opbevaring.",
+      vault_warning:
+        "For at undgå eventuelle konflikter, skal du sørge for, at din Obsidian-mappe ikke er åben i øjeblikket.",
     },
   },
   chat_window: {
-    welcome: "Velkommen til dit nye arbejdsområde.",
-    get_started: "For at komme i gang, enten",
-    get_started_default: "For at komme i gang",
-    upload: "upload et dokument",
-    or: "eller",
-    send_chat: "send en chat.",
     send_message: "Send en besked",
     attach_file: "Vedhæft en fil til denne chat",
-    slash: "Vis alle tilgængelige skråstreg-kommandoer til chat.",
-    agents: "Vis alle tilgængelige agenter, du kan bruge til chat.",
     text_size: "Ændr tekststørrelse.",
     microphone: "Tal din prompt.",
     send: "Send promptbesked til arbejdsområdet",
-    attachments_processing: null,
-    tts_speak_message: null,
-    copy: null,
-    regenerate: null,
-    regenerate_response: null,
-    good_response: null,
-    more_actions: null,
-    hide_citations: null,
-    show_citations: null,
-    pause_tts_speech_message: null,
-    fork: null,
-    delete: null,
-    save_submit: null,
-    cancel: null,
-    edit_prompt: null,
-    edit_response: null,
-    at_agent: null,
-    default_agent_description: null,
-    custom_agents_coming_soon: null,
-    slash_reset: null,
-    preset_reset_description: null,
-    add_new_preset: null,
-    command: null,
-    your_command: null,
-    placeholder_prompt: null,
-    description: null,
-    placeholder_description: null,
-    save: null,
-    small: null,
-    normal: null,
-    large: null,
+    attachments_processing:
+      "Vedhæftede filer behandles. Vær venligst tålmodig...",
+    tts_speak_message: "TTS-besked",
+    copy: "Kopier",
+    regenerate: "Genopbyg",
+    regenerate_response: "Genopbyg svar",
+    good_response: "Godt svar",
+    more_actions: "Flere handlinger",
+    fork: "Fork",
+    delete: "Slet",
+    cancel: "Annullér",
+    edit_prompt: "Redigeringsanmodning",
+    edit_response: "Rediger svar",
+    preset_reset_description:
+      "Rydd op i din chat-historik og start en ny samtale",
+    add_new_preset: "Tilføj ny forudindstilling",
+    command: "Kommandér",
+    your_command: "dit kommando",
+    placeholder_prompt:
+      "Dette er indholdet, der vil blive indsat foran din forespørgsel.",
+    description: "Beskrivelse",
+    placeholder_description: "Svarer med et digt om LLM'er.",
+    save: "Gem",
+    small: "Lille",
+    normal: "Normal",
+    large: "Stor",
     workspace_llm_manager: {
-      search: null,
-      loading_workspace_settings: null,
-      available_models: null,
-      available_models_description: null,
-      save: null,
-      saving: null,
-      missing_credentials: null,
-      missing_credentials_description: null,
+      search: "Søg efter LLM-udbydere",
+      loading_workspace_settings: "Indlæser arbejdsområdets indstillinger...",
+      available_models: "Tilgængelige modeller for {{provider}}",
+      available_models_description:
+        "Vælg en model, der skal bruges til dette arbejdsområde.",
+      save: "Brug denne model",
+      saving: "Indstil modellen som standard for arbejdsområdet...",
+      missing_credentials: "Denne udbyder har ikke de nødvendige beviser!",
+      missing_credentials_description:
+        "Klik for at oprette legitimationsoplysninger",
+    },
+    submit: "Indsend",
+    edit_info_user:
+      '"Send" genopretter AI-responsen. "Gem" opdaterer kun dit budskab.',
+    edit_info_assistant:
+      "Ændringerne, du laver, vil blive gemt direkte i dette svar.",
+    see_less: "Se mindre",
+    see_more: "Se flere",
+    tools: "Værktøj",
+    text_size_label: "Tekststørrelse",
+    select_model: "Vælg model",
+    sources: "Kilder",
+    document: "Dokument",
+    similarity_match: "kamp",
+    source_count_one: "{{count}} henvisning",
+    source_count_other: "{{count}} referencer",
+    preset_exit_description: "Afslut den aktuelle agent-session",
+    add_new: "Tilføj nyt",
+    edit: "Rediger",
+    publish: "Udgive",
+    stop_generating: "Stop med at generere svar",
+    slash_commands: "Kommandoer",
+    agent_skills: "Agenters kompetencer",
+    manage_agent_skills: "Administrer agenters kompetencer",
+    agent_skills_disabled_in_session:
+      "Det er ikke muligt at ændre færdigheder under en aktiv agent-session. Brug kommandoen `/exit` for at afslutte sessionen først.",
+    start_agent_session: "Start Agent-session",
+    use_agent_session_to_use_tools:
+      "Du kan bruge værktøjer i chat ved at starte en agent-session med '@agent' i starten af din forespørgsel.",
+    agent_invocation: {
+      model_wants_to_call: "Modellen ønsker at ringe",
+      approve: "Godkend",
+      reject: "Afvise",
+      always_allow: "Sørg altid for, at {{skillName}} er tilgængeligt.",
+      tool_call_was_approved:
+        "Anmodningen om at bruge værktøjet blev godkendt.",
+      tool_call_was_rejected: "Anmodningen om at bruge værktøjet blev afvist.",
     },
   },
   profile_settings: {
@@ -718,291 +1014,218 @@ const TRANSLATIONS = {
     profile_picture: "Profilbillede",
     remove_profile_picture: "Fjern profilbillede",
     username: "Brugernavn",
-    username_description:
-      "Brugernavnet må kun indeholde små bogstaver, tal, understregninger og bindestreger uden mellemrum",
     new_password: "Ny adgangskode",
     password_description: "Adgangskoden skal være mindst 8 tegn lang",
     cancel: "Annuller",
     update_account: "Opdater konto",
     theme: "Tema-præference",
     language: "Foretrukket sprog",
-    failed_upload: null,
-    upload_success: null,
-    failed_remove: null,
-    profile_updated: null,
-    failed_update_user: null,
-    account: null,
-    support: null,
-    signout: null,
+    failed_upload: "Kunne ikke uploade profilbillede: {{error}}",
+    upload_success: "Profilbillede er uploadet.",
+    failed_remove: "Kunne ikke fjerne profilbilledet: {{error}}",
+    profile_updated: "Profil opdateret.",
+    failed_update_user: "Mislykket med at opdatere bruger: {{error}}",
+    account: "Konto",
+    support: "Støtte",
+    signout: "Log ud",
   },
   customization: {
     interface: {
-      title: null,
-      description: null,
+      title: "Brugerpræferencer",
+      description: "Konfigurer dine præferencer for AnythingLLM.",
     },
     branding: {
-      title: null,
-      description: null,
+      title: 'Brandstrategi og "white label"-løsninger',
+      description: "Mærk din AnythingLLM-instans med dit eget brand.",
     },
     chat: {
-      title: null,
-      description: null,
+      title: "Chat",
+      description: "Angiv dine præferencer for chat med AnythingLLM.",
       auto_submit: {
-        title: null,
-        description: null,
+        title: "Automatisk indtastning af taleinput",
+        description:
+          "Automatisk afsendelse af taleinput efter en periode med stilhed",
       },
       auto_speak: {
-        title: null,
-        description: null,
+        title: "Auto-Speak Responses\n\nAutomatiske svar",
+        description: "Automatisk genererede svar fra AI'en",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "Aktiver stavekontrol",
+        description:
+          "Aktiver eller deaktiver stavekontrollen i indtastningsfeltet",
       },
     },
     items: {
       theme: {
-        title: null,
-        description: null,
+        title: "Tema",
+        description: "Vælg dit foretrukne farveskema til applikationen.",
       },
       "show-scrollbar": {
-        title: null,
-        description: null,
+        title: "Vis afrulningslinje",
+        description: "Aktiver eller deaktiver scrollbaren i chatvinduet.",
       },
       "support-email": {
-        title: null,
-        description: null,
+        title: "Støtte-e-mail",
+        description:
+          "Angiv e-mailadressen, der skal være tilgængelig for brugere, når de har brug for hjælp.",
       },
       "app-name": {
-        title: null,
-        description: null,
-      },
-      "chat-message-alignment": {
-        title: null,
-        description: null,
+        title: "Navn",
+        description:
+          "Angiv et navn, der vises på login-siden for alle brugere.",
       },
       "display-language": {
-        title: null,
-        description: null,
+        title: "Visningssprog",
+        description:
+          "Vælg det foretrukne sprog til at vise AnythingLLM's brugergrænseflade i – når oversættelser er tilgængelige.",
       },
       logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
-      },
-      "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
-        "double-click": null,
-        save: null,
+        title: "Brand Logo",
+        description:
+          "Upload dit brugerdefinerede logo for at vise det på alle sider.",
+        add: "Tilføj et brugerdefineret logo",
+        recommended: "Anbefalet størrelse: 800 x 200",
+        remove: "Fjern",
+        replace: "Udskift",
       },
       "browser-appearance": {
-        title: null,
-        description: null,
+        title: "Browser-udseende",
+        description:
+          "Tilpas udseendet af browserens fane og titel, når appen er åben.",
         tab: {
-          title: null,
-          description: null,
+          title:
+            "**Embracing the Future: A Comprehensive Guide to Sustainable Development**",
+          description:
+            "Angiv en brugerdefineret titel for fanen, når appen åbnes i en browser.",
         },
         favicon: {
-          title: null,
-          description: null,
+          title: "Favikon",
+          description: "Brug et brugerdefineret ikon til browserens fane.",
         },
       },
       "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
+        title: "Sidefods-elementer",
+        description:
+          "Tilpas de elementer, der vises i fodervirket nederst i sidepanelet.",
+        icon: "Ikon",
+        link: "Link",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Vis HTML i chat",
+        description:
+          "Generer HTML-svar i hjælperes svar.\nDette kan resultere i en meget højere kvalitet af svaret, men kan også føre til potentielle sikkerhedsrisici.",
       },
     },
   },
   "main-page": {
-    noWorkspaceError: null,
-    checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
-      tasks: {
-        create_workspace: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        send_chat: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        embed_document: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        visit_community: {
-          title: null,
-          description: null,
-          action: null,
-        },
-      },
+    quickActions: {
+      createAgent: "Opret en agent",
+      editWorkspace: "Rediger arbejdsområdet",
+      uploadDocument: "Upload en fil",
     },
-    quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
-    },
-    exploreMore: {
-      title: null,
-      features: {
-        customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-      },
-    },
-    announcements: {
-      title: null,
-    },
-    resources: {
-      title: null,
-      links: {
-        docs: null,
-        star: null,
-      },
-      keyboardShortcuts: null,
-    },
+    greeting: "Hvordan kan jeg hjælpe dig i dag?",
   },
   "keyboard-shortcuts": {
-    title: null,
+    title: "Tastaturgenveje",
     shortcuts: {
-      settings: null,
-      workspaceSettings: null,
-      home: null,
-      workspaces: null,
-      apiKeys: null,
-      llmPreferences: null,
-      chatSettings: null,
-      help: null,
-      showLLMSelector: null,
+      settings: "Åbn indstillinger",
+      workspaceSettings: "Åbn aktuelle arbejdsområdesindstillinger",
+      home: "Gå til Hjem",
+      workspaces: "Administrer arbejdsområder",
+      apiKeys: "API-nøgler: Indstillinger",
+      llmPreferences: "LLM-præferencer",
+      chatSettings: "Opsætningsindstillinger",
+      help: "Vis hjælp til tastaturgenveje",
+      showLLMSelector: "Vis arbejdsområde LLM-valg",
     },
   },
   community_hub: {
     publish: {
       system_prompt: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Succes!",
+        success_description:
+          "Dit systemprompt er nu tilgængeligt i Community Hub!",
+        success_thank_you: "Tak for at dele med fællesskabet!",
+        view_on_hub: "Se på Community Hub",
+        modal_title: "Publikationssystemets prompt",
+        name_label: "Navn",
+        name_description: "Dette er navnet, der vises for dit systemprompt.",
+        name_placeholder: "Mit systemprompt",
+        description_label: "Beskrivelse",
+        description_description:
+          "Dette er beskrivelsen af dit systemprompt. Brug dette til at beskrive formålet med dit systemprompt.",
+        tags_label: "Tags",
+        tags_description:
+          "Tags bruges til at mærke dine system prompts, så de er nemmere at finde. Du kan tilføje flere tags. Maksimalt 5 tags. Maksimalt 20 tegn per tag.",
+        tags_placeholder: "Skriv og tryk på Enter for at tilføje tags",
+        visibility_label: "Synlighed",
+        public_description: "Offentlige systemmeddelelser er synlige for alle.",
+        private_description: "Private system prompts er kun synlige for dig.",
+        publish_button: "Publicer på Community Hub",
+        submitting: "Uddrag...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "Dette er den faktiske systemprompt, der vil blive brugt til at styre LLM'en.",
+        prompt_placeholder: "Indtast din systemprompt her...",
       },
       agent_flow: {
-        public_description: null,
-        private_description: null,
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        privacy_note: null,
+        success_title: "Succes!",
+        success_description:
+          "Dit Agent Flow er nu tilgængeligt i Community Hub!",
+        success_thank_you: "Tak for at dele med fællesskabet!",
+        view_on_hub: "Se på Community Hub",
+        modal_title: "Publicer agentflow",
+        name_label: "Navn",
+        name_description: "Dette er navnet, der vises for din agentflow.",
+        name_placeholder: "Min agent, Flow",
+        description_label: "Beskrivelse",
+        description_description:
+          "Dette er beskrivelsen af din agentflow. Brug den til at beskrive formålet med dit agentflow.",
+        tags_label: "Tags",
+        tags_description:
+          "Tags bruges til at mærke dine agentflows, så de er nemmere at finde. Du kan tilføje flere tags. Maksimalt 5 tags. Maksimalt 20 tegn per tag.",
+        tags_placeholder: "Skriv og tryk på Enter for at tilføje tags",
+        visibility_label: "Synlighed",
+        submitting: "Uddrag...",
+        submit: "Publicer på Community Hub",
+        privacy_note:
+          "Agent-strømme uploades altid som private for at beskytte enhver følsom data. Du kan ændre synligheden i Community Hub efter udgivelse. Vær venligst opmærksom på, at din strøm ikke indeholder nogen følsom eller privat information, før du udgiver den.",
       },
       generic: {
         unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
+          title: "Krav om godkendelse",
+          description:
+            "Du skal verificere din identitet via AnythingLLM Community Hub, før du kan publicere indhold.",
+          button: "Forbind til fællesskabscenter",
         },
       },
       slash_command: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        command_label: null,
-        command_description: null,
-        command_placeholder: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Succes!",
+        success_description:
+          "Din Slash-kommando er blevet offentliggjort i Community Hub!",
+        success_thank_you: "Tak for at dele med fællesskabet!",
+        view_on_hub: "Se på Community Hub",
+        modal_title: "Udsend Slash Command",
+        name_label: "Navn",
+        name_description: "Dette er navnet, der vises for din kommando.",
+        name_placeholder: "Mit Slash-kommando",
+        description_label: "Beskrivelse",
+        description_description:
+          "Dette er beskrivelsen af din kommando. Brug den til at beskrive formålet med din kommando.",
+        tags_label: "Tags",
+        tags_description:
+          "Tags bruges til at mærke dine kommandoer, så de er nemmere at finde. Du kan tilføje flere tags. Maksimalt 5 tags. Maksimalt 20 tegn pr. tag.",
+        tags_placeholder: "Skriv og tryk på Enter for at tilføje tags",
+        visibility_label: "Synlighed",
+        public_description: "Offentlige kommandoer er synlige for alle.",
+        private_description: "Private kommandoer er kun synlige for dig.",
+        publish_button: "Publicer på Community Hub",
+        submitting: "Uddrag...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "Dette er den kommando, der vil blive brugt, når kommandoen med skråstreg aktiveres.",
+        prompt_placeholder: "Indtast din forespørgsel her...",
       },
     },
   },
@@ -1034,6 +1257,72 @@ const TRANSLATIONS = {
     notAssigned:
       "Du er ikke tildelt til nogen arbejdsområder.\nKontakt din administrator for at anmode om adgang til et arbejdsområde.",
     goToWorkspace: 'Gå til "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram-bot",
+    description:
+      "Forbind dit AnythingLLM-instans med Telegram, så du kan kommunikere med dine arbejdsområder fra enhver enhed.",
+    setup: {
+      step1: {
+        title: "Trin 1: Opret din Telegram-bot",
+        description:
+          "Åbn @BotFather i Telegram, send `/newbot` til <code>@BotFather</code>, følg instruktionerne, og kopier API-tokenet.",
+        "open-botfather": "Åbn BotFather",
+        "instruction-1": "1. Åbn linket eller scann QR-koden",
+        "instruction-2":
+          "2. Send <code>/newbot</code> til <code>@BotFather</code>",
+        "instruction-3": "3. Vælg et navn og et brugernavn til din bot",
+        "instruction-4": "4. Kopier API-tokenet, du modtager.",
+      },
+      step2: {
+        title: "Trin 2: Forbind din bot",
+        description:
+          "Indsæt API-tokenet, du modtog fra @BotFather, og vælg et standard-arbejdsområde, hvor din bot kan kommunikere.",
+        "bot-token": "Bot-token",
+        connecting: "Forbindes...",
+        "connect-bot": "Connect Bot",
+      },
+      security: {
+        title: "Anbefalede sikkerhedsindstillinger",
+        description:
+          "For yderligere sikkerhed, kan du konfigurere disse indstillinger via @BotFather.",
+        "disable-groups": "— Forhindre tilføjelse af bots til grupper",
+        "disable-inline":
+          "— Forhindr brugen af bot i søgninger direkte i søgefeltet",
+        "obscure-username":
+          "Brug et brugernavn til en bot, der ikke er åbenlyst, for at reducere synligheden.",
+      },
+      "toast-enter-token": "Vær venligst opført et bot-token.",
+      "toast-connect-failed": "Kunne ikke etablere forbindelse med botten.",
+    },
+    connected: {
+      status: "Forbundet",
+      "status-disconnected":
+        "Afbrudt – tokenet kan være udløbet eller ugyldigt",
+      "placeholder-token": "Indsæt nyt bot-token...",
+      reconnect: "Genopslå",
+      workspace: "Arbejdsområde",
+      "bot-link": "Bot-link",
+      "voice-response": "Stemmebesvarelse",
+      disconnecting: "Afbryde...",
+      disconnect: "Afbryde",
+      "voice-text-only": "Kun tekst",
+      "voice-mirror": "Spejl (svar med stemme, når brugeren sender en stemme)",
+      "voice-always":
+        "Sørg altid for at inkludere en lydbesked (send lyd sammen med hvert svar).",
+      "toast-disconnect-failed": "Kunne ikke afbryde robotten.",
+      "toast-reconnect-failed":
+        "Kunne ikke genoprette forbindelsen med botten.",
+      "toast-voice-failed": "Kunne ikke opdatere stemmemodus.",
+      "toast-approve-failed": "Mislykkedes med at godkende bruger.",
+      "toast-deny-failed": "Kunne ikke afvise brugeren.",
+      "toast-revoke-failed": "Kunne ikke annullere brugerens adgang.",
+    },
+    users: {
+      "pending-description":
+        "Brugere, der venter på at blive verificeret. Sammenlign den kode, der vises her, med den, der vises i deres Telegram-chat.",
+      unknown: "Ukendt",
+    },
   },
 };
 

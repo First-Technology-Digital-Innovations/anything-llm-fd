@@ -32,6 +32,32 @@ const System = {
       .then((res) => res.vectorCount)
       .catch(() => 0);
   },
+
+  /**
+   * Checks if the onboarding is complete.
+   * @returns {Promise<boolean>}
+   */
+  isOnboardingComplete: async function () {
+    return await fetch(`${API_BASE}/onboarding`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not find onboarding information.");
+        return res.json();
+      })
+      .then((res) => res.onboardingComplete)
+      .catch(() => false);
+  },
+  /**
+   * Marks the onboarding as complete.
+   * @returns {Promise<boolean>}
+   */
+  markOnboardingComplete: async function () {
+    return await fetch(`${API_BASE}/onboarding`, {
+      method: "POST",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   keys: async function () {
     return await fetch(`${API_BASE}/setup-complete`)
       .then((res) => {
@@ -81,6 +107,22 @@ const System = {
       .then((res) => res)
       .catch((e) => {
         return { valid: false, message: e.message };
+      });
+  },
+  /**
+   * Refreshes the user object from the session.
+   * @returns {Promise<{success: boolean, user: Object | null, message: string | null}>}
+   */
+  refreshUser: () => {
+    return fetch(`${API_BASE}/system/refresh-user`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not refresh user.");
+        return res.json();
+      })
+      .catch((e) => {
+        return { success: false, user: null, message: e.message };
       });
   },
   recoverAccount: async function (username, recoveryCodes) {
@@ -415,12 +457,11 @@ const System = {
         throw new Error("Failed to fetch pfp.");
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))
-      .catch((e) => {
-        // console.log(e);
+      .catch(() => {
         return null;
       });
   },
-  removePfp: async function (id) {
+  removePfp: async function () {
     return await fetch(`${API_BASE}/system/remove-pfp`, {
       method: "DELETE",
       headers: baseHeaders(),
@@ -463,39 +504,6 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  getWelcomeMessages: async function () {
-    return await fetch(`${API_BASE}/system/welcome-messages`, {
-      method: "GET",
-      cache: "no-cache",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not fetch welcome messages.");
-        return res.json();
-      })
-      .then((res) => res.welcomeMessages)
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-  },
-  setWelcomeMessages: async function (messages) {
-    return fetch(`${API_BASE}/system/set-welcome-messages`, {
-      method: "POST",
-      headers: baseHeaders(),
-      body: JSON.stringify({ messages }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.statusText || "Error setting welcome messages.");
-        }
-        return { success: true, ...res.json() };
-      })
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
-  },
   getApiKeys: async function () {
     return fetch(`${API_BASE}/system/api-keys`, {
       method: "GET",
@@ -512,10 +520,11 @@ const System = {
         return { apiKey: null, error: e.message };
       });
   },
-  generateApiKey: async function () {
+  generateApiKey: async function (data = {}) {
     return fetch(`${API_BASE}/system/generate-api-key`, {
       method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify(data),
     })
       .then((res) => {
         if (!res.ok) {
@@ -823,6 +832,36 @@ const System = {
         console.error("Failed to validate SQL connection:", e);
         return { success: false, error: e.message };
       });
+  },
+
+  /**
+   * Checks if the filesystem-agent skill is available.
+   * The filesystem-agent skill is only available when running in a Docker container.
+   * @returns {Promise<boolean>}
+   */
+  isFileSystemAgentAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/filesystem-agent/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
+  /**
+   * Checks if the create-files-agent skill is available.
+   * The create-files-agent skill is only available when running in a Docker container.
+   * @returns {Promise<boolean>}
+   */
+  isCreateFilesAgentAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/create-files-agent/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
   },
 
   experimentalFeatures: {
