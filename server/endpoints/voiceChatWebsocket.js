@@ -404,6 +404,24 @@ class VoiceChatSession {
         this.handleTranscription(event);
         break;
 
+      case "input_audio_buffer.speech_started":
+        // User started speaking (barge-in) — forward to client so it stops audio playback
+        console.log(
+          `[VoiceChat] User barge-in detected for session ${this.sessionId}`
+        );
+        this.pendingAITranscript = "";
+        this.sendToClient({
+          type: "input_audio_buffer.speech_started",
+        });
+        break;
+
+      case "input_audio_buffer.speech_stopped":
+        // User stopped speaking — forward to client for UI state update
+        this.sendToClient({
+          type: "input_audio_buffer.speech_stopped",
+        });
+        break;
+
       case "response.done":
         this.handleResponseComplete(event);
         break;
@@ -426,7 +444,8 @@ class VoiceChatSession {
         // Log other events for debugging
         if (
           eventType.startsWith("response.") ||
-          eventType.startsWith("conversation.")
+          eventType.startsWith("conversation.") ||
+          eventType.startsWith("input_audio_buffer.")
         ) {
           console.log(
             `[VoiceChat] Azure event for session ${this.sessionId}: ${eventType}`
@@ -442,6 +461,18 @@ class VoiceChatSession {
       this.workspace?.openAiPrompt ||
       "You are a helpful AI assistant. Respond naturally and conversationally.";
 
+    // Parse configurable parameters from settings (matching Azure model deployment)
+    const vadThreshold = parseFloat(settings.VoiceChatVADThreshold) || 0.5;
+    const prefixPaddingMs =
+      parseInt(settings.VoiceChatVADPrefixPaddingMs) || 200;
+    const silenceDurationMs =
+      parseInt(settings.VoiceChatVADSilenceDurationMs) || 300;
+    const temperature = parseFloat(settings.VoiceChatTemperature) || 0.7;
+    const maxResponseTokens =
+      settings.VoiceChatMaxResponseTokens === "inf"
+        ? "inf"
+        : parseInt(settings.VoiceChatMaxResponseTokens) || 1638;
+
     // Configure Azure Realtime session using the SDK's send method
     const sessionConfig = {
       type: "session.update",
@@ -453,16 +484,16 @@ class VoiceChatSession {
         output_audio_format: "pcm16",
         turn_detection: {
           type: "server_vad",
-          threshold: parseFloat(settings.VoiceChatVADThreshold) || 0.5,
-          prefix_padding_ms: 300,
-          silence_duration_ms: 200,
+          threshold: vadThreshold,
+          prefix_padding_ms: prefixPaddingMs,
+          silence_duration_ms: silenceDurationMs,
           create_response: true,
         },
         input_audio_transcription: {
           model: "whisper-1",
         },
-        temperature: 0.8,
-        max_response_output_tokens: "inf",
+        temperature: temperature,
+        max_response_output_tokens: maxResponseTokens,
       },
     };
 
@@ -658,6 +689,21 @@ class VoiceChatSession {
 
   async handleResponseComplete(event) {
     try {
+      // If the response was cancelled (e.g. user barge-in), skip saving
+      const status = event.response?.status;
+      if (status === "cancelled") {
+        console.log(
+          `[VoiceChat] Response was cancelled (barge-in) for session ${this.sessionId}`
+        );
+        this.pendingAITranscript = "";
+        this.sendToClient({
+          type: "response_complete",
+          text: "",
+          cancelled: true,
+        });
+        return;
+      }
+
       // Get final transcript from accumulated chunks or from event
       // Use accumulated transcript if available, fall back to extracting from event
       let responseText = this.pendingAITranscript;

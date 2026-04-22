@@ -1,18 +1,13 @@
 // Voice Chat UI Component
 // Provides a full-screen voice chat interface with animations and visual feedback
-import React, { useState, useEffect } from "react";
-import {
-  X,
-  Microphone,
-  MicrophoneSlash,
-  Waveform,
-} from "@phosphor-icons/react";
-import { useRealtime } from "@/hooks/useRealtime";
-import { useAudioRecorder } from "@/hooks/useAudioRecorder";
-import { useAudioPlayer } from "@/hooks/useAudioPlayer";
-import useUser from "@/hooks/useUser";
-import { VOICE_CHAT_SAVED_EVENT } from "@/components/WorkspaceChat/ChatContainer";
-import "./VoiceChatMode.css";
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Microphone, MicrophoneSlash, Waveform } from '@phosphor-icons/react';
+import { useRealtime } from '@/hooks/useRealtime';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import useUser from '@/hooks/useUser';
+import { VOICE_CHAT_SAVED_EVENT } from '@/components/WorkspaceChat/ChatContainer';
+import './VoiceChatMode.css';
 
 export default function VoiceChatMode({
   workspace,
@@ -25,12 +20,16 @@ export default function VoiceChatMode({
   const [sessionId] = useState(
     () => `voice-${Date.now()}-${Math.random().toString(36).substring(2)}`
   );
-  const [currentState, setCurrentState] = useState("idle"); // 'idle', 'listening', 'processing', 'speaking', 'error'
+  const [currentState, setCurrentState] = useState('idle'); // 'idle', 'listening', 'processing', 'speaking', 'error'
   const [statusMessage, setStatusMessage] = useState(
-    "Click the microphone to start"
+    'Click the microphone to start'
   );
   const [audioLevel, setAudioLevel] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [userTranscript, setUserTranscript] = useState('');
+  const [aiTranscript, setAiTranscript] = useState('');
+  const isListeningRef = useRef(false);
+  const isRecordingRef = useRef(false);
 
   // Voice chat hooks - pass user ID for proper message attribution
   const userId = user?.id || null;
@@ -61,6 +60,9 @@ export default function VoiceChatMode({
     clearQueue,
   } = useAudioPlayer();
 
+  // Keep refs in sync for use inside message handler closures
+  useEffect(() => { isRecordingRef.current = isRecording; }, [isRecording]);
+
   // Initialize voice chat session when visible
   useEffect(() => {
     if (isVisible && !isInitialized) {
@@ -75,59 +77,84 @@ export default function VoiceChatMode({
     if (!isReady) return;
 
     const unsubscribe = onMessage((message) => {
-      console.log("[VoiceChatMode] Received message:", message.type);
+      console.log('[VoiceChatMode] Received message:', message.type);
 
       switch (message.type) {
-        case "session.created":
-        case "session_configured":
-          setCurrentState("idle");
-          setStatusMessage("Ready to chat - click microphone to start");
+        case 'session.created':
+        case 'session_configured':
+          setCurrentState('idle');
+          setStatusMessage('Ready — click microphone to start');
           break;
 
-        case "input_audio_buffer.speech_started":
-          setCurrentState("listening");
-          setStatusMessage("Listening...");
+        case 'input_audio_buffer.speech_started':
+          // Barge-in: immediately stop AI audio playback so user can speak
+          stopPlayback();
+          clearQueue();
+          isListeningRef.current = true;
+          setCurrentState('listening');
+          setStatusMessage('Listening...');
+          setUserTranscript('');
+          setAiTranscript('');
           break;
 
-        case "input_audio_buffer.speech_stopped":
-          setCurrentState("processing");
-          setStatusMessage("Processing...");
+        case 'input_audio_buffer.speech_stopped':
+          isListeningRef.current = false;
+          setCurrentState('processing');
+          setStatusMessage('Thinking...');
           break;
 
-        case "response.audio_transcript.delta":
-        case "audio_transcript_chunk":
-          setCurrentState("speaking");
-          setStatusMessage("AI is speaking...");
+        case 'user_transcription':
+          if (message.text) setUserTranscript(message.text);
           break;
 
-        case "response.audio.delta":
+        case 'response.audio_transcript.delta':
+        case 'audio_transcript_chunk':
+          setCurrentState('speaking');
+          setStatusMessage('');
+          if (message.transcript) {
+            setAiTranscript(prev => prev + message.transcript);
+          }
+          break;
+
+        case 'audio_transcript_done':
+          if (message.transcript) setAiTranscript(message.transcript);
+          break;
+
+        case 'response.audio.delta':
           // Play audio chunk (direct Azure format)
           if (message.delta) {
             playAudioChunk(message.delta);
           }
           break;
 
-        case "audio_response_chunk":
-          // Play audio chunk (server proxied format)
-          if (message.audio) {
-            console.log(
-              "[VoiceChatMode] Playing audio chunk, length:",
-              message.audio.length
-            );
+        case 'audio_response_chunk':
+          // Play audio chunk — skip if user is speaking (barge-in)
+          if (message.audio && !isListeningRef.current) {
+            setCurrentState('speaking');
+            setStatusMessage('');
             playAudioChunk(message.audio);
           }
           break;
 
-        case "response.done":
-        case "audio_response_done":
-          setCurrentState("idle");
-          setStatusMessage("Click microphone to continue");
+        case 'response.done':
+        case 'audio_response_done':
+          // Audio stream finished — all chunks sent
           break;
 
-        case "chat_saved":
+        case 'response_complete':
+          if (message.cancelled) break;
+          if (isRecordingRef.current) {
+            setCurrentState('listening');
+            setStatusMessage("Go ahead, I'm listening...");
+          } else {
+            setCurrentState('idle');
+            setStatusMessage('Click microphone to start speaking');
+          }
+          break;
+
+        case 'chat_saved':
           // Voice chat exchange was saved to database - trigger refresh
-          console.log("[VoiceChatMode] Chat saved:", message.chatId);
-          // Dispatch event for ChatContainer to update history
+          console.log('[VoiceChatMode] Chat saved:', message.chatId);
           window.dispatchEvent(
             new CustomEvent(VOICE_CHAT_SAVED_EVENT, {
               detail: {
@@ -140,27 +167,24 @@ export default function VoiceChatMode({
           onChatSaved(message);
           break;
 
-        case "error":
-          console.error("[VoiceChatMode] API error:", message.error);
-          setCurrentState("error");
-          setStatusMessage(
-            `Error: ${message.error.message || "Unknown error"}`
-          );
+        case 'error':
+          console.error('[VoiceChatMode] Error:', message.error);
+          setCurrentState('error');
+          setStatusMessage(`Error: ${message.error?.message || 'Unknown error'}`);
           break;
 
         default:
-          // Handle other message types as needed
           break;
       }
     });
 
     return unsubscribe;
-  }, [isReady, onMessage, playAudioChunk]);
+  }, [isReady, onMessage, playAudioChunk, stopPlayback, clearQueue]);
 
   const initializeSession = async () => {
     try {
-      setCurrentState("processing");
-      setStatusMessage("Connecting...");
+      setCurrentState('processing');
+      setStatusMessage('Connecting...');
 
       // Request microphone permission first
       await requestPermission();
@@ -169,17 +193,17 @@ export default function VoiceChatMode({
       await startSession();
 
       setIsInitialized(true);
-      setCurrentState("idle");
-      setStatusMessage("Ready - click microphone to start");
+      setCurrentState('idle');
+      setStatusMessage('Ready - click microphone to start');
     } catch (error) {
-      console.error("[VoiceChatMode] Failed to initialize session:", error);
-      setCurrentState("error");
-      setStatusMessage("Failed to connect. Please try again.");
+      console.error('[VoiceChatMode] Failed to initialize session:', error);
+      setCurrentState('error');
+      setStatusMessage('Failed to connect. Please try again.');
     }
   };
 
   const handleMicrophoneToggle = async () => {
-    if (currentState === "error") {
+    if (currentState === 'error') {
       // Retry initialization
       setIsInitialized(false);
       await initializeSession();
@@ -189,23 +213,27 @@ export default function VoiceChatMode({
     if (isRecording) {
       // Stop recording
       stopRecording();
+      stopPlayback();
+      clearQueue();
       inputAudioBufferClear();
-      setCurrentState("idle");
-      setStatusMessage("Click microphone to start speaking");
+      isListeningRef.current = false;
+      setCurrentState('idle');
+      setStatusMessage('Click microphone to start speaking');
+      setUserTranscript('');
+      setAiTranscript('');
     } else {
       // Start recording
       try {
-        setCurrentState("listening");
-        setStatusMessage("Speak now...");
+        setCurrentState('listening');
+        setStatusMessage("Go ahead, I'm listening...");
 
         await startRecording((audioData) => {
-          // Send audio data to Realtime API
           addUserAudio(audioData);
         });
       } catch (error) {
-        console.error("[VoiceChatMode] Failed to start recording:", error);
-        setCurrentState("error");
-        setStatusMessage("Failed to start recording");
+        console.error('[VoiceChatMode] Failed to start recording:', error);
+        setCurrentState('error');
+        setStatusMessage('Failed to start recording');
       }
     }
   };
@@ -214,9 +242,12 @@ export default function VoiceChatMode({
     stopRecording();
     stopPlayback();
     disconnect();
+    isListeningRef.current = false;
     setIsInitialized(false);
-    setCurrentState("idle");
-    setStatusMessage("Click the microphone to start");
+    setCurrentState('idle');
+    setStatusMessage('Click the microphone to start');
+    setUserTranscript('');
+    setAiTranscript('');
   };
 
   const handleClose = () => {
@@ -226,28 +257,28 @@ export default function VoiceChatMode({
 
   const getStateColor = () => {
     switch (currentState) {
-      case "idle":
-        return "#10b981"; // green
-      case "listening":
-        return "#ef4444"; // red
-      case "processing":
-        return "#f59e0b"; // amber
-      case "speaking":
-        return "#3b82f6"; // blue
-      case "error":
-        return "#ef4444"; // red
+      case 'idle':
+        return '#10b981'; // green
+      case 'listening':
+        return '#ef4444'; // red
+      case 'processing':
+        return '#f59e0b'; // amber
+      case 'speaking':
+        return '#3b82f6'; // blue
+      case 'error':
+        return '#ef4444'; // red
       default:
-        return "#6b7280"; // gray
+        return '#6b7280'; // gray
     }
   };
 
   const renderMicrophoneIcon = () => {
     switch (currentState) {
-      case "listening":
+      case 'listening':
         return <Microphone className="w-16 h-16" />;
-      case "error":
+      case 'error':
         return <MicrophoneSlash className="w-16 h-16" />;
-      case "speaking":
+      case 'speaking':
         return <Waveform className="w-16 h-16" />;
       default:
         return <Microphone className="w-16 h-16" />;
@@ -277,8 +308,8 @@ export default function VoiceChatMode({
           {/* Status message */}
           <div className="voice-chat-status">
             <h2 className="voice-chat-title">Voice Chat</h2>
-            <p className="voice-chat-message">{statusMessage}</p>
-            {connectionStatus === "connecting" && (
+            {statusMessage && <p className="voice-chat-message">{statusMessage}</p>}
+            {connectionStatus === 'connecting' && (
               <div className="voice-chat-spinner" />
             )}
           </div>
@@ -286,7 +317,7 @@ export default function VoiceChatMode({
           {/* Microphone button */}
           <div className="voice-chat-mic-container">
             {/* Animated rings for active states */}
-            {(currentState === "listening" || currentState === "speaking") && (
+            {(currentState === 'listening' || currentState === 'speaking') && (
               <div className="voice-chat-rings">
                 <div className="voice-chat-ring ring-1" />
                 <div className="voice-chat-ring ring-2" />
@@ -298,19 +329,19 @@ export default function VoiceChatMode({
             <button
               onClick={handleMicrophoneToggle}
               className={`voice-chat-mic-button ${currentState}`}
-              style={{ "--state-color": getStateColor() }}
+              style={{ '--state-color': getStateColor() }}
               disabled={
-                currentState === "processing" ||
-                connectionStatus === "connecting"
+                currentState === 'processing' ||
+                connectionStatus === 'connecting'
               }
-              aria-label={isRecording ? "Stop recording" : "Start recording"}
+              aria-label={isRecording ? 'Stop recording' : 'Start recording'}
             >
               {renderMicrophoneIcon()}
             </button>
           </div>
 
           {/* Audio visualization */}
-          {currentState === "speaking" && (
+          {currentState === 'speaking' && (
             <div className="voice-chat-audio-viz">
               {Array.from({ length: 5 }, (_, i) => (
                 <div
@@ -325,8 +356,26 @@ export default function VoiceChatMode({
             </div>
           )}
 
+          {/* Live transcripts */}
+          {(userTranscript || aiTranscript) && (
+            <div className="voice-chat-transcripts">
+              {userTranscript && (
+                <div className="voice-chat-transcript user">
+                  <span className="transcript-label">You</span>
+                  <p className="transcript-text">{userTranscript}</p>
+                </div>
+              )}
+              {aiTranscript && (
+                <div className="voice-chat-transcript ai">
+                  <span className="transcript-label">AI</span>
+                  <p className="transcript-text">{aiTranscript}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Feature highlights */}
-          {currentState === "idle" && !isRecording && (
+          {currentState === 'idle' && !isRecording && (
             <div className="voice-chat-features">
               <div className="feature-card">
                 <div className="feature-icon">🎤</div>
