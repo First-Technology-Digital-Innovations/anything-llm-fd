@@ -63,9 +63,12 @@ function oauthEndpoints(app, apiRouter) {
       });
       const userData = await userResponse.json();
 
-      // Use email or UPN as username
-      const email = userData.mail || userData.userPrincipalName;
-      if (!email) throw new Error("Could not retrieve email from Azure AD");
+      // Use email or UPN as username. Lowercased because the User model's
+      // username regex only allows lowercase, and Azure AD preserves the
+      // original casing of emails/UPNs across tenants.
+      const rawEmail = userData.mail || userData.userPrincipalName;
+      if (!rawEmail) throw new Error("Could not retrieve email from Azure AD");
+      const email = String(rawEmail).toLowerCase();
 
       // Determine Role
       let role = "default";

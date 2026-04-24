@@ -40,15 +40,6 @@ const DOCUMENT_STYLES = {
       coverText: "FFFFFF",
       footerText: "8B6914",
     },
-    corporate: {
-      heading: "0D5387",
-      accent: "002060",
-      tableHeader: "E6EEF6",
-      border: "B3C5D9",
-      coverBg: "0D5387",
-      coverText: "FFFFFF",
-      footerText: "5A5A5A",
-    },
   },
   fonts: {
     body: "Calibri",

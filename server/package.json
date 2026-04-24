@@ -109,6 +109,7 @@
   "devDependencies": {
     "@eslint/js": "9",
     "@inquirer/prompts": "^4.3.1",
+    "better-sqlite3": "^12.9.0",
     "cross-env": "^7.0.3",
     "eslint": "9",
     "eslint-config-prettier": "^9.0.0",

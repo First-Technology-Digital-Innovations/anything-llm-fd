@@ -102,6 +102,17 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/voice-chat",
+        lazy: async () => {
+          const { default: GeneralVoiceChatSettings } = await import(
+            "@/pages/GeneralSettings/VoiceChat"
+          );
+          return {
+            element: <AdminRoute Component={GeneralVoiceChatSettings} />,
+          };
+        },
+      },
+      {
         path: "/settings/embedding-preference",
         lazy: async () => {
           const { default: GeneralEmbeddingPreference } = await import(
