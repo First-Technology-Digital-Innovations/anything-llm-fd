@@ -21,16 +21,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
         xdg-utils git build-essential ffmpeg && \
     mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     # Install node and yarn
     apt-get install -yq --no-install-recommends nodejs && \
-    curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
         && rm yarn_1.22.19_all.deb && \
     # Install uvx (pinned to 0.6.10) for MCP support
-    curl -LsSf https://astral.sh/uv/0.6.10/install.sh | sh && \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -LsSf https://astral.sh/uv/0.6.10/install.sh | sh && \
         mv /root/.local/bin/uv /usr/local/bin/uv && \
         mv /root/.local/bin/uvx /usr/local/bin/uvx && \
         echo "Installed uvx! $(uv --version)" && \
@@ -61,7 +61,7 @@ WORKDIR /app
 # so web-scraping would be broken in arm docker containers unless we patch it
 # by manually installing a compatible chromedriver.
 RUN echo "Need to patch Puppeteer x Chromium support for ARM86 - installing dep!" && \
-    curl -fSL https://webassets.anythingllm.com/chromium-1088-linux-arm64.zip -o chrome-linux.zip && \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -fSL https://webassets.anythingllm.com/chromium-1088-linux-arm64.zip -o chrome-linux.zip && \
     unzip chrome-linux.zip && \
     rm -rf chrome-linux.zip
 
@@ -90,16 +90,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
         xdg-utils git build-essential ffmpeg && \
     mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     # Install node and yarn
     apt-get install -yq --no-install-recommends nodejs && \
-    curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
         && rm yarn_1.22.19_all.deb && \
     # Install uvx (pinned to 0.6.10) for MCP support
-    curl -LsSf https://astral.sh/uv/0.6.10/install.sh | sh && \
+    curl --retry 5 --retry-delay 3 --retry-connrefused --retry-all-errors -LsSf https://astral.sh/uv/0.6.10/install.sh | sh && \
         mv /root/.local/bin/uv /usr/local/bin/uv && \
         mv /root/.local/bin/uvx /usr/local/bin/uvx && \
         echo "Installed uvx! $(uv --version)" && \
