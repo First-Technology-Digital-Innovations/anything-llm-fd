@@ -1,6 +1,15 @@
 const prisma = require("../utils/prisma");
 const { safeJSONStringify } = require("../utils/helpers/chat/responses");
 
+// Get Application Insights client if available
+let appInsightsClient = null;
+try {
+  const appInsights = require("applicationinsights");
+  appInsightsClient = appInsights.defaultClient;
+} catch {
+  // App Insights not initialized
+}
+
 const WorkspaceChats = {
   new: async function ({
     workspaceId,
@@ -10,6 +19,7 @@ const WorkspaceChats = {
     threadId = null,
     include = true,
     apiSessionId = null,
+    // isRegenation = false,
   }) {
     try {
       const chat = await prisma.workspace_chats.create({
@@ -23,9 +33,56 @@ const WorkspaceChats = {
           include,
         },
       });
+      
+      // Log stuff
+      if (appInsightsClient) {
+        // log successful user prompt creation
+        appInsightsClient.trackEvent({
+          name: "WorkspaceChat_Created",
+          properties: {
+            workspaceChatId: String(chat.id),
+            userId: user?.id ? String(user.id) : "anonymous",
+            workspaceId: String(workspaceId),
+            promptLengthChars: prompt.length,
+            promptTokens: response?.metrics?.prompt_tokens || null,
+            threadId: threadId ? String(threadId) : "default"
+          },
+        });
+
+        //log bot response data
+        if (response) {
+          appInsightsClient.trackEvent({
+            name: "WorkspaceChat_BotResponse",
+            properties: {
+              workspaceChatId: String(chat.id),
+              userId: user?.id ? String(user.id) : "anonymous",
+              workspaceId: String(workspaceId),
+              responseLengthChars: response?.text?.length || 0,
+              responseTokens: response?.metrics?.completion_tokens || 0,
+              totalTokens: response?.metrics?.total_tokens || 0,
+              threadId: threadId ? String(threadId) : "default",
+              sourcesUsed: response?.sources?.length || 0,
+            },
+          });
+        }
+      }
+      
       return { chat, message: null };
     } catch (error) {
       console.error(error.message);
+      
+      // Log error
+      if (appInsightsClient) {
+        appInsightsClient.trackEvent({
+          name: "WorkspaceChat_CreateError",
+          properties: {
+            workspaceId: String(workspaceId),
+            userId: user?.id ? String(user.id) : "anonymous",
+            error: error.message,
+          },
+        });
+      }
+      
       return { chat: null, message: error.message };
     }
   },

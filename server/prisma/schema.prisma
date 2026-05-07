@@ -10,7 +10,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// datasource db {
+//datasource db {
 //   provider = "sqlite"
 //   url      = "file:../storage/anythingllm.db"
 //}

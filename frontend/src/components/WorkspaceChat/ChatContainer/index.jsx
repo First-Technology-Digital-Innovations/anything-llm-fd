@@ -109,6 +109,20 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }
 
   const regenerateAssistantMessage = (chatId) => {
+    console.log("[ChatContainer] Regenerating response for chat:", chatId);
+    
+    // Track regenerate event in App Insights
+    if (window.appInsightsClient) {
+      window.appInsightsClient.trackEvent({
+        name: "UserAction_RegenerateResponse",
+        properties: {
+          chatId: String(chatId),
+          workspaceSlug: workspace.slug,
+          threadSlug: threadSlug || "default",
+        },
+      });
+    }
+    
     const updatedHistory = chatHistory.slice(0, -1);
     const lastUserMessage = updatedHistory.slice(-1)[0];
     Workspace.deleteChats(workspace.slug, [chatId])
