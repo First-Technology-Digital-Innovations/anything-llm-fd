@@ -69,6 +69,21 @@ function systemEndpoints(app) {
     response.status(200).json({ online: true });
   });
 
+  app.get(
+    "/system/app-insights-config",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        const connectionString =
+          process.env.APP_INSIGHTS_CONNECTION_STRING || null;
+        response.status(200).json({ connectionString });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(200).json({ connectionString: null });
+      }
+    }
+  );
+
   app.get("/migrate", async (_, response) => {
     response.sendStatus(200);
   });

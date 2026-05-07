@@ -11,28 +11,6 @@ import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
 import "@/index.css";
-import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-
-// Initialize Application Insights for frontend telemetry
-if (import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING) {
-  try {
-    const appInsights = new ApplicationInsights({
-      config: {
-        connectionString: import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING,
-        enableAutoRouteTracking: true,
-        enableUnhandledPromiseRejectionTracking: true,
-      },
-    });
-
-    appInsights.loadAppInsights();
-    window.appInsightsClient = appInsights;
-    console.log("[Main] Application Insights initialized");
-  } catch (error) {
-    console.error("[Main] Failed to initialize Application Insights:", error);
-  }
-} else {
-  console.warn("[Main] VITE_APP_INSIGHTS_CONNECTION_STRING not configured");
-}
 
 const isDev = import.meta.env.DEV;
 const REACTWRAP = isDev ? React.Fragment : React.StrictMode;

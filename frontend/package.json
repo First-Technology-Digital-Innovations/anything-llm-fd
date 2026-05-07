@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "vite --open",
-    "dev": "cross-env NODE_ENV=development vite --debug --host=0.0.0.0",
+    "dev": "cross-env NODE_ENV=development vite --mode development --debug --host=0.0.0.0",
     "build": "vite build && node scripts/postbuild.js",
     "lint:check": "eslint src",
     "lint": "eslint --fix src",

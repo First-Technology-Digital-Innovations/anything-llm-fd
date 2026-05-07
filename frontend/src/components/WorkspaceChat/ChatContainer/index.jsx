@@ -7,6 +7,7 @@ import PromptInput, {
 } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
+import { trackEvent } from "@/utils/appInsights";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useNavigate, useParams } from "react-router-dom";
@@ -112,16 +113,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     console.log("[ChatContainer] Regenerating response for chat:", chatId);
     
     // Track regenerate event in App Insights
-    if (window.appInsightsClient) {
-      window.appInsightsClient.trackEvent({
-        name: "UserAction_RegenerateResponse",
-        properties: {
-          chatId: String(chatId),
-          workspaceSlug: workspace.slug,
-          threadSlug: threadSlug || "default",
-        },
-      });
-    }
+    trackEvent("UserAction_RegenerateResponse", {
+      chatId: String(chatId),
+      workspaceSlug: workspace.slug,
+      threadSlug: threadSlug || "default",
+    });
     
     const updatedHistory = chatHistory.slice(0, -1);
     const lastUserMessage = updatedHistory.slice(-1)[0];

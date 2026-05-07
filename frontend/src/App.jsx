@@ -1,10 +1,11 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { AuthProvider } from "@/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import i18n from "./i18n";
+import AppInsightsInitializer from "@/components/AppInsightsInitializer";
 
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
@@ -17,6 +18,7 @@ import ErrorBoundaryFallback from "./components/ErrorBoundaryFallback";
 
 export default function App() {
   const location = useLocation();
+
   return (
     <ErrorBoundary
       FallbackComponent={ErrorBoundaryFallback}
@@ -27,6 +29,7 @@ export default function App() {
         <PWAModeProvider>
           <Suspense fallback={<FullScreenLoader />}>
             <AuthProvider>
+              <AppInsightsInitializer />
               <LogoProvider>
                 <PfpProvider>
                   <I18nextProvider i18n={i18n}>
