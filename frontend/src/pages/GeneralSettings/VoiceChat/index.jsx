@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
+import Admin from "@/models/admin";
 import PreLoader from "@/components/Preloader";
 import showToast from "@/utils/toast";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
@@ -94,28 +95,21 @@ export default function VoiceChatSettings() {
 
     setSaving(true);
     try {
-      // Test the connection by making a simple request
       const testSettings = {
-        VOICE_CHAT_ENABLED: formData.VoiceChatEnabled,
-        AZURE_REALTIME_ENDPOINT: formData.AzureRealtimeEndpoint,
-        AZURE_REALTIME_KEY: formData.AzureRealtimeKey,
-        AZURE_REALTIME_MODEL: formData.AzureRealtimeModel,
+        VoiceChatEnabled: formData.VoiceChatEnabled,
+        AzureRealtimeEndpoint: formData.AzureRealtimeEndpoint,
+        AzureRealtimeKey: formData.AzureRealtimeKey,
+        AzureRealtimeModel: formData.AzureRealtimeModel,
       };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE}/admin/system-preferences`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(testSettings),
-        }
-      );
-
-      if (response.ok) {
-        showToast("Connection test successful!", "success");
+      const result = await Admin.updateSystemPreferences(testSettings);
+      if (result?.success === false) {
+        showToast(
+          `Connection test failed: ${result?.error ?? "unknown error"}`,
+          "error"
+        );
       } else {
-        const error = await response.text();
-        showToast(`Connection test failed: ${error}`, "error");
+        showToast("Connection test successful!", "success");
       }
     } catch (error) {
       console.error("Connection test failed:", error);
@@ -132,34 +126,27 @@ export default function VoiceChatSettings() {
     setSaving(true);
     try {
       const updateData = {
-        VOICE_CHAT_ENABLED: formData.VoiceChatEnabled,
-        AZURE_REALTIME_ENDPOINT: formData.AzureRealtimeEndpoint,
-        AZURE_REALTIME_KEY: formData.AzureRealtimeKey,
-        AZURE_REALTIME_MODEL: formData.AzureRealtimeModel,
-        VOICE_CHAT_DEFAULT_VOICE: formData.VoiceChatDefaultVoice,
-        VOICE_CHAT_VAD_THRESHOLD: formData.VoiceChatVADThreshold,
-        VOICE_CHAT_SESSION_TIMEOUT: formData.VoiceChatSessionTimeout,
+        VoiceChatEnabled: formData.VoiceChatEnabled,
+        AzureRealtimeEndpoint: formData.AzureRealtimeEndpoint,
+        AzureRealtimeKey: formData.AzureRealtimeKey,
+        AzureRealtimeModel: formData.AzureRealtimeModel,
+        VoiceChatDefaultVoice: formData.VoiceChatDefaultVoice,
+        VoiceChatVADThreshold: formData.VoiceChatVADThreshold,
+        VoiceChatSessionTimeout: formData.VoiceChatSessionTimeout,
       };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE}/admin/system-preferences`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updateData),
-        }
-      );
-
-      if (response.ok) {
+      const result = await Admin.updateSystemPreferences(updateData);
+      if (result?.success === false) {
+        showToast(
+          `Failed to save settings: ${result?.error ?? "unknown error"}`,
+          "error"
+        );
+      } else {
         showToast("Voice chat settings saved successfully", "success");
         setHasChanges(false);
 
-        // Refresh settings
         const _settings = await System.keys();
         setSettings(_settings);
-      } else {
-        const error = await response.text();
-        showToast(`Failed to save settings: ${error}`, "error");
       }
     } catch (error) {
       console.error("Failed to save voice chat settings:", error);

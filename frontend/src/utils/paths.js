@@ -235,4 +235,12 @@ export default {
       manage: () => `/settings/beta-features/live-document-sync/manage`,
     },
   },
+  reports: {
+    home: () => {
+      return "/reports";
+    },
+    usage: () => {
+      return "/reports/usage";
+    },
+  },
 };

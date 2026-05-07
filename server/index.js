@@ -2,6 +2,20 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 
+// Initialize Application Insights
+if (process.env.APP_INSIGHTS_CONNECTION_STRING) {
+  const appInsights = require("applicationinsights");
+  appInsights
+    .setup(process.env.APP_INSIGHTS_CONNECTION_STRING)
+    .setAutoDependencyCorrelation(true)
+    .setAutoCollectRequests(true)
+    // .setAutoCollectPerformance(false, false)
+    .setAutoCollectExceptions(true)
+    // .setAutoCollectDependencies(true)
+    // .setAutoCollectConsole(true, true)
+    .start();
+}
+
 require("./utils/logger")();
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -23,6 +37,7 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const { voiceChatWebSocket } = require("./endpoints/voiceChatWebsocket");
 const {
   agentSkillWhitelistEndpoints,
 } = require("./endpoints/agentSkillWhitelist");
@@ -32,6 +47,7 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
+const { reportEndpoints } = require("./endpoints/reports");
 const { mobileEndpoints } = require("./endpoints/mobile");
 const { webPushEndpoints } = require("./endpoints/webPush");
 const { oauthEndpoints } = require("./endpoints/oauth");
@@ -80,6 +96,7 @@ embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
+voiceChatWebSocket(apiRouter);
 agentSkillWhitelistEndpoints(apiRouter);
 agentFileServerEndpoints(apiRouter);
 experimentalEndpoints(apiRouter);
@@ -87,6 +104,7 @@ developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
 agentFlowEndpoints(apiRouter);
 mcpServersEndpoints(apiRouter);
+reportEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
 webPushEndpoints(apiRouter);
 oauthEndpoints(app, apiRouter);

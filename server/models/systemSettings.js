@@ -344,6 +344,30 @@ const SystemSettings = {
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
+
+    // Voice-chat settings are written to the system_settings table by the admin
+    // UI but the process.env values reflect only what was loaded at boot. Read
+    // the persisted values in one query so saved settings survive a reload.
+    const voiceChatLabels = [
+      "VoiceChatEnabled",
+      "AzureRealtimeEndpoint",
+      "AzureRealtimeKey",
+      "AzureRealtimeModel",
+      "VoiceChatDefaultVoice",
+      "VoiceChatVADThreshold",
+      "VoiceChatVADPrefixPaddingMs",
+      "VoiceChatVADSilenceDurationMs",
+      "VoiceChatMaxResponseTokens",
+      "VoiceChatTemperature",
+      "VoiceChatSessionTimeout",
+    ];
+    const voiceChatRows = await prisma.system_settings.findMany({
+      where: { label: { in: voiceChatLabels } },
+    });
+    const voiceChatDb = Object.fromEntries(
+      voiceChatRows.map((r) => [r.label, r.value])
+    );
+
     return {
       // --------------------------------------------------------
       // General Settings
@@ -424,23 +448,51 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Voice Chat - Azure Realtime API Settings & Configs
       // --------------------------------------------------------
-      VoiceChatEnabled: process.env.VOICE_CHAT_ENABLED === "true",
-      AzureRealtimeEndpoint: process.env.AZURE_REALTIME_ENDPOINT || null,
-      AzureRealtimeKey: process.env.AZURE_REALTIME_KEY || null,
-      AzureRealtimeModel: process.env.AZURE_REALTIME_MODEL || "gpt-realtime",
-      VoiceChatDefaultVoice: process.env.VOICE_CHAT_DEFAULT_VOICE || "alloy",
+      VoiceChatEnabled:
+        (voiceChatDb.VoiceChatEnabled ?? process.env.VOICE_CHAT_ENABLED) ===
+        "true",
+      AzureRealtimeEndpoint:
+        voiceChatDb.AzureRealtimeEndpoint ||
+        process.env.AZURE_REALTIME_ENDPOINT ||
+        null,
+      AzureRealtimeKey:
+        voiceChatDb.AzureRealtimeKey || process.env.AZURE_REALTIME_KEY || null,
+      AzureRealtimeModel:
+        voiceChatDb.AzureRealtimeModel ||
+        process.env.AZURE_REALTIME_MODEL ||
+        "gpt-realtime",
+      VoiceChatDefaultVoice:
+        voiceChatDb.VoiceChatDefaultVoice ||
+        process.env.VOICE_CHAT_DEFAULT_VOICE ||
+        "alloy",
       VoiceChatVADThreshold:
-        parseFloat(process.env.VOICE_CHAT_VAD_THRESHOLD) || 0.5,
+        parseFloat(
+          voiceChatDb.VoiceChatVADThreshold ??
+            process.env.VOICE_CHAT_VAD_THRESHOLD
+        ) || 0.5,
       VoiceChatVADPrefixPaddingMs:
-        parseInt(process.env.VOICE_CHAT_VAD_PREFIX_PADDING_MS) || 200,
+        parseInt(
+          voiceChatDb.VoiceChatVADPrefixPaddingMs ??
+            process.env.VOICE_CHAT_VAD_PREFIX_PADDING_MS
+        ) || 200,
       VoiceChatVADSilenceDurationMs:
-        parseInt(process.env.VOICE_CHAT_VAD_SILENCE_DURATION_MS) || 300,
+        parseInt(
+          voiceChatDb.VoiceChatVADSilenceDurationMs ??
+            process.env.VOICE_CHAT_VAD_SILENCE_DURATION_MS
+        ) || 300,
       VoiceChatMaxResponseTokens:
-        process.env.VOICE_CHAT_MAX_RESPONSE_TOKENS || 1638,
+        voiceChatDb.VoiceChatMaxResponseTokens ||
+        process.env.VOICE_CHAT_MAX_RESPONSE_TOKENS ||
+        1638,
       VoiceChatTemperature:
-        parseFloat(process.env.VOICE_CHAT_TEMPERATURE) || 0.7,
+        parseFloat(
+          voiceChatDb.VoiceChatTemperature ?? process.env.VOICE_CHAT_TEMPERATURE
+        ) || 0.7,
       VoiceChatSessionTimeout:
-        parseInt(process.env.VOICE_CHAT_SESSION_TIMEOUT) || 1500000, // 25 minutes in ms
+        parseInt(
+          voiceChatDb.VoiceChatSessionTimeout ??
+            process.env.VOICE_CHAT_SESSION_TIMEOUT
+        ) || 1500000, // 25 minutes in ms
 
       // --------------------------------------------------------
       // Agent Settings & Configs

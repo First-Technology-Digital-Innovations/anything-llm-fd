@@ -56,6 +56,7 @@ export default defineConfig({
     ]
   },
   build: {
+    sourcemap: true,
     rollupOptions: {
       output: {
         // These settings ensure the primary JS and CSS file references are always index.{js,css}
