@@ -1,5 +1,7 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const { AIProjectClient } = require("@azure/ai-projects");
+const { DefaultAzureCredential } = require("@azure/identity");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -549,61 +551,121 @@ const webBrowsing = {
             return result;
           },
           _bingWebSearch: async function (query) {
-            if (!process.env.AGENT_BING_SEARCH_API_KEY) {
+            if (!process.env.AGENT_BING_SEARCH_ENDPOINT || !process.env.AGENT_BING_SEARCH_AGENTNAME) {
               this.super.introspect(
-                `${this.caller}: I can't use Bing Web Search because the user has not defined the required API key.\nVisit: https://portal.azure.com/ to create the API key.`
+                `${this.caller}: I can't use Bing Web Search because the required Foundry agent configuration is missing. Please ensure AGENT_BING_SEARCH_ENDPOINT and AGENT_BING_SEARCH_AGENTNAME are configured.`
               );
               return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
             }
 
-            const searchURL = new URL(
-              "https://api.bing.microsoft.com/v7.0/search"
-            );
-            searchURL.searchParams.append("q", query);
-
             this.super.introspect(
-              `${this.caller}: Using Bing Web Search to search for "${
+              `${this.caller}: Using Bing Web Search (via Foundry Agent) to search for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
 
-            const searchResponse = await fetch(searchURL, {
-              headers: {
-                "Ocp-Apim-Subscription-Key":
-                  process.env.AGENT_BING_SEARCH_API_KEY,
-              },
-            })
-              .then((res) => {
-                if (res.ok) return res.json();
-                throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_BING_SEARCH_API_KEY, 5), q: query })}`
-                );
-              })
-              .then((data) => {
-                const searchResults = data.webPages?.value || [];
-                return searchResults.map((result) => ({
-                  title: result.name,
-                  link: result.url,
-                  snippet: result.snippet,
-                }));
-              })
-              .catch((e) => {
-                this.super.handlerProps.log(
-                  `Bing Web Search Error: ${e.message}`
-                );
-                return [];
-              });
-
-            if (searchResponse.length === 0)
-              return `No information was found online for the search query.`;
-
-            this.reportSearchResultsCitations(searchResponse);
-            const result = JSON.stringify(searchResponse);
-            this.super.introspect(
-              `${this.caller}: I found ${searchResponse.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
-            );
-            return result;
+            try {
+              const project = new AIProjectClient(
+                process.env.AGENT_BING_SEARCH_ENDPOINT,
+                new DefaultAzureCredential()
+              );
+              const openAIClient = project.getOpenAIClient();
+              const response = await openAIClient.responses.create(
+                {
+                  input: [{ role: "user", content: query }],
+                },
+                {
+                  body: {
+                    agent_reference: {
+                      name: process.env.AGENT_BING_SEARCH_AGENTNAME,
+                      version: "1",
+                      type: "agent_reference",
+                    },
+                  },
+                }
+              );
+              let outputText = response.output_text || "";
+              let searchResults = [];
+              try {
+                const parsed = JSON.parse(outputText);
+                if (Array.isArray(parsed)) {
+                  searchResults = parsed;
+                } else if (typeof parsed === "object") {
+                  searchResults = [parsed];
+                }
+              } catch (e) {
+                // Not JSON, treat as a single result
+                searchResults = [{ title: "Search Result", link: "", snippet: outputText }];
+              }
+              if (searchResults.length === 0)
+                return `No information was found online for the search query.`;
+              this.reportSearchResultsCitations(searchResults);
+              const result = JSON.stringify(searchResults);
+              this.super.introspect(
+                `${this.caller}: I found ${searchResults.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+              );
+              return result;
+            } catch (error) {
+              this.super.handlerProps.log(`Bing Web Search Agent Error: ${error.message}`);
+              return `There was an error searching for content. ${error.message}`;
+            }
           },
+          // _bingWebSearch: async function (query) {
+          //   if (!process.env.AGENT_BING_SEARCH_API_KEY) {
+          //     this.super.introspect(
+          //       `${this.caller}: I can't use Bing Web Search because the user has not defined the required API key.\nVisit: https://portal.azure.com/ to create the API key.`
+          //     );
+          //     return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+          //   }
+
+          //   const searchURL = new URL(
+          //     "https://api.bing.microsoft.com/v7.0/search"
+          //   );
+          //   searchURL.searchParams.append("q", query);
+
+          //   this.super.introspect(
+          //     `${this.caller}: Using Bing Web Search to search for "${
+          //       query.length > 100 ? `${query.slice(0, 100)}...` : query
+          //     }"`
+          //   );
+
+          //   const searchResponse = await fetch(searchURL, {
+          //     headers: {
+          //       "Ocp-Apim-Subscription-Key":
+          //         process.env.AGENT_BING_SEARCH_API_KEY,
+          //     },
+          //   })
+          //     .then((res) => {
+          //       if (res.ok) return res.json();
+          //       throw new Error(
+          //         `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_BING_SEARCH_API_KEY, 5), q: query })}`
+          //       );
+          //     })
+          //     .then((data) => {
+          //       const searchResults = data.webPages?.value || [];
+          //       return searchResults.map((result) => ({
+          //         title: result.name,
+          //         link: result.url,
+          //         snippet: result.snippet,
+          //       }));
+          //     })
+          //     .catch((e) => {
+          //       this.super.handlerProps.log(
+          //         `Bing Web Search Error: ${e.message}`
+          //       );
+          //       return [];
+          //     });
+
+          //   if (searchResponse.length === 0)
+          //     return `No information was found online for the search query.`;
+
+          //   this.reportSearchResultsCitations(searchResponse);
+          //   const result = JSON.stringify(searchResponse);
+          //   this.super.introspect(
+          //     `${this.caller}: I found ${searchResponse.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+          //   );
+          //   return result;
+          // },
           _serplyEngine: async function (
             query,
             language = "en",
